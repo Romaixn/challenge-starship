@@ -58,18 +58,17 @@ const Welcome = () => {
 
   return (
     <div
-      className={css(
-        phase !== "welcome" && {
-          opacity: 0,
-          pointerEvents: "none",
-        },
-        {
-          position: "fixed",
-          inset: 0,
-          transition: "opacity 1.5s",
-          opacity: opacity,
-        },
-      )}
+      className={css({
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: 1000,
+        pointerEvents: phase !== "welcome" ? "none" : "auto",
+        opacity: phase !== "welcome" ? 0 : opacity,
+        transition: "opacity 1.5s",
+      })}
     >
       <div
         className={css({ position: "relative", width: "100%", height: "100%" })}

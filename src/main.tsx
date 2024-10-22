@@ -3,8 +3,8 @@ import { createRoot } from "react-dom/client";
 import { Leva } from "leva";
 import Experience from "@/Experience.tsx";
 
-import "@/index.css";
 import "../styled-system/styles.css";
+import "@/index.css";
 
 const isProd = process.env.NODE_ENV === "production";
 

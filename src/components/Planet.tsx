@@ -5,13 +5,13 @@ import { TextureLoader } from "three/src/loaders/TextureLoader";
 import * as THREE from "three";
 
 // @ts-ignore
-import vertexShader from "../shaders/planet/vertex.glsl";
+import vertexShader from "@/shaders/planet/vertex.glsl";
 // @ts-ignore
-import fragmentShader from "../shaders/planet/fragment.glsl";
+import fragmentShader from "@/shaders/planet/fragment.glsl";
 // @ts-ignore
-import atmosphereVertexShader from "../shaders/atmosphere/vertex.glsl";
+import atmosphereVertexShader from "@/shaders/atmosphere/vertex.glsl";
 // @ts-ignore
-import atmosphereFragmentShader from "../shaders/atmosphere/fragment.glsl";
+import atmosphereFragmentShader from "@/shaders/atmosphere/fragment.glsl";
 
 interface PlanetProps {
   xRadius?: number;

@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Leva } from "leva";
-import Experience from "./Experience.tsx";
+import Experience from "@/Experience.tsx";
 
-import "./index.css";
+import "@/index.css";
 
 const isProd = process.env.NODE_ENV === "production";
 

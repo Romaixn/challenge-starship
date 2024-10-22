@@ -1,8 +1,8 @@
 import { Canvas } from "@react-three/fiber";
-import useGame from "./stores/useGame";
+import useGame from "@/stores/useGame";
 import { Suspense, useMemo, useRef } from "react";
-import Game from "./Game";
-import Welcome from "./Welcome";
+import Game from "@/Game";
+import Welcome from "@/Welcome";
 import {
   KeyboardControls,
   KeyboardControlsEntry,

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { RigidBody, RapierRigidBody } from "@react-three/rapier";
-import Spaceship from "./components/Spaceship";
+import Spaceship from "@/components/Spaceship";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 

@@ -2,7 +2,7 @@ import useGame from "@/stores/useGame";
 import SpaceTravelComponent from "@/components/SpaceTravel";
 import { useState, useEffect } from "react";
 
-import { css } from "@styled-system/css";
+import { css } from "../styled-system/css";
 
 const Welcome = () => {
   const start = useGame((state) => state.start);

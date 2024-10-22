@@ -9,9 +9,6 @@
         "@/*": [
             "./src/*"
         ],
-        "@styled-system/*": [
-            "./styled-system/*"
-        ]
     },
 
     /* Bundler mode */

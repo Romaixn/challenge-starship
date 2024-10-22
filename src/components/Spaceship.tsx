@@ -1,23 +1,23 @@
-import * as THREE from 'three'
-import { useGLTF } from '@react-three/drei'
-import { GLTF } from 'three-stdlib'
+import * as THREE from "three";
+import { useGLTF } from "@react-three/drei";
+import { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    GreenShip_Body: THREE.Mesh
-    GreenShip_LandingGearItem1: THREE.Mesh
-    GreenShip_LandingGearItem2: THREE.Mesh
-    GreenShip_LandingGearItem3: THREE.Mesh
-    GreenShip_LandingGearItem4: THREE.Mesh
-  }
+    GreenShip_Body: THREE.Mesh;
+    GreenShip_LandingGearItem1: THREE.Mesh;
+    GreenShip_LandingGearItem2: THREE.Mesh;
+    GreenShip_LandingGearItem3: THREE.Mesh;
+    GreenShip_LandingGearItem4: THREE.Mesh;
+  };
   materials: {
-    GreenShip: THREE.MeshStandardMaterial
-    LandingGear1: THREE.MeshStandardMaterial
-  }
-}
+    GreenShip: THREE.MeshStandardMaterial;
+    LandingGear1: THREE.MeshStandardMaterial;
+  };
+};
 
-const Spaceship = (props: JSX.IntrinsicElements['group']) => {
-  const { nodes, materials } = useGLTF('/models/spaceship.glb') as GLTFResult
+const Spaceship = (props: JSX.IntrinsicElements["group"]) => {
+  const { nodes, materials } = useGLTF("/models/spaceship.glb") as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <group position={[-30, 0, 0]} rotation={[0, Math.PI / 4, 0]}>
@@ -58,9 +58,9 @@ const Spaceship = (props: JSX.IntrinsicElements['group']) => {
         />
       </group>
     </group>
-  )
-}
+  );
+};
 
-useGLTF.preload('/models/spaceship.glb')
+useGLTF.preload("/models/spaceship.glb");
 
-export default Spaceship
+export default Spaceship;

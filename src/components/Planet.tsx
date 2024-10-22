@@ -1,11 +1,16 @@
 import { useMemo, useRef, useState } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
+// @ts-ignore
 import { TextureLoader } from "three/src/loaders/TextureLoader";
 import * as THREE from "three";
 
+// @ts-ignore
 import vertexShader from "../shaders/planet/vertex.glsl";
+// @ts-ignore
 import fragmentShader from "../shaders/planet/fragment.glsl";
+// @ts-ignore
 import atmosphereVertexShader from "../shaders/atmosphere/vertex.glsl";
+// @ts-ignore
 import atmosphereFragmentShader from "../shaders/atmosphere/fragment.glsl";
 
 interface PlanetProps {
@@ -33,7 +38,7 @@ const Planet: React.FC<PlanetProps> = ({
   planetTexture.colorSpace = THREE.SRGBColorSpace;
   planetTexture.anisotropy = 8;
 
-  const planet = useRef<THREE.Mesh>(null);
+  const planet = useRef<THREE.Mesh>(null!);
 
   const [x, setX] = useState<number>(xRadius);
   const [z, setZ] = useState<number>(zRadius);
@@ -78,6 +83,7 @@ const Planet: React.FC<PlanetProps> = ({
         dayColor={color}
         twilightColor="#ff6600"
       />
+      {/* @ts-ignore */}
       <mesh ref={planet}>
         <sphereGeometry args={[size, 64, 64]} />
         <shaderMaterial
@@ -105,7 +111,7 @@ export const Atmosphere: React.FC<AtmosphereProps> = ({
   dayColor,
   twilightColor,
 }) => {
-  const atmosphere = useRef<THREE.Mesh>(null);
+  const atmosphere = useRef<THREE.Mesh | null>(null);
   const uniforms = useMemo(
     () => ({
       uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 0)),
@@ -131,6 +137,7 @@ export const Atmosphere: React.FC<AtmosphereProps> = ({
   });
 
   return (
+    // @ts-ignore
     <mesh ref={atmosphere} scale={[1.04, 1.04, 1.04]}>
       <sphereGeometry args={[size, 64, 64]} />
       <shaderMaterial

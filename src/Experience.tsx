@@ -35,6 +35,7 @@ const Experience = () => {
     <>
       <KeyboardControls map={map}>
         <Canvas
+          // @ts-ignore
           ref={canvas}
           shadows
           camera={{

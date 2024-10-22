@@ -1,19 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { useRapier, RigidBody } from "@react-three/rapier";
+import { RigidBody, RapierRigidBody } from "@react-three/rapier";
 import Spaceship from "./components/Spaceship";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 
-export const Player = () => {
-  const player = useRef();
+export const Player: React.FC = () => {
+  const player = useRef<RapierRigidBody>(null!);
   const [subscribeKeys, getKeys] = useKeyboardControls();
-  const { rapier, world } = useRapier();
 
-  const [smoothedCameraPosition] = useState(
+  const [smoothedCameraPosition] = useState<THREE.Vector3>(
     () => new THREE.Vector3(10, 10, 10),
   );
-  const [smoothedCameraTarget] = useState(() => new THREE.Vector3());
+  const [smoothedCameraTarget] = useState<THREE.Vector3>(
+    () => new THREE.Vector3(),
+  );
 
   useEffect(() => {
     const unsubscribeAny = subscribeKeys(() => {
@@ -33,14 +34,34 @@ export const Player = () => {
      */
     const { forward, backward, leftward, rightward } = getKeys();
 
-    const impulse = { x: 0, y: 0, z: 0 };
-    const torque = { x: 0, y: 0, z: 0 };
+    const impulse: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
+    const torque: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
 
-    const impulseStrength = 0.6 * delta;
-    const torqueStrength = 0.2 * delta;
+    const impulseStrength: number = 0.6 * delta;
+    const torqueStrength: number = 0.2 * delta;
 
-    player.current.applyImpulse(impulse);
-    player.current.applyTorqueImpulse(torque);
+    if (forward) {
+      impulse.z -= impulseStrength;
+      torque.x -= torqueStrength;
+    }
+
+    if (rightward) {
+      impulse.x += impulseStrength;
+      torque.z -= torqueStrength;
+    }
+
+    if (backward) {
+      impulse.z += impulseStrength;
+      torque.x += torqueStrength;
+    }
+
+    if (leftward) {
+      impulse.x -= impulseStrength;
+      torque.z += torqueStrength;
+    }
+
+    player.current.applyImpulse(impulse, true);
+    player.current.applyTorqueImpulse(torque, true);
 
     /**
      * Camera
@@ -59,10 +80,12 @@ export const Player = () => {
     smoothedCameraTarget.lerp(cameraTarget, 5 * delta);
 
     state.camera.position.copy(smoothedCameraPosition);
+    // @ts-ignore
     state.camera.lookAt(smoothedCameraTarget);
   });
 
   return (
+    // @ts-ignore
     <RigidBody ref={player}>
       <Spaceship />
     </RigidBody>

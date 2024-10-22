@@ -1,10 +1,8 @@
 import { useMemo } from "react";
 import { Center, Environment, OrbitControls, Stars } from "@react-three/drei";
 import { Perf } from "r3f-perf";
-import Lights from "./Lights";
 import { Asteroid } from "./components/Asteroid";
 import Planet from "./components/Planet";
-import { Player } from "./Player";
 import { Physics } from "@react-three/rapier";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -42,6 +40,7 @@ const Game = () => {
       {/* <Lights /> */}
 
       <Environment preset="night" />
+      <Stars radius={500} />
 
       <OrbitControls makeDefault />
 

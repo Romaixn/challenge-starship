@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+// @ts-ignore
 import SpaceTravel from "space-travel";
 
 interface SpaceTravelProps {

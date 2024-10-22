@@ -28,6 +28,7 @@ const SpaceTravelComponent: React.FC<SpaceTravelProps> = ({
       opacity,
       backgroundColor,
       startOpacity: 0,
+      opacityLerpFactor: 0.02,
     });
 
     sceneRef.current.start();

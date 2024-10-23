@@ -4,6 +4,7 @@ import { Perf } from "r3f-perf";
 import { Asteroid } from "@/components/Asteroid";
 import Planet from "@/components/Planet";
 import { Physics } from "@react-three/rapier";
+import { Player } from "./Player";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -42,13 +43,8 @@ const Game = () => {
       <Environment preset="night" />
       <Stars radius={500} />
 
-      <OrbitControls makeDefault />
-
-      <Physics debug>
-        <Center>
-          {/* <Player /> */}
-          <Asteroid position={[0, 0, 0]} />
-        </Center>
+      <Physics debug gravity={[0.1, 0.1, 0.1]}>
+        <Player />
 
         <Planet
           xRadius={1000}

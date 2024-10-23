@@ -4,10 +4,11 @@ import { RigidBody, RapierRigidBody } from "@react-three/rapier";
 import Spaceship from "@/components/Spaceship";
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { Controls } from "./Experience";
 
 export const Player: React.FC = () => {
   const player = useRef<RapierRigidBody>(null!);
-  const [subscribeKeys, getKeys] = useKeyboardControls();
+  const [subscribeKeys, getKeys] = useKeyboardControls<Controls>();
 
   const [smoothedCameraPosition] = useState<THREE.Vector3>(
     () => new THREE.Vector3(10, 10, 10),
@@ -32,7 +33,7 @@ export const Player: React.FC = () => {
     /**
      * Controls
      */
-    const { forward, backward, leftward, rightward } = getKeys();
+    const { forward, back, left, right } = getKeys();
 
     const impulse: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
     const torque: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 };
@@ -45,17 +46,17 @@ export const Player: React.FC = () => {
       torque.x -= torqueStrength;
     }
 
-    if (rightward) {
+    if (right) {
       impulse.x += impulseStrength;
       torque.z -= torqueStrength;
     }
 
-    if (backward) {
+    if (back) {
       impulse.z += impulseStrength;
       torque.x += torqueStrength;
     }
 
-    if (leftward) {
+    if (left) {
       impulse.x -= impulseStrength;
       torque.z += torqueStrength;
     }
@@ -69,12 +70,12 @@ export const Player: React.FC = () => {
     const playerPosition = player.current.translation();
     const cameraPosition = new THREE.Vector3();
     cameraPosition.copy(playerPosition);
-    cameraPosition.z += 2.25;
-    cameraPosition.y += 0.65;
+    cameraPosition.z += 20;
+    cameraPosition.y += 10;
 
     const cameraTarget = new THREE.Vector3();
     cameraTarget.copy(playerPosition);
-    cameraTarget.y += 0.25;
+    cameraTarget.y += 0.5;
 
     smoothedCameraPosition.lerp(cameraPosition, 5 * delta);
     smoothedCameraTarget.lerp(cameraTarget, 5 * delta);
@@ -86,7 +87,7 @@ export const Player: React.FC = () => {
 
   return (
     // @ts-ignore
-    <RigidBody ref={player}>
+    <RigidBody ref={player} colliders="cuboid">
       <Spaceship />
     </RigidBody>
   );

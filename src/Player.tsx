@@ -113,7 +113,7 @@ export const Player = () => {
           rotation={bodyRotation}
         >
           <mesh>
-            <boxGeometry args={[2, 1, 1]} />
+            <boxGeometry args={[1, 1, 2.5]} />
             <meshBasicMaterial color="red" visible={false} />
           </mesh>
         </RigidBody>

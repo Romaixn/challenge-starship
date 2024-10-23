@@ -24,7 +24,7 @@ export default function Spaceship(props: JSX.IntrinsicElements["group"]) {
   return (
     <group
       {...props}
-      position={[0, 0, -4]}
+      position={[0, 0, -4.5]}
       rotation={[0, Math.PI / 2, 0]}
       dispose={null}
     >

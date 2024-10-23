@@ -6,11 +6,13 @@
   "scripts": {
     "prepare": "panda codegen",
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.14.0",
+    "@react-spring/three": "^9.7.5",
     "@react-three/drei": "^9.114.6",
     "@react-three/fiber": "^8.17.10",
     "@react-three/rapier": "^1.5.0",

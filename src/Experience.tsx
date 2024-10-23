@@ -1,52 +1,26 @@
 import { Canvas } from "@react-three/fiber";
 import useGame from "@/stores/useGame";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useRef } from "react";
 import Game from "@/Game";
 import Welcome from "@/Welcome";
-import {
-  KeyboardControls,
-  KeyboardControlsEntry,
-  Loader,
-} from "@react-three/drei";
-
-export enum Controls {
-  forward = "forward",
-  back = "back",
-  left = "left",
-  right = "right",
-}
+import { Loader } from "@react-three/drei";
 
 const Experience = () => {
   const canvas = useRef();
   const phase = useGame((state) => state.phase);
-  const map = useMemo<KeyboardControlsEntry<Controls>[]>(
-    () => [
-      { name: Controls.forward, keys: ["ArrowUp", "KeyW"] },
-      { name: Controls.back, keys: ["ArrowDown", "KeyS"] },
-      { name: Controls.left, keys: ["ArrowLeft", "KeyA"] },
-      { name: Controls.right, keys: ["ArrowRight", "KeyD"] },
-    ],
-    [],
-  );
 
   return (
     <>
-      <KeyboardControls map={map}>
-        <Canvas
-          // @ts-ignore
-          ref={canvas}
-          shadows
-          camera={{
-            fov: 45,
-            position: [2, 5, 50],
-            far: 5000,
-          }}
-        >
-          <color attach="background" args={["#0B192C"]} />
+      <Canvas
+        // @ts-ignore
+        ref={canvas}
+        dpr={[1, 1]}
+        gl={{ antialias: false, stencil: false }}
+      >
+        <color attach="background" args={["#0B192C"]} />
 
-          <Suspense fallback={null}>{phase !== "welcome" && <Game />}</Suspense>
-        </Canvas>
-      </KeyboardControls>
+        <Suspense fallback={null}>{phase !== "welcome" && <Game />}</Suspense>
+      </Canvas>
       {phase === "welcome" && (
         <Suspense fallback={null}>
           <Welcome />

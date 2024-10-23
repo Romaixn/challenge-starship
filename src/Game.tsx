@@ -1,14 +1,42 @@
-import { useMemo } from "react";
-import { Center, Environment, OrbitControls, Stars } from "@react-three/drei";
+import { useEffect, useMemo, useRef, useState } from "react";
+import * as THREE from "three";
+import {
+  Center,
+  Environment,
+  KeyboardControls,
+  OrbitControls,
+  Stars,
+} from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Asteroid } from "@/components/Asteroid";
 import Planet from "@/components/Planet";
 import { Physics } from "@react-three/rapier";
 import { Player } from "./Player";
+import { KeyboardControlsEntry } from "@react-three/drei";
+import Controls from "./components/controls/Controls";
 
 const isProd = process.env.NODE_ENV === "production";
 
+export enum ControlsMap {
+  up = "up",
+  down = "backward",
+  left = "leftward",
+  right = "rightward",
+  boost = "boost",
+}
+
 const Game = () => {
+  const map = useMemo<KeyboardControlsEntry<ControlsMap>[]>(
+    () => [
+      { name: ControlsMap.up, keys: ["ArrowUp", "KeyW"] },
+      { name: ControlsMap.down, keys: ["ArrowDown", "KeyS"] },
+      { name: ControlsMap.left, keys: ["ArrowLeft", "KeyA"] },
+      { name: ControlsMap.right, keys: ["ArrowRight", "KeyD"] },
+      { name: ControlsMap.boost, keys: ["Space"] },
+    ],
+    [],
+  );
+
   const { texture, color } = useMemo(() => {
     const textures = [
       // Habitable
@@ -35,18 +63,34 @@ const Game = () => {
 
     return textures[Math.floor(Math.random() * textures.length)];
   }, []);
+
+  const planet = useRef<THREE.Mesh>();
+  const [planetPosition, setPlanetPosition] = useState(
+    new THREE.Vector3(0, 0, -1000),
+  );
+
+  useEffect(() => {
+    if (planet.current) {
+      setPlanetPosition(planet.current.position);
+    }
+  }, [planet]);
+
   return (
     <>
       {!isProd && <Perf position="top-left" />}
       {/* <Lights /> */}
 
       <Environment preset="night" />
-      <Stars radius={500} />
+      <Stars radius={1000} depth={50} factor={20} saturation={0} fade />
 
-      <Physics debug gravity={[0.1, 0.1, 0.1]}>
-        <Player />
+      <Physics debug timeStep="vary" gravity={[0, 0, 0]}>
+        <KeyboardControls map={map}>
+          <Player planetPosition={planetPosition} />
+        </KeyboardControls>
 
         <Planet
+          ref={planet}
+          position={planetPosition}
           xRadius={1000}
           zRadius={1000}
           size={100}

@@ -7,6 +7,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ControlsMap } from "@/Game";
 import Spaceship from "./components/Spaceship";
+import { useJoystickControls } from "./stores/useJoystickControls";
 
 export const Player = () => {
   const ref = useRef();
@@ -24,15 +25,66 @@ export const Player = () => {
   const speed = useRef(0.2);
   const [cameraDistance, _] = React.useState(-5);
 
+  /**
+   * Check if inside keyboardcontrols
+   */
+  const useIsInsideKeyboardControls = () => {
+    try {
+      return !!useKeyboardControls();
+    } catch {
+      return false;
+    }
+  };
+  const isInsideKeyboardControls = useIsInsideKeyboardControls();
+
   const upPressed = useKeyboardControls((state) => state[ControlsMap.up]);
   const downPressed = useKeyboardControls((state) => state[ControlsMap.down]);
   const leftPressed = useKeyboardControls((state) => state[ControlsMap.left]);
   const rightPressed = useKeyboardControls((state) => state[ControlsMap.right]);
   //   const boostPressed = useKeyboardControls((state) => state[ControlsMap.boost]);
 
+  /**
+   * Joystick controls setup
+   */
+  const getJoystickValues = useJoystickControls(
+    (state) => state.getJoystickValues,
+  );
+  const pressButton1 = useJoystickControls((state) => state.pressButton1);
+  const pressButton2 = useJoystickControls((state) => state.pressButton2);
+  const pressButton3 = useJoystickControls((state) => state.pressButton3);
+  const pressButton4 = useJoystickControls((state) => state.pressButton4);
+  const pressButton5 = useJoystickControls((state) => state.pressButton5);
+  const releaseAllButtons = useJoystickControls(
+    (state) => state.releaseAllButtons,
+  );
+  const setJoystick = useJoystickControls((state) => state.setJoystick);
+  const resetJoystick = useJoystickControls((state) => state.resetJoystick);
+
+  const getJoystickDirection = (angle: number): string => {
+    // Normaliser l'angle entre 0 et 2π
+    const normalizedAngle =
+      ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+
+    if (normalizedAngle >= 5.5 || normalizedAngle <= 0.8) {
+      return "right";
+    } else if (normalizedAngle > 0.8 && normalizedAngle <= 2.4) {
+      return "up";
+    } else if (normalizedAngle > 2.4 && normalizedAngle <= 3.9) {
+      return "left";
+    } else {
+      return "down";
+    }
+  };
+
   const boxSpeed = 0.15;
 
   useFrame(({ clock }) => {
+    /**
+     * Getting all joystick control values
+     */
+    const { joystickDis, joystickAng, runState, button1Pressed } =
+      getJoystickValues();
+
     if (speed.current > 0.2) {
       speed.current -= 0.001;
     }
@@ -47,13 +99,21 @@ export const Player = () => {
       camera.current.fov += 0.1;
     }
 
+    let direction = "";
+    if (joystickDis > 0) {
+      direction = getJoystickDirection(joystickAng);
+    }
+
     boxRef.current.rotation.set(0, 0, 0);
 
-    boxRef.current.position.x += leftPressed ? boxSpeed : 0;
-    boxRef.current.position.x += rightPressed ? -boxSpeed : 0;
+    boxRef.current.position.x +=
+      leftPressed || direction === "left" ? boxSpeed : 0;
+    boxRef.current.position.x +=
+      rightPressed || direction === "right" ? -boxSpeed : 0;
 
-    boxRef.current.position.y += upPressed ? boxSpeed : 0;
-    boxRef.current.position.y += downPressed ? -boxSpeed : 0;
+    boxRef.current.position.y += upPressed || direction === "up" ? boxSpeed : 0;
+    boxRef.current.position.y +=
+      downPressed || direction === "down" ? -boxSpeed : 0;
 
     const boxPosition = new THREE.Vector3();
     boxPosition.setFromMatrixPosition(boxRef.current.matrixWorld);

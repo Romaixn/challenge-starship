@@ -66,7 +66,7 @@ const Game = () => {
   }, []);
 
   const planet = useRef<THREE.Mesh>();
-  const planetPosition = new THREE.Vector3(0, 0, 1000);
+  const planetPosition = new THREE.Vector3(0, 0, 2000);
 
   return (
     <>
@@ -74,7 +74,7 @@ const Game = () => {
       {/* <Lights /> */}
 
       <Environment preset="night" />
-      <Stars radius={1000} depth={50} factor={20} saturation={0} />
+      <Stars radius={2000} depth={50} factor={20} />
 
       <Physics debug timeStep="vary" gravity={[0, 0, 0]}>
         <KeyboardControls map={map}>
@@ -84,7 +84,7 @@ const Game = () => {
         <Planet
           ref={planet}
           position={planetPosition}
-          size={100}
+          size={200}
           texture={texture}
           color={color}
         />

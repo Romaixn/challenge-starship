@@ -76,14 +76,16 @@ const Planet = forwardRef<THREE.Mesh, PlanetProps>(
             dayColor={color}
             twilightColor="#ff6600"
           />
-          <mesh ref={planet}>
-            <sphereGeometry args={[size, 64, 64]} />
-            <shaderMaterial
-              vertexShader={vertexShader}
-              fragmentShader={fragmentShader}
-              uniforms={uniforms}
-            />
-          </mesh>
+          <RigidBody colliders="ball">
+            <mesh ref={planet}>
+              <sphereGeometry args={[size, 64, 64]} />
+              <shaderMaterial
+                vertexShader={vertexShader}
+                fragmentShader={fragmentShader}
+                uniforms={uniforms}
+              />
+            </mesh>
+          </RigidBody>
         </group>
       </>
     );

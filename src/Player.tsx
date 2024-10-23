@@ -2,7 +2,7 @@
 
 import { RigidBody } from "@react-three/rapier";
 import { Box, PerspectiveCamera, useKeyboardControls } from "@react-three/drei";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ControlsMap } from "@/Game";
@@ -17,6 +17,9 @@ export const Player = () => {
   let distance = 5;
   const [bodyPosition, setBodyPosition] = React.useState([0, 0, 0]);
   const [bodyRotation, setBodyRotation] = React.useState([0, 0, 0]);
+  const [initialPosition, setInitialPosition] = useState(
+    new THREE.Vector3(0, 0, 0),
+  );
 
   const speed = useRef(0.2);
   const [cameraDistance, _] = React.useState(-5);

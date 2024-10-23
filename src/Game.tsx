@@ -14,6 +14,7 @@ import { Physics } from "@react-three/rapier";
 import { Player } from "./Player";
 import { KeyboardControlsEntry } from "@react-three/drei";
 import Controls from "./components/controls/Controls";
+import { mx_bilerp_0 } from "three/src/nodes/materialx/lib/mx_noise.js";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -65,15 +66,7 @@ const Game = () => {
   }, []);
 
   const planet = useRef<THREE.Mesh>();
-  const [planetPosition, setPlanetPosition] = useState(
-    new THREE.Vector3(0, 0, -1000),
-  );
-
-  useEffect(() => {
-    if (planet.current) {
-      setPlanetPosition(planet.current.position);
-    }
-  }, [planet]);
+  const planetPosition = new THREE.Vector3(0, 0, 1000);
 
   return (
     <>
@@ -81,18 +74,16 @@ const Game = () => {
       {/* <Lights /> */}
 
       <Environment preset="night" />
-      <Stars radius={1000} depth={50} factor={20} saturation={0} fade />
+      <Stars radius={1000} depth={50} factor={20} saturation={0} />
 
       <Physics debug timeStep="vary" gravity={[0, 0, 0]}>
         <KeyboardControls map={map}>
-          <Player planetPosition={planetPosition} />
+          <Player planet={planet} />
         </KeyboardControls>
 
         <Planet
           ref={planet}
           position={planetPosition}
-          xRadius={1000}
-          zRadius={1000}
           size={100}
           texture={texture}
           color={color}

@@ -1,26 +1,15 @@
+import { Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import useGame from "@/stores/useGame";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Loader } from "@react-three/drei";
+import { isMobile } from "react-device-detect";
 import Game from "@/Game";
 import Welcome from "@/Welcome";
-import { Loader } from "@react-three/drei";
-import { Joystick } from "./components/controls/Joystick";
+import { Joystick } from "@/components/controls/Joystick";
+import useGame from "@/stores/useGame";
 
 const Experience = () => {
   const canvas = useRef();
   const phase = useGame((state) => state.phase);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth <= 768); // Considère comme mobile si la largeur est <= 768px
-    };
-
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-
-    return () => window.removeEventListener("resize", checkIfMobile);
-  }, []);
 
   return (
     <>

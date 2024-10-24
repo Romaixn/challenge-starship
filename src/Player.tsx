@@ -88,15 +88,9 @@ export const Player = () => {
     if (speed.current > 0.2) {
       speed.current -= 0.001;
     }
-    if (camera.current.fov > 50) {
-      camera.current.fov -= 0.1;
-    }
 
     if (speed.current < 0.2) {
       speed.current += 0.001;
-    }
-    if (camera.current.fov < 50) {
-      camera.current.fov += 0.1;
     }
 
     let direction = "";
@@ -124,12 +118,7 @@ export const Player = () => {
     // Calculer l'angle entre les deux points en radians
     ref.current.lookAt(boxPosition);
 
-    const angle = Math.atan2(distanceX, distance);
-    // Définir la rotation de l'arwing autour de l'axe Z en fonction de l'angle
-    ref.current.rotation.z = -(
-      Math.sin(clock.getElapsedTime() * 2) * 0.05 +
-      angle
-    );
+    ref.current.rotation.z = clock.getElapsedTime() * 2 * 0.02;
 
     if (ref.current.position.x !== boxPosition.x) {
       ref.current.position.x +=

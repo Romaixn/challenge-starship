@@ -66,7 +66,7 @@ const Game = () => {
   }, []);
 
   const planet = useRef<THREE.Mesh>();
-  const planetPosition = new THREE.Vector3(0, 0, 2000);
+  const planetPosition = new THREE.Vector3(0, 0, 3000);
 
   return (
     <>

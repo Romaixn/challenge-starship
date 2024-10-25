@@ -8,36 +8,88 @@ import * as THREE from "three";
 import { ControlsMap } from "@/Game";
 import Spaceship from "./components/Spaceship";
 import { useJoystickControls } from "./stores/useJoystickControls";
+import { useControls } from "leva";
 
-export const Player = ({ planet, initialPosition, planetPosition, orbitDistance }) => {
+export const Player = ({ initialPosition, planetPosition }) => {
   const ref = useRef();
   const body = useRef();
   const camera = useRef();
 
-  let distance = 5;
   const [bodyPosition, setBodyPosition] = React.useState([0, 0, 0]);
   const [bodyRotation, setBodyRotation] = React.useState([0, 0, 0]);
 
-  const speed = useRef(0.2);
-  const [cameraDistance, _] = React.useState(-5);
-
-  // Constantes pour le mouvement
-  const TURN_SPEED = 0.03;
-  const PITCH_SPEED = 0.03;
-  const FORWARD_SPEED = 0.5;
-  const CAMERA_HEIGHT = 2;
-  const CAMERA_DISTANCE = 8;
-  const CAMERA_SMOOTHNESS = 0.1;
-  const ROLL_RETURN_SPEED = 0.1;
-  const MAX_ROLL = Math.PI / 4;
+  const {
+    TURN_SPEED,
+    PITCH_SPEED,
+    FORWARD_SPEED,
+    CAMERA_HEIGHT,
+    CAMERA_DISTANCE,
+    CAMERA_SMOOTHNESS,
+    ROLL_RETURN_SPEED,
+    MAX_ROLL
+  } = useControls("Player", {
+    TURN_SPEED: {
+      label: "Turn speed",
+      value: 0.03,
+      min: 0,
+      max: 0.1,
+      step: 0.01
+    },
+    PITCH_SPEED: {
+      label: "Pitch speed",
+      value: 0.03,
+      min: 0,
+      max: 0.1,
+      step: 0.01
+    },
+    FORWARD_SPEED: {
+      label: "Forward speed",
+      value: 0.5,
+      min: 0,
+      max: 1,
+      step: 0.1
+    },
+    CAMERA_HEIGHT: {
+      label: "Camera height",
+      value: 2,
+      min: 0,
+      max: 5,
+      step: 1
+    },
+    CAMERA_DISTANCE: {
+      label: "Camera distance",
+      value: 8,
+      min: 1,
+      max: 20,
+      step: 1
+    },
+    CAMERA_SMOOTHNESS: {
+      label: "Camera smoothness",
+      value: 0.1,
+      min: 0,
+      max: 1,
+      step: 0.1
+    },
+    ROLL_RETURN_SPEED: {
+      label: "Roll return speed",
+      value: 0.1,
+      min: 0,
+      max: 1,
+      step: 0.1
+    },
+    MAX_ROLL: {
+      label: "Max roll",
+      value: Math.PI / 4,
+      min: 0,
+      max: Math.PI / 2,
+      step: Math.PI / 8
+    }
+  });
 
   // Rotation actuelle
   const pitch = useRef(0);
   const yaw = useRef(0);
   const roll = useRef(0);
-
-  // Rotation cible
-  const targetPitch = useRef(0);
   const targetRoll = useRef(0);
 
   // Positionnement initial du vaisseau
@@ -47,22 +99,13 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
     }
   }, [initialPosition, planetPosition]);
 
-  const useIsInsideKeyboardControls = () => {
-    try {
-      return !!useKeyboardControls();
-    } catch {
-      return false;
-    }
-  };
-  const isInsideKeyboardControls = useIsInsideKeyboardControls();
-
   const upPressed = useKeyboardControls((state) => state[ControlsMap.up]);
   const downPressed = useKeyboardControls((state) => state[ControlsMap.down]);
   const leftPressed = useKeyboardControls((state) => state[ControlsMap.left]);
   const rightPressed = useKeyboardControls((state) => state[ControlsMap.right]);
 
   const getJoystickValues = useJoystickControls(
-    (state) => state.getJoystickValues,
+    (state) => state.getJoystickValues
   );
 
   const getJoystickDirection = (angle: number): string => {
@@ -80,7 +123,7 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
     }
   };
 
-  useFrame(({ clock }, delta) => {
+  useFrame(() => {
     if (!ref.current) return;
 
     const { joystickDis, joystickAng } = getJoystickValues();
@@ -89,10 +132,6 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
       direction = getJoystickDirection(joystickAng);
     }
 
-    // Garder une référence de l'ancien pitch pour détecter les transitions
-    const oldPitch = pitch.current;
-
-    // Normaliser le pitch entre -π et π
     pitch.current = pitch.current % (2 * Math.PI);
     if (pitch.current > Math.PI) {
       pitch.current -= 2 * Math.PI;
@@ -104,27 +143,23 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
 
     // Rotation pitch (haut/bas) avec auto-redressement
     if (upPressed || direction === "up") {
-      if (pitch.current < -Math.PI/2) {
+      if (pitch.current < -Math.PI / 2) {
         isTransitioning = true;
-        // Sauvegarder la position actuelle de la caméra pendant la transition
         const currentCameraPos = camera.current.position.clone();
 
         pitch.current = Math.PI - Math.abs(pitch.current);
 
-        // Restaurer la position de la caméra
         camera.current.position.copy(currentCameraPos);
       } else {
         pitch.current -= PITCH_SPEED;
       }
     } else if (downPressed || direction === "down") {
-      if (pitch.current > Math.PI/2) {
+      if (pitch.current > Math.PI / 2) {
         isTransitioning = true;
-        // Sauvegarder la position actuelle de la caméra pendant la transition
         const currentCameraPos = camera.current.position.clone();
 
         pitch.current = -Math.PI + Math.abs(pitch.current);
 
-        // Restaurer la position de la caméra
         camera.current.position.copy(currentCameraPos);
       } else {
         pitch.current += PITCH_SPEED;
@@ -160,12 +195,12 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
     setBodyPosition([
       ref.current.position.x,
       ref.current.position.y,
-      ref.current.position.z,
+      ref.current.position.z
     ]);
     setBodyRotation([
       ref.current.rotation.x,
       ref.current.rotation.y,
-      ref.current.rotation.z,
+      ref.current.rotation.z
     ]);
 
     // Mise à jour de la caméra seulement si on n'est pas en transition
@@ -175,7 +210,6 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
       const targetPosition = ref.current.position.clone().add(offsetBase);
       camera.current.position.lerp(targetPosition, CAMERA_SMOOTHNESS);
 
-      // Faire regarder la caméra vers un point légèrement devant le vaisseau
       const lookAtPoint = ref.current.position.clone().add(direction_vector.multiplyScalar(5));
       camera.current.lookAt(lookAtPoint);
     }

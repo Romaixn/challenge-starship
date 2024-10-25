@@ -1,14 +1,12 @@
-// @ts-nocheck
-
-import { RigidBody } from "@react-three/rapier";
-import { Box, PerspectiveCamera, useKeyboardControls } from "@react-three/drei";
-import React, { useEffect, useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
+import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { ControlsMap } from "@/Game";
-import Spaceship from "./components/Spaceship";
-import { useJoystickControls } from "./stores/useJoystickControls";
+import { useFrame } from "@react-three/fiber";
+import { PerspectiveCamera, useKeyboardControls } from "@react-three/drei";
+import { RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
+import { ControlsMap } from "@/Game";
+import Spaceship from "@/components/Spaceship";
+import { useJoystickControls } from "@/stores/useJoystickControls";
 
 export const Player = ({ initialPosition, planetPosition }) => {
   const ref = useRef();

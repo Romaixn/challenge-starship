@@ -89,11 +89,46 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
       direction = getJoystickDirection(joystickAng);
     }
 
-    // Rotation pitch (haut/bas)
+    // Garder une référence de l'ancien pitch pour détecter les transitions
+    const oldPitch = pitch.current;
+
+    // Normaliser le pitch entre -π et π
+    pitch.current = pitch.current % (2 * Math.PI);
+    if (pitch.current > Math.PI) {
+      pitch.current -= 2 * Math.PI;
+    } else if (pitch.current < -Math.PI) {
+      pitch.current += 2 * Math.PI;
+    }
+
+    let isTransitioning = false;
+
+    // Rotation pitch (haut/bas) avec auto-redressement
     if (upPressed || direction === "up") {
-      pitch.current -= PITCH_SPEED;
+      if (pitch.current < -Math.PI/2) {
+        isTransitioning = true;
+        // Sauvegarder la position actuelle de la caméra pendant la transition
+        const currentCameraPos = camera.current.position.clone();
+
+        pitch.current = Math.PI - Math.abs(pitch.current);
+
+        // Restaurer la position de la caméra
+        camera.current.position.copy(currentCameraPos);
+      } else {
+        pitch.current -= PITCH_SPEED;
+      }
     } else if (downPressed || direction === "down") {
-      pitch.current += PITCH_SPEED;
+      if (pitch.current > Math.PI/2) {
+        isTransitioning = true;
+        // Sauvegarder la position actuelle de la caméra pendant la transition
+        const currentCameraPos = camera.current.position.clone();
+
+        pitch.current = -Math.PI + Math.abs(pitch.current);
+
+        // Restaurer la position de la caméra
+        camera.current.position.copy(currentCameraPos);
+      } else {
+        pitch.current += PITCH_SPEED;
+      }
     }
 
     // Rotation yaw (gauche/droite)
@@ -133,14 +168,10 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
       ref.current.rotation.z,
     ]);
 
-    // Mise à jour de la caméra
-    if (camera.current) {
-      // Position de base de la caméra
+    // Mise à jour de la caméra seulement si on n'est pas en transition
+    if (camera.current && !isTransitioning) {
       const offsetBase = new THREE.Vector3(0, CAMERA_HEIGHT, -CAMERA_DISTANCE);
-
-      // Appliquer la même rotation que le vaisseau à la caméra
       offsetBase.applyEuler(ref.current.rotation);
-
       const targetPosition = ref.current.position.clone().add(offsetBase);
       camera.current.position.lerp(targetPosition, CAMERA_SMOOTHNESS);
 

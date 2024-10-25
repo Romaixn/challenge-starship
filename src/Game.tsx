@@ -67,7 +67,7 @@ const Game = () => {
 
   const planet = useRef<THREE.Mesh>();
   const planetPosition = new THREE.Vector3(0, 0, 0);
-  const playerDistanceFromPlanet = 400; // Ajuste selon tes besoins
+  const playerDistanceFromPlanet = 3000; // Ajuste selon tes besoins
 
   const generateRandomPlayerPosition = () => {
     const phi = Math.random() * Math.PI * 2; // Angle aléatoire autour de l'axe Y

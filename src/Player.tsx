@@ -27,14 +27,20 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
   const CAMERA_HEIGHT = 2;
   const CAMERA_DISTANCE = 8;
   const CAMERA_SMOOTHNESS = 0.1;
+  const RETURN_SPEED = 0.1; // Vitesse de retour à la position neutre
 
-  // Limites de rotation pour le pitch (haut/bas)
-  const MAX_PITCH = Math.PI / 4; // 45 degrés
+  // Limites de rotation
+  const MAX_PITCH = 0.3; // Environ 17 degrés
+  const MAX_ROLL = 0.3;  // Environ 17 degrés
 
   // Rotation actuelle
   const pitch = useRef(0);
   const yaw = useRef(0);
   const roll = useRef(0);
+
+  // Rotation cible
+  const targetPitch = useRef(0);
+  const targetRoll = useRef(0);
 
   // Positionnement initial du vaisseau
   useEffect(() => {
@@ -85,13 +91,26 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
       direction = getJoystickDirection(joystickAng);
     }
 
-    // Mise à jour du pitch (haut/bas) avec limites
+    // Définir les rotations cibles en fonction des contrôles
     if (upPressed || direction === "up") {
-      pitch.current = Math.max(pitch.current - TURN_SPEED, -MAX_PITCH);
+      targetPitch.current = -MAX_PITCH;
+    } else if (downPressed || direction === "down") {
+      targetPitch.current = MAX_PITCH;
+    } else {
+      targetPitch.current = 0;
     }
-    if (downPressed || direction === "down") {
-      pitch.current = Math.min(pitch.current + TURN_SPEED, MAX_PITCH);
+
+    if (leftPressed || direction === "left") {
+      targetRoll.current = -MAX_ROLL;
+    } else if (rightPressed || direction === "right") {
+      targetRoll.current = MAX_ROLL;
+    } else {
+      targetRoll.current = 0;
     }
+
+    // Mise à jour des rotations avec interpolation
+    pitch.current = THREE.MathUtils.lerp(pitch.current, targetPitch.current, RETURN_SPEED);
+    roll.current = THREE.MathUtils.lerp(roll.current, targetRoll.current, RETURN_SPEED);
 
     // Mise à jour du yaw (gauche/droite)
     if (leftPressed || direction === "left") {
@@ -100,11 +119,6 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
     if (rightPressed || direction === "right") {
       yaw.current -= TURN_SPEED;
     }
-
-    // Calcul du roll (inclinaison) en fonction des virages
-    const targetRoll = (leftPressed || direction === "left") ? -0.3 :
-      (rightPressed || direction === "right") ? 0.3 : 0;
-    roll.current = THREE.MathUtils.lerp(roll.current, targetRoll, 0.1);
 
     // Application des rotations dans le bon ordre
     ref.current.rotation.set(0, 0, 0); // Reset
@@ -131,18 +145,14 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
       ref.current.rotation.z,
     ]);
 
-    // Calcul de la position idéale de la caméra
+    // Mise à jour de la caméra
     if (camera.current) {
-      // Position souhaitée de la caméra (derrière et légèrement au-dessus)
       const idealOffset = new THREE.Vector3(0, CAMERA_HEIGHT, -CAMERA_DISTANCE);
-      idealOffset.applyEuler(new THREE.Euler(0, yaw.current, 0)); // N'applique que la rotation horizontale
+      idealOffset.applyEuler(new THREE.Euler(0, yaw.current, 0));
 
       const idealPosition = ref.current.position.clone().add(idealOffset);
-
-      // Déplacement fluide de la caméra
       camera.current.position.lerp(idealPosition, CAMERA_SMOOTHNESS);
 
-      // Faire regarder la caméra vers un point légèrement devant le vaisseau
       const lookAtPoint = ref.current.position.clone().add(direction_vector.multiplyScalar(10));
       camera.current.lookAt(lookAtPoint);
     }

@@ -21,18 +21,15 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
   const speed = useRef(0.2);
   const [cameraDistance, _] = React.useState(-5);
 
-  /// Constantes pour le mouvement
+  // Constantes pour le mouvement
   const TURN_SPEED = 0.03;
-  const PITCH_SPEED = 0.03; // Vitesse de rotation haut/bas
+  const PITCH_SPEED = 0.03;
   const FORWARD_SPEED = 0.5;
   const CAMERA_HEIGHT = 2;
   const CAMERA_DISTANCE = 8;
   const CAMERA_SMOOTHNESS = 0.1;
-  const RETURN_SPEED = 0.1;
-
-  // Limites de rotation
-  const MAX_PITCH = 0.45; // ~25 degrés
-  const MAX_ROLL = 0.3;
+  const ROLL_RETURN_SPEED = 0.1;
+  const MAX_ROLL = Math.PI / 4;
 
   // Rotation actuelle
   const pitch = useRef(0);
@@ -92,17 +89,14 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
       direction = getJoystickDirection(joystickAng);
     }
 
-    // Mise à jour du pitch (haut/bas) de la même manière que le yaw
+    // Rotation pitch (haut/bas)
     if (upPressed || direction === "up") {
-      pitch.current = Math.max(pitch.current - PITCH_SPEED, -MAX_PITCH);
+      pitch.current -= PITCH_SPEED;
     } else if (downPressed || direction === "down") {
-      pitch.current = Math.min(pitch.current + PITCH_SPEED, MAX_PITCH);
-    } else {
-      // Retour progressif à 0
-      pitch.current = THREE.MathUtils.lerp(pitch.current, 0, RETURN_SPEED);
+      pitch.current += PITCH_SPEED;
     }
 
-    // Mise à jour du yaw (gauche/droite)
+    // Rotation yaw (gauche/droite)
     if (leftPressed || direction === "left") {
       yaw.current += TURN_SPEED;
       targetRoll.current = -MAX_ROLL;
@@ -114,19 +108,17 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
     }
 
     // Interpolation douce du roll
-    roll.current = THREE.MathUtils.lerp(roll.current, targetRoll.current, RETURN_SPEED);
+    roll.current = THREE.MathUtils.lerp(roll.current, targetRoll.current, ROLL_RETURN_SPEED);
 
     // Application des rotations dans le bon ordre
     ref.current.rotation.set(0, 0, 0);
     ref.current.rotateY(yaw.current);   // Rotation gauche/droite
     ref.current.rotateX(pitch.current); // Rotation haut/bas
-    ref.current.rotateZ(roll.current);  // Inclinaison dans les virages
+    ref.current.rotateZ(roll.current);  // Roll dans les virages
 
-    // Calcul de la direction
+    // Calcul de la direction et déplacement
     const direction_vector = new THREE.Vector3();
     ref.current.getWorldDirection(direction_vector);
-
-    // Déplacement dans la direction où pointe la fusée
     ref.current.position.add(direction_vector.multiplyScalar(FORWARD_SPEED));
 
     // Mise à jour du RigidBody
@@ -143,20 +135,17 @@ export const Player = ({ planet, initialPosition, planetPosition, orbitDistance 
 
     // Mise à jour de la caméra
     if (camera.current) {
-      const idealOffset = new THREE.Vector3(0, CAMERA_HEIGHT, -CAMERA_DISTANCE);
+      // Position de base de la caméra
+      const offsetBase = new THREE.Vector3(0, CAMERA_HEIGHT, -CAMERA_DISTANCE);
 
-      // Créer une rotation qui suit partiellement les mouvements
-      const cameraEuler = new THREE.Euler(
-        pitch.current * 0.3, // Suit partiellement le pitch
-        yaw.current,        // Suit complètement le yaw
-        roll.current * 0.3  // Suit partiellement le roll
-      );
+      // Appliquer la même rotation que le vaisseau à la caméra
+      offsetBase.applyEuler(ref.current.rotation);
 
-      idealOffset.applyEuler(cameraEuler);
-      const idealPosition = ref.current.position.clone().add(idealOffset);
-      camera.current.position.lerp(idealPosition, CAMERA_SMOOTHNESS);
+      const targetPosition = ref.current.position.clone().add(offsetBase);
+      camera.current.position.lerp(targetPosition, CAMERA_SMOOTHNESS);
 
-      const lookAtPoint = ref.current.position.clone().add(direction_vector.multiplyScalar(10));
+      // Faire regarder la caméra vers un point légèrement devant le vaisseau
+      const lookAtPoint = ref.current.position.clone().add(direction_vector.multiplyScalar(5));
       camera.current.lookAt(lookAtPoint);
     }
   });

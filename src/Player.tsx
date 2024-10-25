@@ -9,25 +9,40 @@ import { ControlsMap } from "@/Game";
 import Spaceship from "./components/Spaceship";
 import { useJoystickControls } from "./stores/useJoystickControls";
 
-export const Player = () => {
+export const Player = ({ planet, initialPosition, planetPosition, orbitDistance }) => {
   const ref = useRef();
   const body = useRef();
-  const boxRef = useRef();
   const camera = useRef();
 
   let distance = 5;
   const [bodyPosition, setBodyPosition] = React.useState([0, 0, 0]);
   const [bodyRotation, setBodyRotation] = React.useState([0, 0, 0]);
-  const [initialPosition, setInitialPosition] = useState(
-    new THREE.Vector3(0, 0, 0),
-  );
 
   const speed = useRef(0.2);
   const [cameraDistance, _] = React.useState(-5);
 
-  /**
-   * Check if inside keyboardcontrols
-   */
+  // Constantes pour le mouvement
+  const TURN_SPEED = 0.03;
+  const FORWARD_SPEED = 0.5;
+  const CAMERA_HEIGHT = 2;
+  const CAMERA_DISTANCE = 8;
+  const CAMERA_SMOOTHNESS = 0.1;
+
+  // Limites de rotation pour le pitch (haut/bas)
+  const MAX_PITCH = Math.PI / 4; // 45 degrés
+
+  // Rotation actuelle
+  const pitch = useRef(0);
+  const yaw = useRef(0);
+  const roll = useRef(0);
+
+  // Positionnement initial du vaisseau
+  useEffect(() => {
+    if (ref.current && initialPosition && camera.current) {
+      ref.current.position.copy(initialPosition);
+    }
+  }, [initialPosition, planetPosition]);
+
   const useIsInsideKeyboardControls = () => {
     try {
       return !!useKeyboardControls();
@@ -41,27 +56,12 @@ export const Player = () => {
   const downPressed = useKeyboardControls((state) => state[ControlsMap.down]);
   const leftPressed = useKeyboardControls((state) => state[ControlsMap.left]);
   const rightPressed = useKeyboardControls((state) => state[ControlsMap.right]);
-  //   const boostPressed = useKeyboardControls((state) => state[ControlsMap.boost]);
 
-  /**
-   * Joystick controls setup
-   */
   const getJoystickValues = useJoystickControls(
     (state) => state.getJoystickValues,
   );
-  const pressButton1 = useJoystickControls((state) => state.pressButton1);
-  const pressButton2 = useJoystickControls((state) => state.pressButton2);
-  const pressButton3 = useJoystickControls((state) => state.pressButton3);
-  const pressButton4 = useJoystickControls((state) => state.pressButton4);
-  const pressButton5 = useJoystickControls((state) => state.pressButton5);
-  const releaseAllButtons = useJoystickControls(
-    (state) => state.releaseAllButtons,
-  );
-  const setJoystick = useJoystickControls((state) => state.setJoystick);
-  const resetJoystick = useJoystickControls((state) => state.resetJoystick);
 
   const getJoystickDirection = (angle: number): string => {
-    // Normaliser l'angle entre 0 et 2π
     const normalizedAngle =
       ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
@@ -76,68 +76,50 @@ export const Player = () => {
     }
   };
 
-  const boxSpeed = 0.15;
+  useFrame(({ clock }, delta) => {
+    if (!ref.current) return;
 
-  useFrame(({ clock }) => {
-    /**
-     * Getting all joystick control values
-     */
-    const { joystickDis, joystickAng, runState, button1Pressed } =
-      getJoystickValues();
-
-    if (speed.current > 0.2) {
-      speed.current -= 0.001;
-    }
-
-    if (speed.current < 0.2) {
-      speed.current += 0.001;
-    }
-
+    const { joystickDis, joystickAng } = getJoystickValues();
     let direction = "";
     if (joystickDis > 0) {
       direction = getJoystickDirection(joystickAng);
     }
 
-    boxRef.current.rotation.set(0, 0, 0);
-
-    boxRef.current.position.x +=
-      leftPressed || direction === "left" ? boxSpeed : 0;
-    boxRef.current.position.x +=
-      rightPressed || direction === "right" ? -boxSpeed : 0;
-
-    boxRef.current.position.y += upPressed || direction === "up" ? boxSpeed : 0;
-    boxRef.current.position.y +=
-      downPressed || direction === "down" ? -boxSpeed : 0;
-
-    const boxPosition = new THREE.Vector3();
-    boxPosition.setFromMatrixPosition(boxRef.current.matrixWorld);
-    const distanceX = boxPosition.x - ref.current.position.x;
-
-    camera.current.position.z += speed.current;
-    boxRef.current.position.z += speed.current;
-    // Calculer l'angle entre les deux points en radians
-    ref.current.lookAt(boxPosition);
-
-    ref.current.rotation.z = clock.getElapsedTime() * 2 * 0.02;
-
-    if (ref.current.position.x !== boxPosition.x) {
-      ref.current.position.x +=
-        ((boxPosition.x - ref.current.position.x) / 10) * 0.3;
+    // Mise à jour du pitch (haut/bas) avec limites
+    if (upPressed || direction === "up") {
+      pitch.current = Math.max(pitch.current - TURN_SPEED, -MAX_PITCH);
     }
-    if (ref.current.position.y !== boxPosition.y) {
-      ref.current.position.y +=
-        ((boxPosition.y - ref.current.position.y) / 10) * 0.3;
+    if (downPressed || direction === "down") {
+      pitch.current = Math.min(pitch.current + TURN_SPEED, MAX_PITCH);
     }
-    if (ref.current.position.z !== boxPosition.z) {
-      ref.current.position.z +=
-        ((boxPosition.z - ref.current.position.z) / 10) * speed.current;
+
+    // Mise à jour du yaw (gauche/droite)
+    if (leftPressed || direction === "left") {
+      yaw.current += TURN_SPEED;
     }
-    camera.current.position.z = ref.current.position.z + cameraDistance;
-    camera.current.position.x = ref.current.position.x * 0.6;
-    camera.current.position.y = ref.current.position.y * 0.6;
-    camera.current.rotation.x = ref.current.position.y * 0.02;
-    camera.current.rotation.y = Math.PI - ref.current.position.x * 0.02;
-    camera.current.rotation.z = -ref.current.position.x * 0.01;
+    if (rightPressed || direction === "right") {
+      yaw.current -= TURN_SPEED;
+    }
+
+    // Calcul du roll (inclinaison) en fonction des virages
+    const targetRoll = (leftPressed || direction === "left") ? -0.3 :
+      (rightPressed || direction === "right") ? 0.3 : 0;
+    roll.current = THREE.MathUtils.lerp(roll.current, targetRoll, 0.1);
+
+    // Application des rotations dans le bon ordre
+    ref.current.rotation.set(0, 0, 0); // Reset
+    ref.current.rotateY(yaw.current); // Rotation gauche/droite
+    ref.current.rotateX(pitch.current); // Pitch haut/bas
+    ref.current.rotateZ(roll.current); // Roll pour les virages
+
+    // Calcul de la direction
+    const direction_vector = new THREE.Vector3();
+    ref.current.getWorldDirection(direction_vector);
+
+    // Déplacement constant vers l'avant
+    ref.current.position.add(direction_vector.multiplyScalar(FORWARD_SPEED));
+
+    // Mise à jour du RigidBody
     setBodyPosition([
       ref.current.position.x,
       ref.current.position.y,
@@ -149,37 +131,46 @@ export const Player = () => {
       ref.current.rotation.z,
     ]);
 
-    camera.current.lookAt(ref.current.position);
-    camera.current.position.z -= 0.01;
+    // Calcul de la position idéale de la caméra
+    if (camera.current) {
+      // Position souhaitée de la caméra (derrière et légèrement au-dessus)
+      const idealOffset = new THREE.Vector3(0, CAMERA_HEIGHT, -CAMERA_DISTANCE);
+      idealOffset.applyEuler(new THREE.Euler(0, yaw.current, 0)); // N'applique que la rotation horizontale
+
+      const idealPosition = ref.current.position.clone().add(idealOffset);
+
+      // Déplacement fluide de la caméra
+      camera.current.position.lerp(idealPosition, CAMERA_SMOOTHNESS);
+
+      // Faire regarder la caméra vers un point légèrement devant le vaisseau
+      const lookAtPoint = ref.current.position.clone().add(direction_vector.multiplyScalar(10));
+      camera.current.lookAt(lookAtPoint);
+    }
   });
 
   return (
-    <>
-      <group>
-        <mesh ref={boxRef} position={[0, 0, 10]} rotation={[0, 0, 0]}></mesh>
-
-        <RigidBody
-          ref={body}
-          type="dynamic"
-          position={bodyPosition}
-          rotation={bodyRotation}
-        >
-          <mesh>
-            <boxGeometry args={[1, 1, 2.5]} />
-            <meshBasicMaterial color="red" visible={false} />
-          </mesh>
-        </RigidBody>
-        <group ref={ref}>
-          <Spaceship scale={0.1} />
-        </group>
-        <PerspectiveCamera
-          ref={camera}
-          far={10000}
-          makeDefault
-          position={[0, 60, -40]}
-          rotation={[0, 0, 0]}
-        />
+    <group>
+      <RigidBody
+        ref={body}
+        type="dynamic"
+        position={bodyPosition}
+        rotation={bodyRotation}
+      >
+        <mesh>
+          <boxGeometry args={[1, 1, 2.5]} />
+          <meshBasicMaterial color="red" visible={false} />
+        </mesh>
+      </RigidBody>
+      <group ref={ref}>
+        <Spaceship scale={0.1} rotation={[0, Math.PI, 0]} />
       </group>
-    </>
+      <PerspectiveCamera
+        ref={camera}
+        far={10000}
+        makeDefault
+        position={[0, CAMERA_HEIGHT, -CAMERA_DISTANCE]}
+        rotation={[0, 0, 0]}
+      />
+    </group>
   );
 };

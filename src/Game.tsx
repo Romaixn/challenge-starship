@@ -66,7 +66,21 @@ const Game = () => {
   }, []);
 
   const planet = useRef<THREE.Mesh>();
-  const planetPosition = new THREE.Vector3(0, 0, 3000);
+  const planetPosition = new THREE.Vector3(0, 0, 0);
+  const playerDistanceFromPlanet = 400; // Ajuste selon tes besoins
+
+  const generateRandomPlayerPosition = () => {
+    const phi = Math.random() * Math.PI * 2; // Angle aléatoire autour de l'axe Y
+    const theta = Math.acos(2 * Math.random() - 1); // Angle aléatoire par rapport à l'axe Y
+
+    const x = playerDistanceFromPlanet * Math.sin(theta) * Math.cos(phi);
+    const y = playerDistanceFromPlanet * Math.sin(theta) * Math.sin(phi);
+    const z = playerDistanceFromPlanet * Math.cos(theta);
+
+    return new THREE.Vector3(x, y, z);
+  };
+
+  const initialPlayerPosition = useMemo(() => generateRandomPlayerPosition(), []);
 
   return (
     <>
@@ -78,7 +92,7 @@ const Game = () => {
 
       <Physics debug timeStep="vary" gravity={[0, 0, 0]}>
         <KeyboardControls map={map}>
-          <Player planet={planet} />
+          <Player planet={planet} initialPosition={initialPlayerPosition} planetPosition={planetPosition} orbitDistance={playerDistanceFromPlanet} />
         </KeyboardControls>
 
         <Planet

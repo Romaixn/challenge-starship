@@ -246,7 +246,7 @@ export const Player = ({ initialPosition, planetPosition }) => {
         position={bodyPosition}
         rotation={bodyRotation}
       >
-        <mesh visible={false}>
+        <mesh>
           <boxGeometry args={[1, 1, 2.5]} />
           <meshBasicMaterial color="red" visible={false} />
         </mesh>

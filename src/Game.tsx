@@ -15,6 +15,7 @@ import { Player } from "./Player";
 import { KeyboardControlsEntry } from "@react-three/drei";
 import Controls from "./components/controls/Controls";
 import { mx_bilerp_0 } from "three/src/nodes/materialx/lib/mx_noise.js";
+import { useControls } from "leva";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -67,7 +68,14 @@ const Game = () => {
 
   const planet = useRef<THREE.Mesh>();
   const planetPosition = new THREE.Vector3(0, 0, 0);
-  const playerDistanceFromPlanet = 1000;
+  const { playerDistanceFromPlanet } = useControls('Player', {
+    playerDistanceFromPlanet: {
+      value: 3000,
+      min: 1000,
+      max: 5000,
+      step: 100
+    }
+  });
 
   const generateRandomPlayerPosition = () => {
     const randomAngle = Math.random() * Math.PI * 2;
@@ -90,7 +98,7 @@ const Game = () => {
       {/* <Lights /> */}
 
       <Environment preset="night" />
-      <Stars radius={2000} depth={50} factor={20} />
+      <Stars radius={2000} factor={40} />
 
       <Physics debug timeStep="vary" gravity={[0, 0, 0]}>
         <KeyboardControls map={map}>

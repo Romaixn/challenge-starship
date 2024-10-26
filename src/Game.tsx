@@ -34,7 +34,7 @@ const Game = () => {
       { name: ControlsMap.down, keys: ["ArrowDown", "KeyS"] },
       { name: ControlsMap.left, keys: ["ArrowLeft", "KeyA"] },
       { name: ControlsMap.right, keys: ["ArrowRight", "KeyD"] },
-      { name: ControlsMap.boost, keys: ["Space"] }
+      { name: ControlsMap.boost, keys: ["Shift"] }
     ],
     []
   );

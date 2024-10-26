@@ -17,11 +17,13 @@ export const Player = ({ initialPosition, planetPosition }) => {
   const [bodyPosition, setBodyPosition] = React.useState([0, 0, 0]);
   const [bodyRotation, setBodyRotation] = React.useState([0, 0, 0]);
 
-  // Define control values with different defaults for mobile and desktop
   const defaultValues = {
-    TURN_SPEED: isMobile ? 0.015 : 0.02,
-    PITCH_SPEED: isMobile ? 0.015 : 0.02,
+    TURN_SPEED: isMobile ? 0.01 : 0.02,
+    PITCH_SPEED: isMobile ? 0.01 : 0.02,
     FORWARD_SPEED: isMobile ? 0.3 : 0.5,
+    BOOST_SPEED_MULTIPLIER: 3,
+    BOOST_ACCELERATION: 0.1,
+    BOOST_DECELERATION: 0.05,
     CAMERA_HEIGHT: 2,
     CAMERA_DISTANCE: isMobile ? 10 : 8,
     CAMERA_SMOOTHNESS: isMobile ? 0.05 : 0.1,
@@ -29,16 +31,18 @@ export const Player = ({ initialPosition, planetPosition }) => {
     MAX_ROLL: isMobile ? Math.PI / 6 : Math.PI / 4
   };
 
-  // Debug controls using Leva panel
   const {
     TURN_SPEED,
     PITCH_SPEED,
     FORWARD_SPEED,
+    BOOST_SPEED_MULTIPLIER,
+    BOOST_ACCELERATION,
+    BOOST_DECELERATION,
     CAMERA_HEIGHT,
     CAMERA_DISTANCE,
     CAMERA_SMOOTHNESS,
     ROLL_RETURN_SPEED,
-    MAX_ROLL
+    MAX_ROLL,
   } = useControls("Player", {
     TURN_SPEED: {
       label: "Turn speed",
@@ -60,6 +64,27 @@ export const Player = ({ initialPosition, planetPosition }) => {
       min: 0,
       max: 1,
       step: 0.1
+    },
+    BOOST_SPEED_MULTIPLIER: {
+      label: "Boost multiplier",
+      value: defaultValues.BOOST_SPEED_MULTIPLIER,
+      min: 1,
+      max: 5,
+      step: 0.1
+    },
+    BOOST_ACCELERATION: {
+      label: "Boost Acceleration",
+      value: defaultValues.BOOST_ACCELERATION,
+      min: 0.01,
+      max: 1,
+      step: 0.01
+    },
+    BOOST_DECELERATION: {
+      label: "Boost Deceleration",
+      value: defaultValues.BOOST_DECELERATION,
+      min: 0.01,
+      max: 1,
+      step: 0.01
     },
     CAMERA_HEIGHT: {
       label: "Camera height",
@@ -98,13 +123,14 @@ export const Player = ({ initialPosition, planetPosition }) => {
     }
   });
 
-  // Track current rotation angles of the spaceship
-  const pitch = useRef(0);  // Up/down rotation
-  const yaw = useRef(0);    // Left/right rotation
-  const roll = useRef(0);   // Banking rotation during turns
+  // Track current rotation angles and boost
+  const pitch = useRef(0);
+  const yaw = useRef(0);
+  const roll = useRef(0);
   const targetRoll = useRef(0);
+  const currentBoostMultiplier = useRef(1);
 
-  // Initialize spaceship position when the game starts
+  // Initialize spaceship position
   useEffect(() => {
     if (ref.current && initialPosition && camera.current) {
       ref.current.position.copy(initialPosition);
@@ -116,45 +142,51 @@ export const Player = ({ initialPosition, planetPosition }) => {
   const downPressed = useKeyboardControls((state) => state[ControlsMap.down]);
   const leftPressed = useKeyboardControls((state) => state[ControlsMap.left]);
   const rightPressed = useKeyboardControls((state) => state[ControlsMap.right]);
+  const boostPressed = useKeyboardControls((state) => state[ControlsMap.boost]);
 
-  const getJoystickValues = useJoystickControls(
-    (state) => state.getJoystickValues
-  );
+  const getJoystickValues = useJoystickControls((state) => state.getJoystickValues);
 
   // Convert joystick angle to directional input
   const getJoystickDirection = (angle: number): string => {
-    const normalizedAngle =
-      ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-
-    if (normalizedAngle >= 5.5 || normalizedAngle <= 0.8) {
-      return "right";
-    } else if (normalizedAngle > 0.8 && normalizedAngle <= 2.4) {
-      return "up";
-    } else if (normalizedAngle > 2.4 && normalizedAngle <= 3.9) {
-      return "left";
-    } else {
-      return "down";
-    }
+    const normalizedAngle = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    if (normalizedAngle >= 5.5 || normalizedAngle <= 0.8) return "right";
+    if (normalizedAngle > 0.8 && normalizedAngle <= 2.4) return "up";
+    if (normalizedAngle > 2.4 && normalizedAngle <= 3.9) return "left";
+    return "down";
   };
 
   // Calculate movement intensity based on joystick distance (mobile only)
   const getMobileMovementStrength = (joystickDis: number): number => {
-    const normalizedStrength = Math.min(joystickDis / 50, 1);
-    return normalizedStrength;
+    return Math.min(joystickDis / 50, 1);
   };
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     if (!ref.current) return;
 
-    // Get current joystick state
-    const { joystickDis, joystickAng } = getJoystickValues();
+    // Get current joystick state and boost state
+    const { joystickDis, joystickAng, button1Pressed: boostButton } = getJoystickValues();
+    const isBoosting = boostPressed || boostButton;
+
     let direction = "";
     if (joystickDis > 0) {
       direction = getJoystickDirection(joystickAng);
     }
 
-    // Calculate movement intensity for mobile controls
+    // Calculate movement intensity
     const mobileStrength = isMobile ? getMobileMovementStrength(joystickDis) : 1;
+
+    // Smoothly update boost multiplier
+    const targetBoostMultiplier = isBoosting ? BOOST_SPEED_MULTIPLIER : 1;
+    const boostTransitionSpeed = isBoosting ? BOOST_ACCELERATION : BOOST_DECELERATION;
+
+    currentBoostMultiplier.current = THREE.MathUtils.lerp(
+      currentBoostMultiplier.current,
+      targetBoostMultiplier,
+      boostTransitionSpeed
+    );
+
+    // Calculate final speed with smooth boost
+    const currentSpeed = FORWARD_SPEED * currentBoostMultiplier.current;
 
     // Normalize pitch to keep it within -PI to PI range
     pitch.current = pitch.current % (2 * Math.PI);
@@ -169,7 +201,6 @@ export const Player = ({ initialPosition, planetPosition }) => {
     // Handle vertical rotation (pitch)
     if (upPressed || direction === "up") {
       if (pitch.current < -Math.PI / 2) {
-        // Smooth transition when passing through vertical
         isTransitioning = true;
         const currentCameraPos = camera.current.position.clone();
         pitch.current = Math.PI - Math.abs(pitch.current);
@@ -179,7 +210,6 @@ export const Player = ({ initialPosition, planetPosition }) => {
       }
     } else if (downPressed || direction === "down") {
       if (pitch.current > Math.PI / 2) {
-        // Smooth transition when passing through vertical
         isTransitioning = true;
         const currentCameraPos = camera.current.position.clone();
         pitch.current = -Math.PI + Math.abs(pitch.current);
@@ -201,7 +231,11 @@ export const Player = ({ initialPosition, planetPosition }) => {
     }
 
     // Smooth roll transition
-    roll.current = THREE.MathUtils.lerp(roll.current, targetRoll.current, ROLL_RETURN_SPEED);
+    roll.current = THREE.MathUtils.lerp(
+      roll.current,
+      targetRoll.current,
+      ROLL_RETURN_SPEED
+    );
 
     // Apply rotations in the correct order (yaw -> pitch -> roll)
     ref.current.rotation.set(0, 0, 0);
@@ -209,12 +243,12 @@ export const Player = ({ initialPosition, planetPosition }) => {
     ref.current.rotateX(pitch.current);
     ref.current.rotateZ(roll.current);
 
-    // Update position based on current direction
+    // Update position based on current direction and speed
     const direction_vector = new THREE.Vector3();
     ref.current.getWorldDirection(direction_vector);
-    ref.current.position.add(direction_vector.multiplyScalar(FORWARD_SPEED));
+    ref.current.position.add(direction_vector.multiplyScalar(currentSpeed));
 
-    // Update physics body position and rotation
+    // Update physics body
     setBodyPosition([
       ref.current.position.x,
       ref.current.position.y,

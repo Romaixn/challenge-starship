@@ -19,8 +19,8 @@ export const Player = ({ initialPosition, planetPosition }) => {
 
   // Define control values with different defaults for mobile and desktop
   const defaultValues = {
-    TURN_SPEED: isMobile ? 0.015 : 0.03,
-    PITCH_SPEED: isMobile ? 0.015 : 0.03,
+    TURN_SPEED: isMobile ? 0.015 : 0.02,
+    PITCH_SPEED: isMobile ? 0.015 : 0.02,
     FORWARD_SPEED: isMobile ? 0.3 : 0.5,
     CAMERA_HEIGHT: 2,
     CAMERA_DISTANCE: isMobile ? 10 : 8,
@@ -246,7 +246,7 @@ export const Player = ({ initialPosition, planetPosition }) => {
         position={bodyPosition}
         rotation={bodyRotation}
       >
-        <mesh>
+        <mesh visible={false}>
           <boxGeometry args={[1, 1, 2.5]} />
           <meshBasicMaterial color="red" visible={false} />
         </mesh>

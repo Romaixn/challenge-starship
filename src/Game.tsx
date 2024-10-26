@@ -5,7 +5,7 @@ import {
   Environment,
   KeyboardControls,
   OrbitControls,
-  Stars,
+  Stars
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import { Asteroid } from "@/components/Asteroid";
@@ -33,9 +33,9 @@ const Game = () => {
       { name: ControlsMap.down, keys: ["ArrowDown", "KeyS"] },
       { name: ControlsMap.left, keys: ["ArrowLeft", "KeyA"] },
       { name: ControlsMap.right, keys: ["ArrowRight", "KeyD"] },
-      { name: ControlsMap.boost, keys: ["Space"] },
+      { name: ControlsMap.boost, keys: ["Space"] }
     ],
-    [],
+    []
   );
 
   const { texture, color } = useMemo(() => {
@@ -59,7 +59,7 @@ const Game = () => {
       { texture: "/planets/terrestrial/Terrestrial1.png", color: "#00AAFF" },
       { texture: "/planets/terrestrial/Terrestrial2.png", color: "#00AAFF" },
       { texture: "/planets/terrestrial/Terrestrial3.png", color: "#00AAFF" },
-      { texture: "/planets/terrestrial/Terrestrial4.png", color: "#00AAFF" },
+      { texture: "/planets/terrestrial/Terrestrial4.png", color: "#00AAFF" }
     ];
 
     return textures[Math.floor(Math.random() * textures.length)];
@@ -67,20 +67,22 @@ const Game = () => {
 
   const planet = useRef<THREE.Mesh>();
   const planetPosition = new THREE.Vector3(0, 0, 0);
-  const playerDistanceFromPlanet = 400; // Ajuste selon tes besoins
+  const playerDistanceFromPlanet = 1000;
 
   const generateRandomPlayerPosition = () => {
-    const phi = Math.random() * Math.PI * 2; // Angle aléatoire autour de l'axe Y
-    const theta = Math.acos(2 * Math.random() - 1); // Angle aléatoire par rapport à l'axe Y
+    const randomAngle = Math.random() * Math.PI * 2;
 
-    const x = playerDistanceFromPlanet * Math.sin(theta) * Math.cos(phi);
-    const y = playerDistanceFromPlanet * Math.sin(theta) * Math.sin(phi);
-    const z = playerDistanceFromPlanet * Math.cos(theta);
+    const x = playerDistanceFromPlanet * Math.cos(randomAngle);
+    const y = 0;
+    const z = playerDistanceFromPlanet * Math.sin(randomAngle);
 
     return new THREE.Vector3(x, y, z);
   };
 
-  const initialPlayerPosition = useMemo(() => generateRandomPlayerPosition(), []);
+  const initialPlayerPosition = useMemo(
+    () => generateRandomPlayerPosition(),
+    []
+  );
 
   return (
     <>
@@ -92,7 +94,12 @@ const Game = () => {
 
       <Physics debug timeStep="vary" gravity={[0, 0, 0]}>
         <KeyboardControls map={map}>
-          <Player planet={planet} initialPosition={initialPlayerPosition} planetPosition={planetPosition} orbitDistance={playerDistanceFromPlanet} />
+          <Player
+            planet={planet}
+            initialPosition={initialPlayerPosition}
+            planetPosition={planetPosition}
+            orbitDistance={playerDistanceFromPlanet}
+          />
         </KeyboardControls>
 
         <Planet

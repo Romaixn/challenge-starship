@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { PerspectiveCamera, useKeyboardControls } from "@react-three/drei";
-import { RigidBody } from "@react-three/rapier";
+import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
 import { ControlsMap } from "@/Game";
 import Spaceship from "@/components/Spaceship";
@@ -69,8 +69,8 @@ export const Player = ({ initialPosition, planetPosition }) => {
       label: "Boost multiplier",
       value: defaultValues.BOOST_SPEED_MULTIPLIER,
       min: 1,
-      max: 5,
-      step: 0.1
+      max: 20,
+      step: 1
     },
     BOOST_ACCELERATION: {
       label: "Boost Acceleration",
@@ -276,10 +276,15 @@ export const Player = ({ initialPosition, planetPosition }) => {
     <group>
       <RigidBody
         ref={body}
-        type="dynamic"
         position={bodyPosition}
         rotation={bodyRotation}
+        type='kinematicPosition'
+        colliders={false}
+        mass={50}
+        restitution={1}
+        friction={0}
       >
+        <CuboidCollider args={[1.5, 1.5, 3]} sensor={false} restitution={1} friction={0} />
         <mesh>
           <boxGeometry args={[1, 1, 2.5]} />
           <meshBasicMaterial color="red" visible={false} />

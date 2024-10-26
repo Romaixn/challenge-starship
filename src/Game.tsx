@@ -10,7 +10,7 @@ import {
 import { Perf } from "r3f-perf";
 import { Asteroid } from "@/components/Asteroid";
 import Planet from "@/components/Planet";
-import { Physics } from "@react-three/rapier";
+import { Physics, RigidBody } from "@react-three/rapier";
 import { Player } from "./Player";
 import { KeyboardControlsEntry } from "@react-three/drei";
 import Controls from "./components/controls/Controls";
@@ -68,7 +68,7 @@ const Game = () => {
 
   const planet = useRef<THREE.Mesh>();
   const planetPosition = new THREE.Vector3(0, 0, 0);
-  const { playerDistanceFromPlanet } = useControls('Player', {
+  const { playerDistanceFromPlanet } = useControls("Player", {
     playerDistanceFromPlanet: {
       value: 3000,
       min: 1000,
@@ -100,7 +100,7 @@ const Game = () => {
       <Environment preset="night" />
       <Stars radius={2000} factor={40} />
 
-      <Physics debug timeStep="vary" gravity={[0, 0, 0]}>
+      <Physics debug={!isProd} timeStep="vary" gravity={[0, 0, 0]} colliders={false}>
         <KeyboardControls map={map}>
           <Player
             planet={planet}
@@ -109,6 +109,8 @@ const Game = () => {
             orbitDistance={playerDistanceFromPlanet}
           />
         </KeyboardControls>
+
+        <Asteroid position={[0, 500, 0]} />
 
         <Planet
           ref={planet}

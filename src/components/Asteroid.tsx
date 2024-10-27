@@ -249,7 +249,16 @@ export const Asteroid: React.FC<AsteroidProps> = ({
 
 const AsteroidBelt = () => {
   const rigidBodies = useRef(null);
-  const { nodes, materials } = useGLTF('/models/asteroids.glb') as GLTFResult;
+  const { nodes } = useGLTF('/models/asteroids.glb') as GLTFResult;
+
+  const asteroidMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      color: 0x888888,
+      roughness: 0.8,
+      metalness: 0.2,
+      envMapIntensity: 0.5
+    });
+  }, []);
 
   const {
     asteroidCount,
@@ -417,7 +426,7 @@ const AsteroidBelt = () => {
       ]}
     >
       <instancedMesh
-        args={[nodes.Asteroid_Small.geometry, materials.asteroid, asteroidCount]}
+        args={[nodes.Asteroid_Small.geometry, asteroidMaterial, asteroidCount]}
         count={asteroidCount}
       />
     </InstancedRigidBodies>

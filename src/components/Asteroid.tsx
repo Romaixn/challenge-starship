@@ -132,9 +132,9 @@ type AsteroidProps = {
 };
 
 export const Asteroid: React.FC<AsteroidProps> = ({
-                                                    position: initialPosition,
-                                                    types = [BigAsteroid, SmallAsteroid]
-                                                  }) => {
+  position: initialPosition,
+  types = [BigAsteroid, SmallAsteroid]
+}) => {
   const rigidBodyRef = useRef(null);
 
   const AsteroidType = useMemo(() => {
@@ -163,8 +163,6 @@ export const Asteroid: React.FC<AsteroidProps> = ({
   }, []);
 
   useEffect(() => {
-    // Ajouter une vélocité initiale aléatoire très faible
-    // pour éviter que l'astéroïde soit parfaitement statique
     if (rigidBodyRef.current) {
       rigidBodyRef.current.setLinvel({
         x: (Math.random() - 0.5) * 0.1,
@@ -180,7 +178,6 @@ export const Asteroid: React.FC<AsteroidProps> = ({
     const asteroidPos = rigidBodyRef.current.translation();
     const otherPos = e.other.translation();
 
-    // Récupérer la vélocité actuelle du vaisseau
     const playerVelocity = e.other.linvel();
     const impactSpeed = Math.sqrt(
       playerVelocity.x ** 2 +
@@ -188,7 +185,6 @@ export const Asteroid: React.FC<AsteroidProps> = ({
       playerVelocity.z ** 2
     );
 
-    // Calculer la direction de l'impact
     const directionX = asteroidPos.x - otherPos.x;
     const directionY = asteroidPos.y - otherPos.y;
     const directionZ = asteroidPos.z - otherPos.z;
@@ -199,18 +195,15 @@ export const Asteroid: React.FC<AsteroidProps> = ({
       directionZ * directionZ
     );
 
-    // Force d'impact basée sur la vitesse du vaisseau
     const BASE_IMPULSE = 2000;
     const impactForce = BASE_IMPULSE + (impactSpeed * 100);
 
-    // Appliquer une impulsion massive avec la direction normalisée
     rigidBodyRef.current.applyImpulse({
       x: (directionX / magnitude) * impactForce,
       y: (directionY / magnitude) * impactForce,
       z: (directionZ / magnitude) * impactForce
     }, true);
 
-    // Rotation dramatique
     const rotationForce = impactForce * 0.5;
     rigidBodyRef.current.applyTorqueImpulse({
       x: (Math.random() - 0.5) * rotationForce,
@@ -218,7 +211,6 @@ export const Asteroid: React.FC<AsteroidProps> = ({
       z: (Math.random() - 0.5) * rotationForce
     }, true);
 
-    // Vélocité angulaire pour une rotation plus spectaculaire
     const angularSpeed = 10 + (impactSpeed * 0.1);
     rigidBodyRef.current.setAngvel({
       x: (Math.random() - 0.5) * angularSpeed,

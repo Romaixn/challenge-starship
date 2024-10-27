@@ -3,7 +3,13 @@ import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
 import { useEffect, useMemo, useRef } from "react";
 import { useControls } from "leva";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import {
+  CuboidCollider,
+  InstancedRigidBodies,
+  InstancedRigidBodyProps,
+  RigidBody
+} from "@react-three/rapier";
+import { useFrame } from "@react-three/fiber";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -240,5 +246,140 @@ export const Asteroid: React.FC<AsteroidProps> = ({
     </RigidBody>
   );
 };
+
+const AsteroidBelt = () => {
+  const rigidBodies = useRef(null);
+  const { nodes, materials } = useGLTF('/models/asteroids.glb') as GLTFResult;
+
+  const {
+    asteroidCount,
+    minRadius,
+    maxRadius,
+    verticalSpread,
+    rotationSpeed,
+    asteroidScale,
+    asteroidMass,
+    colliderSize,
+    orbitForce,
+  } = useControls('Asteroid Belt', {
+    asteroidCount: { value: 1000, min: 100, max: 5000, step: 100 },
+    minRadius: { value: 800, min: 500, max: 1500, step: 50 },
+    maxRadius: { value: 2000, min: 600, max: 3000, step: 50 },
+    verticalSpread: { value: 100, min: 0, max: 500, step: 10 },
+    rotationSpeed: { value: 0.1, min: 0, max: 1, step: 0.01 },
+    asteroidScale: { value: 2, min: 0.5, max: 5, step: 0.1 },
+    asteroidMass: { value: 100, min: 1, max: 1000, step: 10 },
+    colliderSize: { value: 2, min: 1, max: 10, step: 0.5 },
+    orbitForce: { value: 50, min: 1, max: 200, step: 1 },
+  });
+
+  const instances = useMemo(() => {
+    const instances: InstancedRigidBodyProps[] = [];
+
+    for (let i = 0; i < asteroidCount; i++) {
+      const radius = minRadius + Math.random() * (maxRadius - minRadius);
+      const angle = (Math.random() * Math.PI * 2);
+      const verticalPosition = (Math.random() - 0.5) * verticalSpread;
+
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+
+      const randomRotationX = Math.random() * Math.PI * 2;
+      const randomRotationY = Math.random() * Math.PI * 2;
+      const randomRotationZ = Math.random() * Math.PI * 2;
+
+      // Calculer la vitesse initiale pour l'orbite
+      const speed = rotationSpeed * radius;
+      const velocityX = -Math.sin(angle) * speed;
+      const velocityZ = Math.cos(angle) * speed;
+
+      instances.push({
+        key: `asteroid_${i}`,
+        position: [x, verticalPosition, z],
+        rotation: [randomRotationX, randomRotationY, randomRotationZ],
+        scale: [asteroidScale, asteroidScale, asteroidScale],
+        // Configuration physique pour un comportement dynamique
+        rigidBodyProps: {
+          type: 'dynamic',
+          mass: asteroidMass,
+          gravityScale: 0,
+          linearDamping: 1, // Amortissement pour éviter le chaos
+          angularDamping: 1,
+          friction: 0.2,
+          restitution: 0.3,
+          lockRotations: false,
+          // Définir la vitesse initiale pour l'orbite
+          initialLinvel: { x: velocityX, y: 0, z: velocityZ },
+        },
+        userData: {
+          orbitRadius: radius,
+          orbitAngle: angle,
+          verticalPosition,
+        }
+      });
+    }
+
+    return instances;
+  }, [asteroidCount, minRadius, maxRadius, verticalSpread, asteroidScale, asteroidMass, rotationSpeed]);
+
+  useFrame((state, delta) => {
+    if (!rigidBodies.current) return;
+
+    rigidBodies.current.forEach((body, index) => {
+      if (!body || !body.isValid()) return;
+
+      const position = body.translation();
+      const velocity = body.linvel();
+      const userData = instances[index].userData;
+
+      // Maintenir l'orbite circulaire
+      const distanceFromCenter = Math.sqrt(position.x * position.x + position.z * position.z);
+      const directionToCenter = new THREE.Vector3(-position.x, 0, -position.z).normalize();
+
+      // Force centripète pour maintenir l'orbite
+      const centerForce = (distanceFromCenter - userData.orbitRadius) * orbitForce;
+
+      // Calculer la vitesse tangentielle désirée
+      const desiredSpeed = rotationSpeed * userData.orbitRadius;
+      const currentSpeed = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
+      const speedDiff = desiredSpeed - currentSpeed;
+
+      // Calculer la direction tangentielle
+      const tangent = new THREE.Vector3(-position.z, 0, position.x).normalize();
+
+      // Appliquer les forces
+      body.applyImpulse({
+        // Force vers le centre + ajustement de la vitesse tangentielle
+        x: (directionToCenter.x * centerForce + tangent.x * speedDiff) * delta,
+        // Force de rappel verticale
+        y: -(position.y - userData.verticalPosition) * orbitForce * delta,
+        z: (directionToCenter.z * centerForce + tangent.z * speedDiff) * delta,
+      }, true);
+    });
+  });
+
+  return (
+    <InstancedRigidBodies
+      ref={rigidBodies}
+      instances={instances}
+      colliders={false}
+      colliderNodes={[
+        <CuboidCollider
+          args={[colliderSize, colliderSize, colliderSize]}
+          sensor={false}
+          restitution={0.7}
+          friction={0.2}
+        />
+      ]}
+    >
+      <instancedMesh
+        args={[nodes.Asteroid_Small.geometry, materials.asteroid, asteroidCount]}
+        count={asteroidCount}
+      />
+    </InstancedRigidBodies>
+  );
+};
+
+export default AsteroidBelt;
 
 useGLTF.preload("/models/asteroids.glb");

@@ -8,7 +8,7 @@ import {
   Stars
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
-import { Asteroid } from "@/components/Asteroid";
+import AsteroidBelt, { Asteroid } from "@/components/Asteroid";
 import Planet from "@/components/Planet";
 import { Physics, RigidBody } from "@react-three/rapier";
 import { Player } from "./Player";
@@ -110,7 +110,7 @@ const Game = () => {
           />
         </KeyboardControls>
 
-        <Asteroid position={[0, 500, 0]} />
+        <AsteroidBelt />
 
         <Planet
           ref={planet}

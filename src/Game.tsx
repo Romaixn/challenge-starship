@@ -77,20 +77,9 @@ const Game = () => {
     }
   });
 
-  const generateRandomPlayerPosition = () => {
-    const randomAngle = Math.random() * Math.PI * 2;
-
-    const x = playerDistanceFromPlanet * Math.cos(randomAngle);
-    const y = 0;
-    const z = playerDistanceFromPlanet * Math.sin(randomAngle);
-
-    return new THREE.Vector3(x, y, z);
-  };
-
-  const initialPlayerPosition = useMemo(
-    () => generateRandomPlayerPosition(),
-    []
-  );
+  const initialPlayerPosition = useMemo(() => {
+    return new THREE.Vector3(0, 0, playerDistanceFromPlanet);
+  }, [playerDistanceFromPlanet]);
 
   return (
     <>

@@ -125,7 +125,7 @@ export const Player = ({ initialPosition, planetPosition }) => {
 
   // Track current rotation angles and boost
   const pitch = useRef(0);
-  const yaw = useRef(0);
+  const yaw = useRef(Math.PI);
   const roll = useRef(0);
   const targetRoll = useRef(0);
   const currentBoostMultiplier = useRef(1);
@@ -133,9 +133,21 @@ export const Player = ({ initialPosition, planetPosition }) => {
   // Initialize spaceship position
   useEffect(() => {
     if (ref.current && initialPosition && camera.current) {
+      // Position initiale
       ref.current.position.copy(initialPosition);
+
+      // Orientation initiale (face à la planète)
+      ref.current.rotation.set(0, Math.PI, 0);
+
+      // Position initiale de la caméra
+      const cameraOffset = new THREE.Vector3(0, CAMERA_HEIGHT, -CAMERA_DISTANCE);
+      cameraOffset.applyEuler(ref.current.rotation);
+      camera.current.position.copy(initialPosition).add(cameraOffset);
+
+      // Faire regarder la caméra vers le vaisseau
+      camera.current.lookAt(initialPosition);
     }
-  }, [initialPosition, planetPosition]);
+  }, [initialPosition]);
 
   // Get keyboard control states
   const upPressed = useKeyboardControls((state) => state[ControlsMap.up]);

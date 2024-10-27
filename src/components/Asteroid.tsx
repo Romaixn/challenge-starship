@@ -257,17 +257,19 @@ const AsteroidBelt = () => {
     maxRadius,
     verticalSpread,
     rotationSpeed,
-    asteroidScale,
+    asteroidMinScale,
+    asteroidMaxScale,
     asteroidMass,
     colliderSize,
     impactMultiplier,
   } = useControls('Asteroid Belt', {
-    asteroidCount: { value: 1000, min: 100, max: 5000, step: 100 },
+    asteroidCount: { value: 1500, min: 100, max: 5000, step: 100 },
     minRadius: { value: 600, min: 500, max: 1500, step: 50 },
-    maxRadius: { value: 1000, min: 600, max: 3000, step: 50 },
-    verticalSpread: { value: 100, min: 0, max: 500, step: 10 },
+    maxRadius: { value: 2500, min: 600, max: 3000, step: 50 },
+    verticalSpread: { value: 400, min: 0, max: 800, step: 10 },
     rotationSpeed: { value: 0.1, min: 0, max: 1, step: 0.01 },
-    asteroidScale: { value: 2, min: 0.5, max: 5, step: 0.1 },
+    asteroidMinScale: { value: 4, min: 1, max: 6, step: 1 },
+    asteroidMaxScale: { value: 12, min: 5, max: 20, step: 1 },
     asteroidMass: { value: 100, min: 1, max: 1000, step: 10 },
     colliderSize: { value: 2, min: 1, max: 10, step: 0.5 },
     impactMultiplier: { value: 50, min: 1, max: 200, step: 1 },
@@ -290,6 +292,9 @@ const AsteroidBelt = () => {
       const randomRotationY = Math.random() * Math.PI * 2;
       const randomRotationZ = Math.random() * Math.PI * 2;
 
+      const scale = asteroidMinScale + Math.random() * (asteroidMaxScale - asteroidMinScale);
+      const scaledMass = asteroidMass * (scale / asteroidMinScale);
+
       // Initial speed for orbit
       const speed = rotationSpeed * radius;
       const velocityX = -Math.sin(angle) * speed;
@@ -299,10 +304,10 @@ const AsteroidBelt = () => {
         key: `asteroid_${i}`,
         position: [x, verticalPosition, z],
         rotation: [randomRotationX, randomRotationY, randomRotationZ],
-        scale: [asteroidScale, asteroidScale, asteroidScale],
+        scale: [scale, scale, scale],
         rigidBodyProps: {
           type: 'dynamic',
-          mass: asteroidMass,
+          mass: scaledMass,
           gravityScale: 0,
           linearDamping: 0,
           angularDamping: 0,
@@ -315,12 +320,14 @@ const AsteroidBelt = () => {
           orbitRadius: radius,
           orbitAngle: angle,
           verticalPosition,
+          scale: scale,
         }
       });
     }
 
     return instances;
-  }, [asteroidCount, minRadius, maxRadius, verticalSpread, asteroidScale, asteroidMass, rotationSpeed]);
+  }, [asteroidCount, minRadius, maxRadius, verticalSpread, asteroidMinScale, asteroidMaxScale, asteroidMass, rotationSpeed]);
+
 
   useFrame((state, delta) => {
     if (!rigidBodies.current) return;
@@ -371,22 +378,23 @@ const AsteroidBelt = () => {
         playerVelocity.z
       ).normalize();
 
-      const impactForce = impactMultiplier * asteroidMass;
+      const asteroidScale = instances[asteroidIndex].userData.scale;
+      const scaleAdjustedForce = impactMultiplier * asteroidMass * (asteroidMinScale / asteroidScale);
+
       asteroidBody.applyImpulse(
         {
-          x: impactDirection.x * impactForce,
-          y: impactDirection.y * impactForce,
-          z: impactDirection.z * impactForce,
+          x: impactDirection.x * scaleAdjustedForce,
+          y: impactDirection.y * scaleAdjustedForce,
+          z: impactDirection.z * scaleAdjustedForce,
         },
         true
       );
 
-      // Add random rotation for best effect
       asteroidBody.applyTorqueImpulse(
         {
-          x: (Math.random() - 0.5) * impactForce,
-          y: (Math.random() - 0.5) * impactForce,
-          z: (Math.random() - 0.5) * impactForce,
+          x: (Math.random() - 0.5) * scaleAdjustedForce,
+          y: (Math.random() - 0.5) * scaleAdjustedForce,
+          z: (Math.random() - 0.5) * scaleAdjustedForce,
         },
         true
       );

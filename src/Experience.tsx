@@ -6,12 +6,11 @@ import Game from "@/Game";
 import Welcome from "@/Welcome";
 import { Joystick } from "@/components/controls/Joystick";
 import useGame from "@/stores/useGame";
-import { initializePerformanceDetection, usePerformanceStore } from "@/stores/performanceStore.ts";
+import { initializePerformanceDetection } from "@/stores/performanceStore.ts";
 
 const Experience = () => {
   const canvas = useRef();
   const phase = useGame((state) => state.phase);
-  const settings = usePerformanceStore((state) => state.settings);
 
   useEffect(() => {
     initializePerformanceDetection();
@@ -23,7 +22,6 @@ const Experience = () => {
         ref={canvas}
         dpr={[1, 1]}
         gl={{ antialias: false, stencil: false }}
-        shadows={settings.shadowEnabled}
       >
         <color attach="background" args={["#0B192C"]} />
 

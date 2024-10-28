@@ -43,18 +43,18 @@ function getDefaultSettings(tier: number): GameSettings {
   switch (tier) {
     case 3: // High-end devices
       return {
-        asteroidCount: 2000,
+        asteroidCount: 1500,
         particleCount: 1000,
-        maxStars: 5000,
+        maxStars: 2500,
         shadowEnabled: true,
         textureQuality: 'high',
         renderDistance: 5000
       };
     case 2: // Mid-range devices
       return {
-        asteroidCount: 1500,
+        asteroidCount: 1000,
         particleCount: 500,
-        maxStars: 2500,
+        maxStars: 2000,
         shadowEnabled: true,
         textureQuality: 'medium',
         renderDistance: 3000

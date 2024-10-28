@@ -89,7 +89,7 @@ const Game = () => {
       <Environment files='/textures/stars.jpg' background />
       <OrbitControls makeDefault />
 
-      <Physics debug={!isProd} timeStep="vary" gravity={[0, 0, 0]} colliders={false}>
+      <Physics timeStep="vary" gravity={[0, 0, 0]} colliders={false}>
         <KeyboardControls map={map}>
           <Player
             planet={planet}

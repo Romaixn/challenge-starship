@@ -1,23 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import {
-  Center,
   Environment,
   KeyboardControls,
-  OrbitControls,
   Stars
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
-import AsteroidBelt, { Asteroid } from "@/components/Asteroid";
+import AsteroidBelt from "@/components/Asteroid";
 import Planet from "@/components/Planet";
-import { Physics, RigidBody } from "@react-three/rapier";
+import { Physics } from "@react-three/rapier";
 import { Player } from "./Player";
 import { KeyboardControlsEntry } from "@react-three/drei";
-import Controls from "./components/controls/Controls";
-import { mx_bilerp_0 } from "three/src/nodes/materialx/lib/mx_noise.js";
 import { useControls } from "leva";
-import RocketEngine from "@/components/RocketEngine.tsx";
-import Spaceship from "@/components/Spaceship.tsx";
+import { usePerformanceStore } from "@/stores/performanceStore.ts";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -83,13 +78,15 @@ const Game = () => {
     return new THREE.Vector3(0, 0, playerDistanceFromPlanet);
   }, [playerDistanceFromPlanet]);
 
+  const settings = usePerformanceStore((state) => state.settings);
+
   return (
     <>
       {!isProd && <Perf position="top-left" />}
       {/* <Lights /> */}
 
       <Environment preset="night" />
-      <Stars radius={2000} factor={40} />
+      <Stars radius={2000} factor={settings.maxStars / 100} />
 
       <Physics debug={!isProd} timeStep="vary" gravity={[0, 0, 0]} colliders={false}>
         <KeyboardControls map={map}>

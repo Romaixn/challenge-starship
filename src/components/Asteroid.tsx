@@ -10,6 +10,7 @@ import {
   RigidBody
 } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
+import { usePerformanceStore } from "@/stores/performanceStore.ts";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -243,6 +244,8 @@ const AsteroidBelt = () => {
   const rigidBodies = useRef(null);
   const { nodes } = useGLTF('/models/asteroids.glb') as GLTFResult;
 
+  const settings = usePerformanceStore((state) => state.settings);
+
   const asteroidMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
       color: 0x888888,
@@ -264,7 +267,7 @@ const AsteroidBelt = () => {
     colliderSize,
     impactMultiplier,
   } = useControls('Asteroid Belt', {
-    asteroidCount: { value: 1500, min: 100, max: 5000, step: 100 },
+    asteroidCount: { value: settings.asteroidCount, min: 100, max: 5000, step: 100 },
     minRadius: { value: 600, min: 500, max: 1500, step: 50 },
     maxRadius: { value: 2500, min: 600, max: 3000, step: 50 },
     verticalSpread: { value: 400, min: 0, max: 800, step: 10 },

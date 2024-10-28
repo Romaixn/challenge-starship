@@ -5,6 +5,7 @@ import { useTexture } from '@react-three/drei';
 import { useControls } from 'leva';
 import vertexShader from '@/shaders/engine/vertex.glsl';
 import fragmentShader from '@/shaders/engine/fragment.glsl';
+import { usePerformanceStore } from "@/stores/performanceStore.ts";
 
 interface RocketEngineProps {
   position?: [number, number, number];
@@ -21,6 +22,7 @@ const RocketEngine: React.FC<RocketEngineProps> = ({
  }) => {
   const particlesRef = useRef<THREE.Points>(null);
   const engineLightRef = useRef<THREE.PointLight>(null);
+  const settings = usePerformanceStore((state) => state.settings);
 
   const particleTexture = useTexture('/textures/fire.png');
 
@@ -32,7 +34,7 @@ const RocketEngine: React.FC<RocketEngineProps> = ({
     engineBrightness,
     particleSpeed
   } = useControls('Rocket Engine', {
-    particleCount: { value: 1000, min: 100, max: 5000, step: 100 },
+    particleCount: { value: settings.particleCount, min: 100, max: 5000, step: 100 },
     particleSize: { value: 5, min: 1, max: 20, step: 1 },
     engineLength: { value: 2, min: 0.1, max: 10, step: 0.1 },
     spreadRadius: { value: 0.5, min: 0.1, max: 2, step: 0.1 },

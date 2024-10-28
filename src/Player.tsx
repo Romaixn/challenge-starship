@@ -8,6 +8,7 @@ import { ControlsMap } from "@/Game";
 import Spaceship from "@/components/Spaceship";
 import { useJoystickControls } from "@/stores/useJoystickControls";
 import { isMobile } from "react-device-detect";
+import { usePerformanceStore } from "@/stores/performanceStore.ts";
 
 export const Player = ({ initialPosition, planetPosition }) => {
   const ref = useRef();
@@ -305,7 +306,7 @@ export const Player = ({ initialPosition, planetPosition }) => {
 
       <PerspectiveCamera
         ref={camera}
-        far={10000}
+        far={7000}
         makeDefault
         position={[0, CAMERA_HEIGHT, -CAMERA_DISTANCE]}
         rotation={[0, 0, 0]}

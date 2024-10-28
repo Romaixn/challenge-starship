@@ -45,28 +45,19 @@ function getDefaultSettings(tier: number): GameSettings {
       return {
         asteroidCount: 1500,
         particleCount: 1000,
-        maxStars: 2500,
-        shadowEnabled: true,
-        textureQuality: 'high',
-        renderDistance: 5000
+        maxStars: 2000,
       };
     case 2: // Mid-range devices
       return {
-        asteroidCount: 1000,
+        asteroidCount: 1250,
         particleCount: 500,
-        maxStars: 2000,
-        shadowEnabled: true,
-        textureQuality: 'medium',
-        renderDistance: 3000
+        maxStars: 1500,
       };
     default: // Low-end devices
       return {
         asteroidCount: 500,
         particleCount: 100,
         maxStars: 1000,
-        shadowEnabled: false,
-        textureQuality: 'low',
-        renderDistance: 2000
       };
   }
 }
@@ -88,8 +79,6 @@ export async function initializePerformanceDetection() {
     if (isMobile) {
       performanceTier = Math.max(1, performanceTier - 1);
     }
-
-    console.log({ gpuTier, performanceTier });
 
     // Initialize performance monitoring
     const settings = getDefaultSettings(performanceTier);

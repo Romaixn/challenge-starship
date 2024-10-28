@@ -81,8 +81,6 @@ const Game = () => {
     return new THREE.Vector3(0, 0, playerDistanceFromPlanet);
   }, [playerDistanceFromPlanet]);
 
-  const settings = usePerformanceStore((state) => state.settings);
-
   return (
     <>
       {!isProd && <Perf position="top-left" />}

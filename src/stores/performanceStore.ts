@@ -45,19 +45,16 @@ function getDefaultSettings(tier: number): GameSettings {
       return {
         asteroidCount: 1500,
         particleCount: 1000,
-        maxStars: 2000,
       };
     case 2: // Mid-range devices
       return {
         asteroidCount: 1250,
         particleCount: 500,
-        maxStars: 1500,
       };
     default: // Low-end devices
       return {
         asteroidCount: 500,
         particleCount: 100,
-        maxStars: 1000,
       };
   }
 }

@@ -16,6 +16,8 @@ import { KeyboardControlsEntry } from "@react-three/drei";
 import Controls from "./components/controls/Controls";
 import { mx_bilerp_0 } from "three/src/nodes/materialx/lib/mx_noise.js";
 import { useControls } from "leva";
+import RocketEngine from "@/components/RocketEngine.tsx";
+import Spaceship from "@/components/Spaceship.tsx";
 
 const isProd = process.env.NODE_ENV === "production";
 

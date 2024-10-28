@@ -4,6 +4,7 @@ import * as THREE from "three";
 import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
+import RocketEngine from "@/components/RocketEngine.tsx";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -57,6 +58,12 @@ export default function Spaceship(props: JSX.IntrinsicElements["group"]) {
         receiveShadow
         geometry={nodes.GreenShip_LandingGearItem4.geometry}
         material={materials.LandingGear1}
+      />
+      <RocketEngine
+        position={[-37, 0, 0]}
+        scale={3}
+        engineColor="#ff3300"
+        intensity={1.2}
       />
     </group>
   );

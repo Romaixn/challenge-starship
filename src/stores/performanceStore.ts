@@ -89,6 +89,8 @@ export async function initializePerformanceDetection() {
       performanceTier = Math.max(1, performanceTier - 1);
     }
 
+    console.log({ gpuTier, performanceTier });
+
     // Initialize performance monitoring
     const settings = getDefaultSettings(performanceTier);
     usePerformanceStore.setState({

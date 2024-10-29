@@ -35,7 +35,7 @@ const RocketEngine: React.FC<RocketEngineProps> = ({
     particleSpeed
   } = useControls('Rocket Engine', {
     particleCount: { value: settings.particleCount, min: 100, max: 5000, step: 100 },
-    particleSize: { value: 5, min: 1, max: 20, step: 1 },
+    particleSize: { value: settings.particleSize, min: 1, max: 20, step: 1 },
     engineLength: { value: 2, min: 0.1, max: 10, step: 0.1 },
     spreadRadius: { value: 0.5, min: 0.1, max: 2, step: 0.1 },
     engineBrightness: { value: 0.5, min: 0.1, max: 3, step: 0.1 },

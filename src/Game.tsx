@@ -2,8 +2,7 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import {
   Environment,
-  KeyboardControls, OrbitControls,
-  Stars
+  KeyboardControls
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import AsteroidBelt from "@/components/Asteroid";
@@ -12,9 +11,6 @@ import { Physics } from "@react-three/rapier";
 import { Player } from "./Player";
 import { KeyboardControlsEntry } from "@react-three/drei";
 import { useControls } from "leva";
-import { usePerformanceStore } from "@/stores/performanceStore.ts";
-import StarField from "@/components/Stars.tsx";
-import StarsBackground from "@/components/Stars.tsx";
 import Lights from "@/Lights.tsx";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -87,7 +83,6 @@ const Game = () => {
        <Lights />
 
       <Environment files='/textures/stars.jpg' background />
-      <OrbitControls makeDefault />
 
       <Physics timeStep="vary" gravity={[0, 0, 0]} colliders={false}>
         <KeyboardControls map={map}>

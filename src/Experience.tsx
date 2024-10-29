@@ -23,7 +23,7 @@ const Experience = () => {
         dpr={[1, 1]}
         gl={{ antialias: false, stencil: false }}
       >
-        <color attach="background" args={["#0B192C"]} />
+        <color attach="background" args={["#030304"]} />
 
         <Suspense fallback={null}>{phase !== "welcome" && <Game />}</Suspense>
       </Canvas>

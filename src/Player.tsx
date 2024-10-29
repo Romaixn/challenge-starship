@@ -8,7 +8,6 @@ import { ControlsMap } from "@/Game";
 import Spaceship from "@/components/Spaceship";
 import { useJoystickControls } from "@/stores/useJoystickControls";
 import { isMobile } from "react-device-detect";
-import { usePerformanceStore } from "@/stores/performanceStore.ts";
 
 export const Player = ({ initialPosition, planetPosition }) => {
   const ref = useRef();

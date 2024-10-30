@@ -29,8 +29,8 @@ const HUD = () => {
       details: {
         background: true,
         title: 'Controls',
-        content: `Use arrow keys or WASD to control the ship.
-                 Hold SHIFT to boost. Press any key to discard this message.`,
+        content: !isMobile ? `Use arrow keys or WASD to control the ship.
+                 Hold SHIFT to boost. Press any key to discard this message.` : `Use joystick to control the ship. Use right button to boost. Touch to discard this message.`,
       },
       instructions: !isMobile ? {
         content: 'Use the arrow keys or WASD to move.'

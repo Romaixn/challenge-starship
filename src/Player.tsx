@@ -8,14 +8,22 @@ import { ControlsMap } from "@/Game";
 import Spaceship from "@/components/Spaceship";
 import { useJoystickControls } from "@/stores/useJoystickControls";
 import { isMobile } from "react-device-detect";
+import useGame from "@/stores/useGame.ts";
+import { PositionTracker } from "@/utils/positionTracker.ts";
 
-export const Player = ({ initialPosition, planetPosition }) => {
+export const Player = ({ initialPosition }) => {
   const ref = useRef();
   const body = useRef();
   const camera = useRef();
 
   const [bodyPosition, setBodyPosition] = React.useState([0, 0, 0]);
   const [bodyRotation, setBodyRotation] = React.useState([0, 0, 0]);
+
+  const startLandingSequence = useGame((state) => state.startLandingSequence);
+
+  const positionTracker = useRef(new PositionTracker(500, () => {
+    startLandingSequence();
+  }))
 
   const defaultValues = {
     TURN_SPEED: isMobile ? 0.01 : 0.02,
@@ -255,6 +263,10 @@ export const Player = ({ initialPosition, planetPosition }) => {
     const direction_vector = new THREE.Vector3();
     ref.current.getWorldDirection(direction_vector);
     ref.current.position.add(direction_vector.multiplyScalar(currentSpeed));
+
+    const currentPosition = ref.current.position.clone();
+    const relativePosition = currentPosition.clone().sub(new THREE.Vector3(0, 0, 0));
+    positionTracker.current.checkPosition(relativePosition);
 
     // Update physics body
     setBodyPosition([

@@ -11,10 +11,10 @@ import { Physics } from "@react-three/rapier";
 import { Player } from "./Player";
 import { KeyboardControlsEntry } from "@react-three/drei";
 import { useControls } from "leva";
-import { usePerformanceStore } from "@/stores/performanceStore.ts";
-import StarField from "@/components/Stars.tsx";
-import StarsBackground from "@/components/Stars.tsx";
 import Lights from "@/Lights.tsx";
+import useGame from "@/stores/useGame.ts";
+import { LandingPlayer } from "@/LandingPlayer.tsx";
+import { LandingPlatform } from "@/components/LandingPlatform.tsx";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -27,12 +27,15 @@ export enum ControlsMap {
 }
 
 const Game = () => {
+  const phase = useGame((state) => state.phase);
+  const landingTransitionComplete = useGame((state) => state.landingTransitionComplete);
+
   const map = useMemo<KeyboardControlsEntry<ControlsMap>[]>(
     () => [
-      { name: ControlsMap.up, keys: ["ArrowUp", "KeyW"] },
-      { name: ControlsMap.down, keys: ["ArrowDown", "KeyS"] },
-      { name: ControlsMap.left, keys: ["ArrowLeft", "KeyA"] },
-      { name: ControlsMap.right, keys: ["ArrowRight", "KeyD"] },
+      { name: ControlsMap.up, keys: ["ArrowUp", "KeyW", "KeyZ"] },
+      { name: ControlsMap.down, keys: ["ArrowDown", "KeyS", "KeyS"] },
+      { name: ControlsMap.left, keys: ["ArrowLeft", "KeyA", "KeyA"] },
+      { name: ControlsMap.right, keys: ["ArrowRight", "KeyD", "KeyD"] },
       { name: ControlsMap.boost, keys: ["Shift"] }
     ],
     []
@@ -67,6 +70,7 @@ const Game = () => {
 
   const planet = useRef<THREE.Mesh>();
   const planetPosition = new THREE.Vector3(0, 0, 0);
+  const PLANET_RADIUS = 200;
   const { playerDistanceFromPlanet } = useControls("Player", {
     playerDistanceFromPlanet: {
       value: 3000,
@@ -89,23 +93,29 @@ const Game = () => {
 
       <Physics debug={!isProd} timeStep="vary" gravity={[0, 0, 0]} colliders={false}>
         <KeyboardControls map={map}>
-          <Player
-            planet={planet}
-            initialPosition={initialPlayerPosition}
-            planetPosition={planetPosition}
-            orbitDistance={playerDistanceFromPlanet}
-          />
+          {phase === "space" && (
+            <Player initialPosition={initialPlayerPosition} />
+          )}
+
+          {phase === "landing" && landingTransitionComplete && (
+            <LandingPlayer planetRadius={PLANET_RADIUS} />
+          )}
         </KeyboardControls>
 
-        <AsteroidBelt />
+        {phase === "space" && <AsteroidBelt />}
 
         <Planet
           ref={planet}
           position={planetPosition}
-          size={200}
+          size={PLANET_RADIUS}
           texture={texture}
           color={color}
+          shouldRotate={phase === 'space'}
         />
+
+        {phase === "landing" && (
+          <LandingPlatform planetRadius={PLANET_RADIUS} scale={3} />
+        )}
       </Physics>
     </>
   );

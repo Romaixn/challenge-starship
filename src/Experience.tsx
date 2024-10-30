@@ -8,10 +8,12 @@ import { Joystick } from "@/components/controls/Joystick";
 import useGame from "@/stores/useGame";
 import { initializePerformanceDetection } from "@/stores/performanceStore.ts";
 import HUD from "@/components/HUD.tsx";
+import { FadeTransition } from "@/components/FadeTransition.tsx";
 
 const Experience = () => {
   const canvas = useRef();
   const phase = useGame((state) => state.phase);
+  const landingTransitionComplete = useGame((state) => state.landingTransitionComplete);
 
   useEffect(() => {
     initializePerformanceDetection();
@@ -35,6 +37,9 @@ const Experience = () => {
       )}
       {phase !== "welcome" && isMobile && <Joystick />}
       {phase !== "welcome" && <HUD />}
+      {phase === "landing" && !landingTransitionComplete && (
+        <FadeTransition />
+      )}
       <Loader />
     </>
   );

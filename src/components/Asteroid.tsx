@@ -261,7 +261,7 @@ const AsteroidBelt = () => {
     asteroidCount: { value: settings.asteroidCount, min: 100, max: 5000, step: 100 },
     minRadius: { value: 600, min: 500, max: 1500, step: 50 },
     maxRadius: { value: 3800, min: 600, max: 3000, step: 50 },
-    verticalSpread: { value: 400, min: 0, max: 800, step: 10 },
+    verticalSpread: { value: 800, min: 0, max: 1000, step: 100 },
     rotationSpeed: { value: 0.1, min: 0, max: 1, step: 0.01 },
     asteroidMinScale: { value: 8, min: 1, max: 6, step: 1 },
     asteroidMaxScale: { value: 50, min: 5, max: 50, step: 1 },

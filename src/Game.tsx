@@ -73,7 +73,7 @@ const Game = () => {
   const PLANET_RADIUS = 200;
   const { playerDistanceFromPlanet } = useControls("Player", {
     playerDistanceFromPlanet: {
-      value: 3000,
+      value: 4000,
       min: 1000,
       max: 5000,
       step: 100

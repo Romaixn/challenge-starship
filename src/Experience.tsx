@@ -7,6 +7,7 @@ import Welcome from "@/Welcome";
 import { Joystick } from "@/components/controls/Joystick";
 import useGame from "@/stores/useGame";
 import { initializePerformanceDetection } from "@/stores/performanceStore.ts";
+import HUD from "@/components/HUD.tsx";
 
 const Experience = () => {
   const canvas = useRef();
@@ -33,6 +34,7 @@ const Experience = () => {
         </Suspense>
       )}
       {phase !== "welcome" && isMobile && <Joystick />}
+      {phase !== "welcome" && <HUD />}
       <Loader />
     </>
   );

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@alienkitty/space.js':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@dimforge/rapier3d-compat':
         specifier: ^0.14.0
         version: 0.14.0
@@ -104,6 +107,9 @@ importers:
         version: 5.4.9(@types/node@22.7.8)(lightningcss@1.27.0)
 
 packages:
+
+  '@alienkitty/space.js@1.2.0':
+    resolution: {integrity: sha512-rkIRp0TZv5C5CShU0YbHxCiSsAci//xUvLzg4vaK2bfoQzE13bZKz3900Ir80/jW8U+MXb9ySaJnAEs/Qas5hA==}
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -2514,6 +2520,8 @@ packages:
         optional: true
 
 snapshots:
+
+  '@alienkitty/space.js@1.2.0': {}
 
   '@ampproject/remapping@2.3.0':
     dependencies:

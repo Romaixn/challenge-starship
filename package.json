@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@alienkitty/space.js": "^1.2.0",
     "@dimforge/rapier3d-compat": "^0.14.0",
     "@react-spring/three": "^9.7.5",
     "@react-three/drei": "^9.114.6",

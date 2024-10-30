@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { UI, Stage, ticker } from '@alienkitty/space.js';
 import { css } from "../../styled-system/css";
+import { isMobile } from "react-device-detect";
 
 const HUD = () => {
   const containerRef = useRef(null);
@@ -30,16 +31,19 @@ const HUD = () => {
         content: `Use arrow keys or WASD to control the ship.
                  Hold SHIFT to boost. Click to discard this message.`,
       },
-      instructions: {
+      instructions: !isMobile ? {
         content: 'Use the arrow keys or WASD to move.'
-      },
+      } : false,
       detailsButton: true,
     });
 
     // Animate in the UI
     uiInstance.current.animateIn();
     uiInstance.current.info.animateIn();
-    uiInstance.current.instructions.animateIn();
+    if (!isMobile) {
+      uiInstance.current.instructions.animateIn();
+    }
+
     uiInstance.current.toggleDetails(true);
 
     // Append to our container

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
-// @ts-ignore
 import SpaceTravel from "space-travel";
+import { css } from "../../styled-system/css";
 
 interface SpaceTravelProps {
   throttle?: number;
@@ -15,7 +15,6 @@ const SpaceTravelComponent: React.FC<SpaceTravelProps> = ({
   opacity = 1,
   backgroundColor = 0x08000f,
   onLoad,
-  className,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<any>(null);
@@ -67,8 +66,10 @@ const SpaceTravelComponent: React.FC<SpaceTravelProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className={className}
-      style={{ width: "100%", height: "100%" }}
+      className={css({
+        width: "100%",
+        height: "100%",
+      })}
     />
   );
 };

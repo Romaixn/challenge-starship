@@ -21,7 +21,7 @@ export const Player = ({ initialPosition }) => {
 
   const startLandingSequence = useGame((state) => state.startLandingSequence);
 
-  const positionTracker = useRef(new PositionTracker(500, () => {
+  const positionTracker = useRef(new PositionTracker(400, () => {
     startLandingSequence();
   }))
 

@@ -116,7 +116,7 @@ export const FinalMessage = () => {
                   margin: 0,
                 })}
               >
-                {isSuccess ? "Perfect Landing!" : "Landing Failed"}
+                {isSuccess ? "Perfect Landing!" : "You Crashed!"}
               </motion.h2>
             </motion.div>
 

@@ -4,19 +4,17 @@ import { css } from "../../styled-system/css";
 import { isMobile } from "react-device-detect";
 import useSound from "@/stores/useSound.ts";
 import { useJoystickControls } from "@/stores/useJoystickControls.ts";
-import { usePerformanceStore } from "@/stores/performanceStore.ts";
 import useGame from "@/stores/useGame.ts";
+import useHealth from "@/stores/useHealth.ts";
 
 const HUD = () => {
   const containerRef = useRef(null);
   const uiInstance = useRef(null);
   const animationFrameRef = useRef(null);
   const isDetailsShown = useRef(true);
-  const phase = useGame((state) => state.phase);
   const toggleSound = useSound((state) => state.toggleSound);
   const soundPlaying = useSound((state) => state.soundPlaying);
-
-  const tier = usePerformanceStore((state) => state.tier);
+  const currentHealth = useHealth((state) => state.currentHealth);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -35,7 +33,7 @@ const HUD = () => {
         ],
       },
       info: {
-        content: "Goal: Reach the planet",
+        content: `Health: ${currentHealth}`,
       },
       details: {
         background: true,
@@ -45,11 +43,9 @@ const HUD = () => {
            Hold SHIFT to boost. Press any key to discard this message.`
           : `Use joystick to control the ship. Use right button to boost. Touch to discard this message.`,
       },
-      instructions: !isMobile
-        ? {
-            content: "Use the arrow keys or WASD to move.",
-          }
-        : false,
+      instructions: {
+        content: "Goal: Reach the planet.",
+      },
       detailsButton: true,
       muteButton: {
         sound: soundPlaying,
@@ -66,22 +62,29 @@ const HUD = () => {
     // Animate in the UI
     uiInstance.current.animateIn();
     uiInstance.current.info.animateIn();
-    if (!isMobile) {
-      uiInstance.current.instructions.animateIn();
-    }
+    uiInstance.current.instructions.animateIn();
     uiInstance.current.toggleDetails(true);
 
     // Update info content based on phase
     const unsubscribePhase = useGame.subscribe((state) => {
       if (uiInstance.current) {
         if (state.phase === "landing") {
-          uiInstance.current.info.animateOut(() => {
-            uiInstance.current.info.setContent(
+          uiInstance.current.instructions.animateOut(() => {
+            uiInstance.current.instructions.setContent(
               "Goal: Land on the planet without crashing",
             );
-            uiInstance.current.info.animateIn();
+            uiInstance.current.instructions.animateIn();
           });
         }
+      }
+    });
+
+    const unsubscribeHealth = useHealth.subscribe((state) => {
+      if (uiInstance.current) {
+        uiInstance.current.info.animateOut(() => {
+          uiInstance.current.info.setContent(`Health: ${state.currentHealth}`);
+          uiInstance.current.info.animateIn();
+        });
       }
     });
 
@@ -124,6 +127,7 @@ const HUD = () => {
 
       unsuscribeJoystickChange();
       unsubscribePhase();
+      unsubscribeHealth();
     };
   }, []);
 

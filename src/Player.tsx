@@ -10,22 +10,55 @@ import { useJoystickControls } from "@/stores/useJoystickControls";
 import { isMobile } from "react-device-detect";
 import useGame from "@/stores/useGame.ts";
 import { PositionTracker } from "@/utils/positionTracker.ts";
+import useHealth from "@/stores/useHealth.ts";
+
+interface CollisionData {
+  target: {
+    rigidBody: {
+      translation(): { x: number; y: number; z: number };
+      mass: number;
+    };
+  };
+  other: {
+    rigidBody: {
+      translation(): { x: number; y: number; z: number };
+      linvel(): { x: number; y: number; z: number };
+    };
+  };
+}
 
 export const Player = ({ initialPosition }) => {
   const ref = useRef();
   const body = useRef();
   const camera = useRef();
+  const damageLight = useRef<THREE.PointLight>();
+  const damageAnimationRef = useRef({
+    active: false,
+    startTime: 0,
+    duration: 3000,
+    maxIntensity: 1500,
+    flashCount: 4,
+  });
 
   const [bodyPosition, setBodyPosition] = React.useState([0, 0, 0]);
   const [bodyRotation, setBodyRotation] = React.useState([0, 0, 0]);
 
   const startLandingSequence = useGame((state) => state.startLandingSequence);
+  const takeDamage = useHealth((state) => state.takeDamage);
+  const isInvulnerable = useHealth((state) => state.isInvulnerable);
 
   const positionTracker = useRef(
     new PositionTracker(400, () => {
       startLandingSequence();
     }),
   );
+
+  const startDamageAnimation = () => {
+    if (damageAnimationRef.current) {
+      damageAnimationRef.current.active = true;
+      damageAnimationRef.current.startTime = performance.now();
+    }
+  };
 
   const defaultValues = {
     TURN_SPEED: isMobile ? 0.01 : 0.02,
@@ -158,6 +191,28 @@ export const Player = ({ initialPosition }) => {
       camera.current.lookAt(initialPosition);
     }
   }, [initialPosition]);
+
+  const handleCollision = (e: CollisionData) => {
+    if (isInvulnerable) return;
+
+    const asteroidVelocity = e.other.rigidBody.linvel();
+
+    const relativeVelocity = Math.sqrt(
+      Math.pow(asteroidVelocity.x, 2) +
+        Math.pow(asteroidVelocity.y, 2) +
+        Math.pow(asteroidVelocity.z, 2),
+    );
+
+    const BASE_DAMAGE = 5;
+    const VELOCITY_DAMAGE_MULTIPLIER = 0.08;
+    const damage = Math.round(
+      BASE_DAMAGE + relativeVelocity * VELOCITY_DAMAGE_MULTIPLIER,
+    );
+
+    startDamageAnimation();
+
+    takeDamage(damage);
+  };
 
   // Get keyboard control states
   const upPressed = useKeyboardControls((state) => state[ControlsMap.up]);
@@ -311,6 +366,27 @@ export const Player = ({ initialPosition }) => {
         .add(direction_vector.multiplyScalar(5));
       camera.current.lookAt(lookAtPoint);
     }
+
+    // Damage animation
+    if (!damageLight.current || !damageAnimationRef.current.active) return;
+    const animation = damageAnimationRef.current;
+    const elapsed = performance.now() - animation.startTime;
+
+    if (elapsed > animation.duration) {
+      damageLight.current.intensity = 0;
+      animation.active = false;
+      return;
+    }
+
+    const progress = elapsed / animation.duration;
+    const flashSpeed = animation.flashCount * Math.PI * 2;
+    const flashIntensity = Math.sin(progress * flashSpeed);
+    const fadeOut = 1 - progress;
+
+    damageLight.current.intensity = Math.max(
+      0,
+      flashIntensity * fadeOut * animation.maxIntensity,
+    );
   });
 
   return (
@@ -327,6 +403,7 @@ export const Player = ({ initialPosition }) => {
       >
         <CuboidCollider
           args={[1.5, 1.5, 3]}
+          onCollisionEnter={handleCollision}
           sensor={false}
           restitution={1}
           friction={0}
@@ -339,6 +416,14 @@ export const Player = ({ initialPosition }) => {
 
       <group ref={ref}>
         <Spaceship scale={0.1} rotation={[0, Math.PI, 0]} />
+        <pointLight
+          ref={damageLight}
+          position={[0, 0, 0]}
+          intensity={0}
+          color={"#ff0000"}
+          distance={50}
+          decay={2}
+        />
       </group>
 
       <PerspectiveCamera

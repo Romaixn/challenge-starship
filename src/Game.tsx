@@ -99,10 +99,9 @@ const Game = () => {
       />
 
       <Physics
-        debug={!isProd}
+        // debug={!isProd}
         timeStep="vary"
         gravity={[0, 0, 0]}
-        colliders={false}
       >
         <KeyboardControls map={map}>
           {phase === "space" && (

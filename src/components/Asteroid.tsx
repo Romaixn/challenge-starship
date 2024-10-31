@@ -271,7 +271,6 @@ const AsteroidBelt = () => {
     asteroidMaxScale,
     asteroidMass,
     colliderSize,
-    impactMultiplier,
   } = useControls("Asteroid Belt", {
     asteroidCount: {
       value: settings.asteroidCount,
@@ -287,7 +286,6 @@ const AsteroidBelt = () => {
     asteroidMaxScale: { value: 70, min: 5, max: 500, step: 1 },
     asteroidMass: { value: 100, min: 1, max: 1000, step: 10 },
     colliderSize: { value: 1, min: 0.1, max: 10, step: 0.1 },
-    impactMultiplier: { value: 50, min: 1, max: 200, step: 1 },
   });
 
   const hitAsteroids = useRef(new Set<number>());
@@ -389,50 +387,11 @@ const AsteroidBelt = () => {
     });
   });
 
-  const handleCollision = (event: any) => {
-    const asteroidBody = event.target;
-    const asteroidIndex = rigidBodies.current.indexOf(asteroidBody);
-    const playerVelocity = event.other.linvel();
-
-    if (asteroidIndex !== -1 && !hitAsteroids.current.has(asteroidIndex)) {
-      hitAsteroids.current.add(asteroidIndex);
-
-      const impactDirection = new THREE.Vector3(
-        playerVelocity.x,
-        playerVelocity.y,
-        playerVelocity.z,
-      ).normalize();
-
-      const asteroidScale = instances[asteroidIndex].userData.scale;
-      const scaleAdjustedForce =
-        impactMultiplier * asteroidMass * (asteroidMinScale / asteroidScale);
-
-      asteroidBody.applyImpulse(
-        {
-          x: impactDirection.x * scaleAdjustedForce,
-          y: impactDirection.y * scaleAdjustedForce,
-          z: impactDirection.z * scaleAdjustedForce,
-        },
-        true,
-      );
-
-      asteroidBody.applyTorqueImpulse(
-        {
-          x: (Math.random() - 0.5) * scaleAdjustedForce,
-          y: (Math.random() - 0.5) * scaleAdjustedForce,
-          z: (Math.random() - 0.5) * scaleAdjustedForce,
-        },
-        true,
-      );
-    }
-  };
-
   return (
     <InstancedRigidBodies
       ref={rigidBodies}
       instances={instances}
       colliders={false}
-      onCollisionEnter={handleCollision}
       colliderNodes={[
         <CuboidCollider
           args={[colliderSize, colliderSize, colliderSize]}

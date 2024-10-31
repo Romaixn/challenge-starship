@@ -15,6 +15,7 @@ import Lights from "@/Lights.tsx";
 import useGame from "@/stores/useGame.ts";
 import { LandingPlayer } from "@/LandingPlayer.tsx";
 import { LandingPlatform } from "@/components/LandingPlatform.tsx";
+import { Effects } from "@/Effects.tsx";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -128,6 +129,8 @@ const Game = () => {
           <LandingPlatform planetRadius={PLANET_RADIUS} scale={3} />
         )}
       </Physics>
+
+      <Effects />
     </>
   );
 };

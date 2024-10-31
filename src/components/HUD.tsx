@@ -75,7 +75,12 @@ const HUD = () => {
     const unsubscribePhase = useGame.subscribe((state) => {
       if (uiInstance.current) {
         if (state.phase === "landing") {
-          uiInstance.current.info.animateOut();
+          uiInstance.current.info.animateOut(() => {
+            uiInstance.current.info.setContent(
+              "Goal: Land on the planet without crashing",
+            );
+            uiInstance.current.info.animateIn();
+          });
         }
       }
     });

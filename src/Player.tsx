@@ -21,9 +21,11 @@ export const Player = ({ initialPosition }) => {
 
   const startLandingSequence = useGame((state) => state.startLandingSequence);
 
-  const positionTracker = useRef(new PositionTracker(400, () => {
-    startLandingSequence();
-  }))
+  const positionTracker = useRef(
+    new PositionTracker(400, () => {
+      startLandingSequence();
+    }),
+  );
 
   const defaultValues = {
     TURN_SPEED: isMobile ? 0.01 : 0.02,
@@ -36,7 +38,7 @@ export const Player = ({ initialPosition }) => {
     CAMERA_DISTANCE: isMobile ? 10 : 8,
     CAMERA_SMOOTHNESS: isMobile ? 0.05 : 0.1,
     ROLL_RETURN_SPEED: isMobile ? 0.05 : 0.1,
-    MAX_ROLL: isMobile ? Math.PI / 6 : Math.PI / 4
+    MAX_ROLL: isMobile ? Math.PI / 6 : Math.PI / 4,
   };
 
   const {
@@ -57,78 +59,78 @@ export const Player = ({ initialPosition }) => {
       value: defaultValues.TURN_SPEED,
       min: 0,
       max: 0.1,
-      step: 0.001
+      step: 0.001,
     },
     PITCH_SPEED: {
       label: "Pitch speed",
       value: defaultValues.PITCH_SPEED,
       min: 0,
       max: 0.1,
-      step: 0.001
+      step: 0.001,
     },
     FORWARD_SPEED: {
       label: "Forward speed",
       value: defaultValues.FORWARD_SPEED,
       min: 0,
       max: 1,
-      step: 0.1
+      step: 0.1,
     },
     BOOST_SPEED_MULTIPLIER: {
       label: "Boost multiplier",
       value: defaultValues.BOOST_SPEED_MULTIPLIER,
       min: 1,
       max: 20,
-      step: 1
+      step: 1,
     },
     BOOST_ACCELERATION: {
       label: "Boost Acceleration",
       value: defaultValues.BOOST_ACCELERATION,
       min: 0.01,
       max: 1,
-      step: 0.01
+      step: 0.01,
     },
     BOOST_DECELERATION: {
       label: "Boost Deceleration",
       value: defaultValues.BOOST_DECELERATION,
       min: 0.01,
       max: 1,
-      step: 0.01
+      step: 0.01,
     },
     CAMERA_HEIGHT: {
       label: "Camera height",
       value: defaultValues.CAMERA_HEIGHT,
       min: 0,
       max: 5,
-      step: 1
+      step: 1,
     },
     CAMERA_DISTANCE: {
       label: "Camera distance",
       value: defaultValues.CAMERA_DISTANCE,
       min: 1,
       max: 20,
-      step: 1
+      step: 1,
     },
     CAMERA_SMOOTHNESS: {
       label: "Camera smoothness",
       value: defaultValues.CAMERA_SMOOTHNESS,
       min: 0,
       max: 1,
-      step: 0.01
+      step: 0.01,
     },
     ROLL_RETURN_SPEED: {
       label: "Roll return speed",
       value: defaultValues.ROLL_RETURN_SPEED,
       min: 0,
       max: 1,
-      step: 0.01
+      step: 0.01,
     },
     MAX_ROLL: {
       label: "Max roll",
       value: defaultValues.MAX_ROLL,
       min: 0,
       max: Math.PI / 2,
-      step: Math.PI / 8
-    }
+      step: Math.PI / 8,
+    },
   });
 
   // Track current rotation angles and boost
@@ -145,7 +147,11 @@ export const Player = ({ initialPosition }) => {
 
       ref.current.rotation.set(0, Math.PI, 0);
 
-      const cameraOffset = new THREE.Vector3(0, CAMERA_HEIGHT, -CAMERA_DISTANCE);
+      const cameraOffset = new THREE.Vector3(
+        0,
+        CAMERA_HEIGHT,
+        -CAMERA_DISTANCE,
+      );
       cameraOffset.applyEuler(ref.current.rotation);
       camera.current.position.copy(initialPosition).add(cameraOffset);
 
@@ -160,11 +166,14 @@ export const Player = ({ initialPosition }) => {
   const rightPressed = useKeyboardControls((state) => state[ControlsMap.right]);
   const boostPressed = useKeyboardControls((state) => state[ControlsMap.boost]);
 
-  const getJoystickValues = useJoystickControls((state) => state.getJoystickValues);
+  const getJoystickValues = useJoystickControls(
+    (state) => state.getJoystickValues,
+  );
 
   // Convert joystick angle to directional input
   const getJoystickDirection = (angle: number): string => {
-    const normalizedAngle = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const normalizedAngle =
+      ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
     if (normalizedAngle >= 5.5 || normalizedAngle <= 0.8) return "right";
     if (normalizedAngle > 0.8 && normalizedAngle <= 2.4) return "up";
     if (normalizedAngle > 2.4 && normalizedAngle <= 3.9) return "left";
@@ -180,7 +189,11 @@ export const Player = ({ initialPosition }) => {
     if (!ref.current) return;
 
     // Get current joystick state and boost state
-    const { joystickDis, joystickAng, button1Pressed: boostButton } = getJoystickValues();
+    const {
+      joystickDis,
+      joystickAng,
+      button1Pressed: boostButton,
+    } = getJoystickValues();
     const isBoosting = boostPressed || boostButton;
 
     let direction = "";
@@ -189,16 +202,20 @@ export const Player = ({ initialPosition }) => {
     }
 
     // Calculate movement intensity
-    const mobileStrength = isMobile ? getMobileMovementStrength(joystickDis) : 1;
+    const mobileStrength = isMobile
+      ? getMobileMovementStrength(joystickDis)
+      : 1;
 
     // Smoothly update boost multiplier
     const targetBoostMultiplier = isBoosting ? BOOST_SPEED_MULTIPLIER : 1;
-    const boostTransitionSpeed = isBoosting ? BOOST_ACCELERATION : BOOST_DECELERATION;
+    const boostTransitionSpeed = isBoosting
+      ? BOOST_ACCELERATION
+      : BOOST_DECELERATION;
 
     currentBoostMultiplier.current = THREE.MathUtils.lerp(
       currentBoostMultiplier.current,
       targetBoostMultiplier,
-      boostTransitionSpeed
+      boostTransitionSpeed,
     );
 
     // Calculate final speed with smooth boost
@@ -250,7 +267,7 @@ export const Player = ({ initialPosition }) => {
     roll.current = THREE.MathUtils.lerp(
       roll.current,
       targetRoll.current,
-      ROLL_RETURN_SPEED
+      ROLL_RETURN_SPEED,
     );
 
     // Apply rotations in the correct order (yaw -> pitch -> roll)
@@ -265,19 +282,21 @@ export const Player = ({ initialPosition }) => {
     ref.current.position.add(direction_vector.multiplyScalar(currentSpeed));
 
     const currentPosition = ref.current.position.clone();
-    const relativePosition = currentPosition.clone().sub(new THREE.Vector3(0, 0, 0));
+    const relativePosition = currentPosition
+      .clone()
+      .sub(new THREE.Vector3(0, 0, 0));
     positionTracker.current.checkPosition(relativePosition);
 
     // Update physics body
     setBodyPosition([
       ref.current.position.x,
       ref.current.position.y,
-      ref.current.position.z
+      ref.current.position.z,
     ]);
     setBodyRotation([
       ref.current.rotation.x,
       ref.current.rotation.y,
-      ref.current.rotation.z
+      ref.current.rotation.z,
     ]);
 
     // Update camera position and look target
@@ -287,7 +306,9 @@ export const Player = ({ initialPosition }) => {
       const targetPosition = ref.current.position.clone().add(offsetBase);
       camera.current.position.lerp(targetPosition, CAMERA_SMOOTHNESS);
 
-      const lookAtPoint = ref.current.position.clone().add(direction_vector.multiplyScalar(5));
+      const lookAtPoint = ref.current.position
+        .clone()
+        .add(direction_vector.multiplyScalar(5));
       camera.current.lookAt(lookAtPoint);
     }
   });
@@ -298,13 +319,18 @@ export const Player = ({ initialPosition }) => {
         ref={body}
         position={bodyPosition}
         rotation={bodyRotation}
-        type='kinematicPosition'
+        type="kinematicPosition"
         colliders={false}
         mass={50}
         restitution={1}
         friction={0}
       >
-        <CuboidCollider args={[1.5, 1.5, 3]} sensor={false} restitution={1} friction={0} />
+        <CuboidCollider
+          args={[1.5, 1.5, 3]}
+          sensor={false}
+          restitution={1}
+          friction={0}
+        />
         <mesh>
           <boxGeometry args={[1, 1, 2.5]} />
           <meshBasicMaterial color="red" visible={false} />

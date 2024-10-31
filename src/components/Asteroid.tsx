@@ -7,7 +7,7 @@ import {
   CuboidCollider,
   InstancedRigidBodies,
   InstancedRigidBodyProps,
-  RigidBody
+  RigidBody,
 } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { usePerformanceStore } from "@/stores/performanceStore.ts";
@@ -134,7 +134,7 @@ type AsteroidProps = {
 
 export const Asteroid: React.FC<AsteroidProps> = ({
   position: initialPosition,
-  types = [BigAsteroid, SmallAsteroid]
+  types = [BigAsteroid, SmallAsteroid],
 }) => {
   const rigidBodyRef = useRef(null);
 
@@ -147,7 +147,7 @@ export const Asteroid: React.FC<AsteroidProps> = ({
     return [
       Math.random() * 100 - 50,
       Math.random() * 100 - 50,
-      Math.random() * 100 - 50
+      Math.random() * 100 - 50,
     ];
   }, [initialPosition]);
 
@@ -155,7 +155,7 @@ export const Asteroid: React.FC<AsteroidProps> = ({
     return [
       Math.random() * Math.PI * 2,
       Math.random() * Math.PI * 2,
-      Math.random() * Math.PI * 2
+      Math.random() * Math.PI * 2,
     ];
   }, []);
 
@@ -165,11 +165,14 @@ export const Asteroid: React.FC<AsteroidProps> = ({
 
   useEffect(() => {
     if (rigidBodyRef.current) {
-      rigidBodyRef.current.setLinvel({
-        x: (Math.random() - 0.5) * 0.1,
-        y: (Math.random() - 0.5) * 0.1,
-        z: (Math.random() - 0.5) * 0.1
-      }, true);
+      rigidBodyRef.current.setLinvel(
+        {
+          x: (Math.random() - 0.5) * 0.1,
+          y: (Math.random() - 0.5) * 0.1,
+          z: (Math.random() - 0.5) * 0.1,
+        },
+        true,
+      );
     }
   }, []);
 
@@ -181,9 +184,7 @@ export const Asteroid: React.FC<AsteroidProps> = ({
 
     const playerVelocity = e.other.linvel();
     const impactSpeed = Math.sqrt(
-      playerVelocity.x ** 2 +
-      playerVelocity.y ** 2 +
-      playerVelocity.z ** 2
+      playerVelocity.x ** 2 + playerVelocity.y ** 2 + playerVelocity.z ** 2,
     );
 
     const directionX = asteroidPos.x - otherPos.x;
@@ -192,32 +193,41 @@ export const Asteroid: React.FC<AsteroidProps> = ({
 
     const magnitude = Math.sqrt(
       directionX * directionX +
-      directionY * directionY +
-      directionZ * directionZ
+        directionY * directionY +
+        directionZ * directionZ,
     );
 
     const BASE_IMPULSE = 2000;
-    const impactForce = BASE_IMPULSE + (impactSpeed * 100);
+    const impactForce = BASE_IMPULSE + impactSpeed * 100;
 
-    rigidBodyRef.current.applyImpulse({
-      x: (directionX / magnitude) * impactForce,
-      y: (directionY / magnitude) * impactForce,
-      z: (directionZ / magnitude) * impactForce
-    }, true);
+    rigidBodyRef.current.applyImpulse(
+      {
+        x: (directionX / magnitude) * impactForce,
+        y: (directionY / magnitude) * impactForce,
+        z: (directionZ / magnitude) * impactForce,
+      },
+      true,
+    );
 
     const rotationForce = impactForce * 0.5;
-    rigidBodyRef.current.applyTorqueImpulse({
-      x: (Math.random() - 0.5) * rotationForce,
-      y: (Math.random() - 0.5) * rotationForce,
-      z: (Math.random() - 0.5) * rotationForce
-    }, true);
+    rigidBodyRef.current.applyTorqueImpulse(
+      {
+        x: (Math.random() - 0.5) * rotationForce,
+        y: (Math.random() - 0.5) * rotationForce,
+        z: (Math.random() - 0.5) * rotationForce,
+      },
+      true,
+    );
 
-    const angularSpeed = 10 + (impactSpeed * 0.1);
-    rigidBodyRef.current.setAngvel({
-      x: (Math.random() - 0.5) * angularSpeed,
-      y: (Math.random() - 0.5) * angularSpeed,
-      z: (Math.random() - 0.5) * angularSpeed
-    }, true);
+    const angularSpeed = 10 + impactSpeed * 0.1;
+    rigidBodyRef.current.setAngvel(
+      {
+        x: (Math.random() - 0.5) * angularSpeed,
+        y: (Math.random() - 0.5) * angularSpeed,
+        z: (Math.random() - 0.5) * angularSpeed,
+      },
+      true,
+    );
   };
 
   return (
@@ -234,7 +244,12 @@ export const Asteroid: React.FC<AsteroidProps> = ({
       gravityScale={0}
       onCollisionEnter={handleCollision}
     >
-      <CuboidCollider args={[2, 2, 2]} sensor={false} restitution={1} friction={0} />
+      <CuboidCollider
+        args={[2, 2, 2]}
+        sensor={false}
+        restitution={1}
+        friction={0}
+      />
       <AsteroidType rotation={rotation} scale={scale} />;
     </RigidBody>
   );
@@ -242,7 +257,7 @@ export const Asteroid: React.FC<AsteroidProps> = ({
 
 const AsteroidBelt = () => {
   const rigidBodies = useRef(null);
-  const { nodes, materials } = useGLTF('/models/asteroids.glb') as GLTFResult;
+  const { nodes, materials } = useGLTF("/models/asteroids.glb") as GLTFResult;
 
   const settings = usePerformanceStore((state) => state.settings);
 
@@ -257,8 +272,13 @@ const AsteroidBelt = () => {
     asteroidMass,
     colliderSize,
     impactMultiplier,
-  } = useControls('Asteroid Belt', {
-    asteroidCount: { value: settings.asteroidCount, min: 100, max: 5000, step: 100 },
+  } = useControls("Asteroid Belt", {
+    asteroidCount: {
+      value: settings.asteroidCount,
+      min: 100,
+      max: 5000,
+      step: 100,
+    },
     minRadius: { value: 600, min: 500, max: 1500, step: 50 },
     maxRadius: { value: 4800, min: 600, max: 5000, step: 50 },
     verticalSpread: { value: 1000, min: 0, max: 1000, step: 100 },
@@ -277,7 +297,7 @@ const AsteroidBelt = () => {
 
     for (let i = 0; i < asteroidCount; i++) {
       const radius = minRadius + Math.random() * (maxRadius - minRadius);
-      const angle = (Math.random() * Math.PI * 2);
+      const angle = Math.random() * Math.PI * 2;
       const verticalPosition = (Math.random() - 0.5) * verticalSpread;
 
       const x = Math.cos(angle) * radius;
@@ -287,7 +307,9 @@ const AsteroidBelt = () => {
       const randomRotationY = Math.random() * Math.PI * 2;
       const randomRotationZ = Math.random() * Math.PI * 2;
 
-      const scale = asteroidMinScale + Math.random() * (asteroidMaxScale - asteroidMinScale);
+      const scale =
+        asteroidMinScale +
+        Math.random() * (asteroidMaxScale - asteroidMinScale);
       const scaledMass = asteroidMass * (scale / asteroidMinScale);
 
       // Initial speed for orbit
@@ -301,7 +323,7 @@ const AsteroidBelt = () => {
         rotation: [randomRotationX, randomRotationY, randomRotationZ],
         scale: [scale, scale, scale],
         rigidBodyProps: {
-          type: 'dynamic',
+          type: "dynamic",
           mass: scaledMass,
           gravityScale: 0,
           linearDamping: 0,
@@ -316,13 +338,21 @@ const AsteroidBelt = () => {
           orbitAngle: angle,
           verticalPosition,
           scale: scale,
-        }
+        },
       });
     }
 
     return instances;
-  }, [asteroidCount, minRadius, maxRadius, verticalSpread, asteroidMinScale, asteroidMaxScale, asteroidMass, rotationSpeed]);
-
+  }, [
+    asteroidCount,
+    minRadius,
+    maxRadius,
+    verticalSpread,
+    asteroidMinScale,
+    asteroidMaxScale,
+    asteroidMass,
+    rotationSpeed,
+  ]);
 
   useFrame((state, delta) => {
     if (!rigidBodies.current) return;
@@ -344,7 +374,7 @@ const AsteroidBelt = () => {
           y: 0,
           z: Math.cos(angle) * speed,
         },
-        true
+        true,
       );
 
       // Maintain vertical position
@@ -354,7 +384,7 @@ const AsteroidBelt = () => {
           y: userData.verticalPosition,
           z: position.z,
         },
-        true
+        true,
       );
     });
   });
@@ -370,11 +400,12 @@ const AsteroidBelt = () => {
       const impactDirection = new THREE.Vector3(
         playerVelocity.x,
         playerVelocity.y,
-        playerVelocity.z
+        playerVelocity.z,
       ).normalize();
 
       const asteroidScale = instances[asteroidIndex].userData.scale;
-      const scaleAdjustedForce = impactMultiplier * asteroidMass * (asteroidMinScale / asteroidScale);
+      const scaleAdjustedForce =
+        impactMultiplier * asteroidMass * (asteroidMinScale / asteroidScale);
 
       asteroidBody.applyImpulse(
         {
@@ -382,7 +413,7 @@ const AsteroidBelt = () => {
           y: impactDirection.y * scaleAdjustedForce,
           z: impactDirection.z * scaleAdjustedForce,
         },
-        true
+        true,
       );
 
       asteroidBody.applyTorqueImpulse(
@@ -391,7 +422,7 @@ const AsteroidBelt = () => {
           y: (Math.random() - 0.5) * scaleAdjustedForce,
           z: (Math.random() - 0.5) * scaleAdjustedForce,
         },
-        true
+        true,
       );
     }
   };
@@ -408,11 +439,15 @@ const AsteroidBelt = () => {
           sensor={false}
           restitution={0.3}
           friction={0.2}
-        />
+        />,
       ]}
     >
       <instancedMesh
-        args={[nodes.Asteroid_Small.geometry, materials.asteroid, asteroidCount]}
+        args={[
+          nodes.Asteroid_Small.geometry,
+          materials.asteroid,
+          asteroidCount,
+        ]}
         count={asteroidCount}
       />
     </InstancedRigidBodies>

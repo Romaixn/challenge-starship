@@ -1,15 +1,15 @@
 import * as THREE from "three";
 import { Canvas, type ThreeElements } from "@react-three/fiber";
 import React, {
-  useEffect,
-  useState,
   forwardRef,
-  useMemo,
   type ReactNode,
-  useCallback,
   Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
 } from "react";
-import { useSpring, animated } from "@react-spring/three";
+import { animated, useSpring } from "@react-spring/three";
 import { useJoystickControls } from "@/stores/useJoystickControls";
 import { css } from "../../../styled-system/css";
 

@@ -30,24 +30,26 @@ const HUD = () => {
         links: [
           {
             title: "Starship - rherault",
-            link: "https://rherault.dev"
-          }
-        ]
+            link: "https://rherault.dev",
+          },
+        ],
       },
       info: {
-        content: 'Goal: Reach the planet',
+        content: "Goal: Reach the planet",
       },
       details: {
         background: true,
         title: "Controls",
-        content: !isMobile ?
-          `Use arrow keys or WASD to control the ship.
-           Hold SHIFT to boost. Press any key to discard this message.` :
-          `Use joystick to control the ship. Use right button to boost. Touch to discard this message.`
+        content: !isMobile
+          ? `Use arrow keys or WASD to control the ship.
+           Hold SHIFT to boost. Press any key to discard this message.`
+          : `Use joystick to control the ship. Use right button to boost. Touch to discard this message.`,
       },
-      instructions: !isMobile ? {
-        content: "Use the arrow keys or WASD to move."
-      } : false,
+      instructions: !isMobile
+        ? {
+            content: "Use the arrow keys or WASD to move.",
+          }
+        : false,
       detailsButton: true,
       muteButton: {
         sound: soundPlaying,
@@ -57,8 +59,8 @@ const HUD = () => {
           if (i > 1) {
             toggleSound();
           }
-        }
-      }
+        },
+      },
     });
 
     // Animate in the UI
@@ -76,7 +78,7 @@ const HUD = () => {
           uiInstance.current.info.animateOut();
         }
       }
-    })
+    });
 
     // Handle key press for details
     const handleKeyPress = () => {
@@ -106,7 +108,11 @@ const HUD = () => {
         cancelAnimationFrame(animationFrameRef.current);
       }
       window.removeEventListener("keydown", handleKeyPress);
-      if (uiInstance.current && uiInstance.current.element && containerRef.current) {
+      if (
+        uiInstance.current &&
+        uiInstance.current.element &&
+        containerRef.current
+      ) {
         containerRef.current.removeChild(uiInstance.current.element);
         uiInstance.current = null;
       }
@@ -122,7 +128,7 @@ const HUD = () => {
       className={css({
         position: "fixed",
         inset: 0,
-        pointerEvents: "none"
+        pointerEvents: "none",
       })}
     />
   );

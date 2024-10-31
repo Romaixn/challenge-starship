@@ -11,13 +11,14 @@ const useSound = create<SoundState>()(
     persist(
       (set) => ({
         soundPlaying: true,
-        toggleSound: () => set((state) => ({ soundPlaying: !state.soundPlaying })),
+        toggleSound: () =>
+          set((state) => ({ soundPlaying: !state.soundPlaying })),
       }),
       {
         name: "sound-storage",
-      }
-    )
-  )
-)
+      },
+    ),
+  ),
+);
 
 export default useSound;

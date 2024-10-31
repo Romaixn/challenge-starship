@@ -15,7 +15,9 @@ import { FinalMessage } from "@/components/FinalMessage.tsx";
 const Experience = () => {
   const canvas = useRef();
   const phase = useGame((state) => state.phase);
-  const landingTransitionComplete = useGame((state) => state.landingTransitionComplete);
+  const landingTransitionComplete = useGame(
+    (state) => state.landingTransitionComplete,
+  );
 
   useEffect(() => {
     initializePerformanceDetection();
@@ -44,10 +46,8 @@ const Experience = () => {
           <HUD />
         </>
       )}
-      {phase === "landing" && !landingTransitionComplete && (
-        <FadeTransition />
-      )}
-      {phase === 'landed' && <FinalMessage />}
+      {phase === "landing" && !landingTransitionComplete && <FadeTransition />}
+      {phase === "landed" && <FinalMessage />}
       <Loader />
     </>
   );

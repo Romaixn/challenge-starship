@@ -8,18 +8,18 @@ import { RigidBody } from "@react-three/rapier";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Landing_Pad: THREE.Mesh
-    landingarm: THREE.Mesh
-    landingarm_1: THREE.Mesh
-    landingarm_2: THREE.Mesh
-  }
+    Landing_Pad: THREE.Mesh;
+    landingarm: THREE.Mesh;
+    landingarm_1: THREE.Mesh;
+    landingarm_2: THREE.Mesh;
+  };
   materials: {
-    landingpad: THREE.MeshStandardMaterial
-    grey: THREE.MeshStandardMaterial
-    orange: THREE.MeshStandardMaterial
-    black: THREE.MeshStandardMaterial
-  }
-}
+    landingpad: THREE.MeshStandardMaterial;
+    grey: THREE.MeshStandardMaterial;
+    orange: THREE.MeshStandardMaterial;
+    black: THREE.MeshStandardMaterial;
+  };
+};
 
 interface LandingPlatformProps {
   planetRadius: number;
@@ -27,9 +27,9 @@ interface LandingPlatformProps {
 }
 
 export const LandingPlatform = ({
-                                  planetRadius,
-                                  scale = 1
-                                }: LandingPlatformProps) => {
+  planetRadius,
+  scale = 1,
+}: LandingPlatformProps) => {
   const platformRef = useRef<THREE.Group>();
   const lightRef = useRef<THREE.PointLight>();
 

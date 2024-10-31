@@ -2,14 +2,14 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import {
   Environment,
-  KeyboardControls
+  KeyboardControls,
+  KeyboardControlsEntry,
 } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 import AsteroidBelt from "@/components/Asteroid";
 import Planet from "@/components/Planet";
 import { Physics } from "@react-three/rapier";
 import { Player } from "./Player";
-import { KeyboardControlsEntry } from "@react-three/drei";
 import { useControls } from "leva";
 import Lights from "@/Lights.tsx";
 import useGame from "@/stores/useGame.ts";
@@ -28,7 +28,9 @@ export enum ControlsMap {
 
 const Game = () => {
   const phase = useGame((state) => state.phase);
-  const landingTransitionComplete = useGame((state) => state.landingTransitionComplete);
+  const landingTransitionComplete = useGame(
+    (state) => state.landingTransitionComplete,
+  );
 
   const map = useMemo<KeyboardControlsEntry<ControlsMap>[]>(
     () => [
@@ -36,9 +38,9 @@ const Game = () => {
       { name: ControlsMap.down, keys: ["ArrowDown", "KeyS", "KeyS"] },
       { name: ControlsMap.left, keys: ["ArrowLeft", "KeyA", "KeyA"] },
       { name: ControlsMap.right, keys: ["ArrowRight", "KeyD", "KeyD"] },
-      { name: ControlsMap.boost, keys: ["Shift"] }
+      { name: ControlsMap.boost, keys: ["Shift"] },
     ],
-    []
+    [],
   );
 
   const { texture, color } = useMemo(() => {
@@ -62,7 +64,7 @@ const Game = () => {
       { texture: "/planets/terrestrial/Terrestrial1.png", color: "#00AAFF" },
       { texture: "/planets/terrestrial/Terrestrial2.png", color: "#00AAFF" },
       { texture: "/planets/terrestrial/Terrestrial3.png", color: "#00AAFF" },
-      { texture: "/planets/terrestrial/Terrestrial4.png", color: "#00AAFF" }
+      { texture: "/planets/terrestrial/Terrestrial4.png", color: "#00AAFF" },
     ];
 
     return textures[Math.floor(Math.random() * textures.length)];
@@ -76,8 +78,8 @@ const Game = () => {
       value: 5000,
       min: 1000,
       max: 10000,
-      step: 1000
-    }
+      step: 1000,
+    },
   });
 
   const initialPlayerPosition = useMemo(() => {
@@ -87,11 +89,20 @@ const Game = () => {
   return (
     <>
       {!isProd && <Perf position="top-left" />}
-       <Lights />
+      <Lights />
 
-      <Environment files='/textures/stars.jpg' backgroundIntensity={4} background />
+      <Environment
+        files="/textures/stars.jpg"
+        backgroundIntensity={4}
+        background
+      />
 
-      <Physics debug={!isProd} timeStep="vary" gravity={[0, 0, 0]} colliders={false}>
+      <Physics
+        debug={!isProd}
+        timeStep="vary"
+        gravity={[0, 0, 0]}
+        colliders={false}
+      >
         <KeyboardControls map={map}>
           {phase === "space" && (
             <Player initialPosition={initialPlayerPosition} />
@@ -110,7 +121,7 @@ const Game = () => {
           size={PLANET_RADIUS}
           texture={texture}
           color={color}
-          shouldRotate={phase === 'space'}
+          shouldRotate={phase === "space"}
         />
 
         {phase !== "space" && (

@@ -42,7 +42,7 @@ const useGame = create<GameState>()(
       if (DEBUG) console.log("Starting landing sequence");
       set({
         phase: "landing",
-        landingTransitionComplete: false
+        landingTransitionComplete: false,
       });
     },
 
@@ -65,8 +65,8 @@ const useGame = create<GameState>()(
     setLandingState: (state) => {
       if (DEBUG) console.log("Setting landing state", state);
       set({ landingState: state });
-    }
-  }))
+    },
+  })),
 );
 
 export default useGame;

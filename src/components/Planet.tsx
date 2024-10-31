@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, forwardRef } from "react";
+import { forwardRef, useMemo, useRef } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 // @ts-ignore
 import { TextureLoader } from "three/src/loaders/TextureLoader";
@@ -12,7 +12,6 @@ import fragmentShader from "@/shaders/planet/fragment.glsl";
 import atmosphereVertexShader from "@/shaders/atmosphere/vertex.glsl";
 // @ts-ignore
 import atmosphereFragmentShader from "@/shaders/atmosphere/fragment.glsl";
-import { RigidBody } from "@react-three/rapier";
 
 interface PlanetProps {
   position: THREE.Vector3;
@@ -33,9 +32,9 @@ const Planet = forwardRef<THREE.Mesh, PlanetProps>(
       rotationSpeed = 0.1,
       texture = "/planets/habitable/Tropical.png",
       color = "#00aaff",
-      shouldRotate = true
+      shouldRotate = true,
     },
-    ref
+    ref,
   ) => {
     const planetTexture = useLoader(TextureLoader, texture);
     planetTexture.colorSpace = THREE.SRGBColorSpace;
@@ -48,9 +47,9 @@ const Planet = forwardRef<THREE.Mesh, PlanetProps>(
         uPlanetTexture: new THREE.Uniform(planetTexture),
         uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 0)),
         uAtmosphereDayColor: new THREE.Uniform(new THREE.Color(color)),
-        uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color("#ff6600"))
+        uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color("#ff6600")),
       }),
-      []
+      [],
     );
 
     useFrame((state) => {
@@ -65,7 +64,7 @@ const Planet = forwardRef<THREE.Mesh, PlanetProps>(
         const sunDirection = new THREE.Vector3(
           -planet.current.position.x,
           0,
-          -planet.current.position.z
+          -planet.current.position.z,
         ).normalize();
         planet.current.material.uniforms.uSunDirection.value = sunDirection;
       }
@@ -91,7 +90,7 @@ const Planet = forwardRef<THREE.Mesh, PlanetProps>(
         </group>
       </>
     );
-  }
+  },
 );
 
 interface AtmosphereProps {
@@ -101,20 +100,20 @@ interface AtmosphereProps {
 }
 
 export const Atmosphere: React.FC<AtmosphereProps> = ({
-                                                        size,
-                                                        dayColor,
-                                                        twilightColor
-                                                      }) => {
+  size,
+  dayColor,
+  twilightColor,
+}) => {
   const atmosphere = useRef<THREE.Mesh | null>(null);
   const uniforms = useMemo(
     () => ({
       uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 0)),
       uAtmosphereDayColor: new THREE.Uniform(new THREE.Color(dayColor)),
       uAtmosphereTwilightColor: new THREE.Uniform(
-        new THREE.Color(twilightColor)
-      )
+        new THREE.Color(twilightColor),
+      ),
     }),
-    []
+    [],
   );
 
   useFrame(() => {
@@ -123,7 +122,7 @@ export const Atmosphere: React.FC<AtmosphereProps> = ({
       const sunDirection = new THREE.Vector3(
         -atmosphere.current.position.x,
         0,
-        -atmosphere.current.position.z
+        -atmosphere.current.position.z,
       ).normalize();
       (
         atmosphere.current.material as THREE.ShaderMaterial

@@ -1,7 +1,7 @@
 import useGame from "@/stores/useGame";
 import SpaceTravelComponent from "@/components/SpaceTravel";
-import { useState, useEffect } from "react";
-import * as THREE from 'three';
+import { useEffect, useState } from "react";
+import * as THREE from "three";
 
 import { css } from "../styled-system/css";
 import useSound from "@/stores/useSound.ts";
@@ -18,13 +18,13 @@ const Welcome = () => {
 
   const playAudio = () => {
     const audioLoader = new THREE.AudioLoader();
-    audioLoader.load('/musics/launch.mp3', (buffer) => {
+    audioLoader.load("/musics/launch.mp3", (buffer) => {
       audio.setBuffer(buffer);
       audio.setLoop(false);
       audio.setVolume(0.5);
       audio.play();
-    })
-  }
+    });
+  };
 
   useEffect(() => {
     if (isTransitioning) {

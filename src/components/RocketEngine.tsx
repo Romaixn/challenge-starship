@@ -1,10 +1,10 @@
-import { useRef, useMemo } from 'react';
-import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
-import { useTexture } from '@react-three/drei';
-import { useControls } from 'leva';
-import vertexShader from '@/shaders/engine/vertex.glsl';
-import fragmentShader from '@/shaders/engine/fragment.glsl';
+import { useMemo, useRef } from "react";
+import * as THREE from "three";
+import { useFrame } from "@react-three/fiber";
+import { useTexture } from "@react-three/drei";
+import { useControls } from "leva";
+import vertexShader from "@/shaders/engine/vertex.glsl";
+import fragmentShader from "@/shaders/engine/fragment.glsl";
 import { usePerformanceStore } from "@/stores/performanceStore.ts";
 
 interface RocketEngineProps {
@@ -15,16 +15,16 @@ interface RocketEngineProps {
 }
 
 const RocketEngine: React.FC<RocketEngineProps> = ({
-   position = [0, 0, 0],
-   scale = 1,
-   intensity = 1.0,
-   color = '#00aaff'
- }) => {
+  position = [0, 0, 0],
+  scale = 1,
+  intensity = 1.0,
+  color = "#00aaff",
+}) => {
   const particlesRef = useRef<THREE.Points>(null);
   const engineLightRef = useRef<THREE.PointLight>(null);
   const settings = usePerformanceStore((state) => state.settings);
 
-  const particleTexture = useTexture('/textures/fire.png');
+  const particleTexture = useTexture("/textures/fire.png");
 
   const {
     particleCount,
@@ -32,14 +32,19 @@ const RocketEngine: React.FC<RocketEngineProps> = ({
     engineLength,
     spreadRadius,
     engineBrightness,
-    particleSpeed
-  } = useControls('Rocket Engine', {
-    particleCount: { value: settings.particleCount, min: 100, max: 5000, step: 100 },
+    particleSpeed,
+  } = useControls("Rocket Engine", {
+    particleCount: {
+      value: settings.particleCount,
+      min: 100,
+      max: 5000,
+      step: 100,
+    },
     particleSize: { value: settings.particleSize, min: 1, max: 20, step: 1 },
     engineLength: { value: 2, min: 0.1, max: 10, step: 0.1 },
     spreadRadius: { value: 0.5, min: 0.1, max: 2, step: 0.1 },
     engineBrightness: { value: 0.5, min: 0.1, max: 3, step: 0.1 },
-    particleSpeed: { value: 6, min: 2, max: 30, step: 1 }
+    particleSpeed: { value: 6, min: 2, max: 30, step: 1 },
   });
 
   // Generate particles
@@ -68,9 +73,9 @@ const RocketEngine: React.FC<RocketEngineProps> = ({
     }
 
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
-    geometry.setAttribute('lifetime', new THREE.BufferAttribute(lifetimes, 1));
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+    geometry.setAttribute("velocity", new THREE.BufferAttribute(velocities, 3));
+    geometry.setAttribute("lifetime", new THREE.BufferAttribute(lifetimes, 1));
 
     return geometry;
   }, [particleCount, engineLength, spreadRadius, particleSpeed]);
@@ -82,14 +87,14 @@ const RocketEngine: React.FC<RocketEngineProps> = ({
         particleTexture: { value: particleTexture },
         engineColor: { value: new THREE.Color(color) },
         engineIntensity: { value: intensity * engineBrightness },
-        particleSize: { value: particleSize }
+        particleSize: { value: particleSize },
       },
       vertexShader: vertexShader,
       fragmentShader: fragmentShader,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       transparent: true,
-      vertexColors: true
+      vertexColors: true,
     });
   }, [color, intensity, engineBrightness, particleSize, particleTexture]);
 
@@ -99,13 +104,18 @@ const RocketEngine: React.FC<RocketEngineProps> = ({
 
       // Flicker the engine light slightly
       const flicker = 0.9 + Math.random() * 0.2;
-      engineLightRef.current.intensity = 20 * intensity * engineBrightness * flicker;
+      engineLightRef.current.intensity =
+        20 * intensity * engineBrightness * flicker;
     }
   });
 
   return (
     <group position={position} scale={scale} rotation={[0, 0, Math.PI / 2]}>
-      <points ref={particlesRef} geometry={particles} material={engineMaterial} />
+      <points
+        ref={particlesRef}
+        geometry={particles}
+        material={engineMaterial}
+      />
 
       <pointLight
         position={[0, -1, 0]}

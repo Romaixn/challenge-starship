@@ -24,8 +24,10 @@ export class PositionTracker {
     const distance = position.length();
 
     // Éviter les calculs si on n'est pas proche de la zone de déclenchement
-    if (this.lastDistance > this.triggerDistance * 1.5 &&
-      distance > this.triggerDistance * 1.5) {
+    if (
+      this.lastDistance > this.triggerDistance * 1.5 &&
+      distance > this.triggerDistance * 1.5
+    ) {
       this.lastDistance = distance;
       this.lastUpdateTime = currentTime;
       return;

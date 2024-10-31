@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
-import useGame from '@/stores/useGame';
+import { useEffect, useState } from "react";
+import useGame from "@/stores/useGame";
 import { css } from "../../styled-system/css";
 
 export const FadeTransition = () => {
   const [opacity, setOpacity] = useState(0);
-  const completeLandingTransition = useGame((state) => state.completeLandingTransition);
+  const completeLandingTransition = useGame(
+    (state) => state.completeLandingTransition,
+  );
 
   useEffect(() => {
     // Fade in

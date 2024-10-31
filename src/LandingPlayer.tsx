@@ -23,12 +23,18 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   const body = useRef();
   const camera = useRef<THREE.PerspectiveCamera>();
 
-  const completeLandingTransition = useGame((state) => state.completeLandingTransition);
-  const landingTransitionComplete = useGame((state) => state.landingTransitionComplete);
+  const completeLandingTransition = useGame(
+    (state) => state.completeLandingTransition,
+  );
+  const landingTransitionComplete = useGame(
+    (state) => state.landingTransitionComplete,
+  );
   const setPhase = useGame((state) => state.setPhase);
   const setLandingState = useGame((state) => state.setLandingState);
   const landingState = useGame((state) => state.landingState);
-  const getJoystickValues = useJoystickControls((state) => state.getJoystickValues);
+  const getJoystickValues = useJoystickControls(
+    (state) => state.getJoystickValues,
+  );
 
   const defaultValues = {
     VERTICAL_SPEED: isMobile ? 0.3 : 0.5,
@@ -38,7 +44,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
     MIN_ALTITUDE: 1,
     ROTATION_SPEED: isMobile ? 0.4 : 0.8,
     MAX_ROTATION: isMobile ? 0.25 : 0.5,
-    DRIFT_FACTOR: isMobile ? 0.25 : 0.5
+    DRIFT_FACTOR: isMobile ? 0.25 : 0.5,
   };
 
   const checkLandingConditions = () => {
@@ -50,7 +56,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
       const distance = new THREE.Vector2(
         ref.current.position.x,
-        ref.current.position.z
+        ref.current.position.z,
       ).distanceTo(new THREE.Vector2(0, INITIAL_Z_POSITION));
 
       const isOnPlatform = distance < 5;
@@ -60,8 +66,10 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
         return;
       }
 
-      const isSafeVelocity = Math.abs(verticalVelocity.current) < SAFE_LANDING_VELOCITY;
-      const isSafeRotation = Math.abs(currentRotation.current) < SAFE_ROTATION_ANGLE;
+      const isSafeVelocity =
+        Math.abs(verticalVelocity.current) < SAFE_LANDING_VELOCITY;
+      const isSafeRotation =
+        Math.abs(currentRotation.current) < SAFE_ROTATION_ANGLE;
 
       if (isSafeVelocity && isSafeRotation) {
         setLandingState("success");
@@ -79,16 +87,51 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
     MIN_ALTITUDE,
     ROTATION_SPEED,
     MAX_ROTATION,
-    DRIFT_FACTOR
+    DRIFT_FACTOR,
   } = useControls("Landing Controls", {
     STARTING_HEIGHT: { value: 100, min: 100, max: 1000, step: 50 },
-    VERTICAL_SPEED: { value: defaultValues.VERTICAL_SPEED, min: 0.1, max: 2, step: 0.1 },
-    GRAVITY_FORCE: { value: defaultValues.GRAVITY_FORCE, min: 0, max: 0.5, step: 0.01 },
-    CAMERA_DISTANCE: { value: defaultValues.CAMERA_DISTANCE, min: 10, max: 500, step: 10 },
-    MIN_ALTITUDE: { value: defaultValues.MIN_ALTITUDE, min: 0.5, max: 5, step: 0.5 },
-    ROTATION_SPEED: { value: defaultValues.ROTATION_SPEED, min: 0.1, max: 2, step: 0.1 },
-    MAX_ROTATION: { value: defaultValues.MAX_ROTATION, min: 0.1, max: Math.PI / 2, step: 0.1 },
-    DRIFT_FACTOR: { value: defaultValues.DRIFT_FACTOR, min: 0, max: 2, step: 0.1 }
+    VERTICAL_SPEED: {
+      value: defaultValues.VERTICAL_SPEED,
+      min: 0.1,
+      max: 2,
+      step: 0.1,
+    },
+    GRAVITY_FORCE: {
+      value: defaultValues.GRAVITY_FORCE,
+      min: 0,
+      max: 0.5,
+      step: 0.01,
+    },
+    CAMERA_DISTANCE: {
+      value: defaultValues.CAMERA_DISTANCE,
+      min: 10,
+      max: 500,
+      step: 10,
+    },
+    MIN_ALTITUDE: {
+      value: defaultValues.MIN_ALTITUDE,
+      min: 0.5,
+      max: 5,
+      step: 0.5,
+    },
+    ROTATION_SPEED: {
+      value: defaultValues.ROTATION_SPEED,
+      min: 0.1,
+      max: 2,
+      step: 0.1,
+    },
+    MAX_ROTATION: {
+      value: defaultValues.MAX_ROTATION,
+      min: 0.1,
+      max: Math.PI / 2,
+      step: 0.1,
+    },
+    DRIFT_FACTOR: {
+      value: defaultValues.DRIFT_FACTOR,
+      min: 0,
+      max: 2,
+      step: 0.1,
+    },
   });
 
   const verticalVelocity = useRef(0);
@@ -100,7 +143,8 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   const rightPressed = useKeyboardControls((state) => state[ControlsMap.right]);
 
   const getJoystickDirection = (angle: number): string => {
-    const normalizedAngle = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const normalizedAngle =
+      ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
     if (normalizedAngle >= 5.5 || normalizedAngle <= 1.3) return "right";
     if (normalizedAngle > 1.3 && normalizedAngle <= 1.6) return "up";
     if (normalizedAngle > 1.6 && normalizedAngle <= 3.9) return "left";
@@ -113,13 +157,17 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
   useEffect(() => {
     if (ref.current && camera.current) {
-      ref.current.position.set(0, planetRadius + STARTING_HEIGHT, INITIAL_Z_POSITION);
+      ref.current.position.set(
+        0,
+        planetRadius + STARTING_HEIGHT,
+        INITIAL_Z_POSITION,
+      );
       ref.current.rotation.set(Math.PI / 2, Math.PI, Math.PI / 2);
 
       camera.current.position.set(
         CAMERA_DISTANCE,
         planetRadius + defaultValues.CAMERA_DISTANCE,
-        0
+        0,
       );
       camera.current.lookAt(ref.current.position);
 
@@ -128,7 +176,13 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   }, []);
 
   useFrame((state, delta) => {
-    if (!ref.current || !camera.current || !landingTransitionComplete || landingState !== "in_progress") return;
+    if (
+      !ref.current ||
+      !camera.current ||
+      !landingTransitionComplete ||
+      landingState !== "in_progress"
+    )
+      return;
 
     const currentPosition = ref.current.position;
 
@@ -140,28 +194,32 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
     }
 
     // Calculate movement intensity for mobile
-    const mobileStrength = isMobile ? getMobileMovementStrength(joystickDis) : 1;
+    const mobileStrength = isMobile
+      ? getMobileMovementStrength(joystickDis)
+      : 1;
 
     // Handle rotation with both keyboard and joystick inputs
     if (leftPressed || direction === "left") {
-      currentRotation.current += ROTATION_SPEED * delta * (isMobile ? mobileStrength : 1);
+      currentRotation.current +=
+        ROTATION_SPEED * delta * (isMobile ? mobileStrength : 1);
     }
     if (rightPressed || direction === "right") {
-      currentRotation.current -= ROTATION_SPEED * delta * (isMobile ? mobileStrength : 1);
+      currentRotation.current -=
+        ROTATION_SPEED * delta * (isMobile ? mobileStrength : 1);
     }
 
     // Clamp rotation
     currentRotation.current = THREE.MathUtils.clamp(
       currentRotation.current,
       -MAX_ROTATION,
-      MAX_ROTATION
+      MAX_ROTATION,
     );
 
     // Apply rotation to ship
     ref.current.rotation.set(
       Math.PI / 2 + currentRotation.current,
       Math.PI,
-      Math.PI / 2
+      Math.PI / 2,
     );
 
     // Apply drift based on rotation
@@ -173,10 +231,12 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
     // Handle vertical movement with both keyboard and joystick inputs
     if (upPressed || direction === "up") {
-      verticalVelocity.current += VERTICAL_SPEED * delta * (isMobile ? mobileStrength : 1);
+      verticalVelocity.current +=
+        VERTICAL_SPEED * delta * (isMobile ? mobileStrength : 1);
     }
     if (downPressed || direction === "down") {
-      verticalVelocity.current -= VERTICAL_SPEED * delta * (isMobile ? mobileStrength : 1);
+      verticalVelocity.current -=
+        VERTICAL_SPEED * delta * (isMobile ? mobileStrength : 1);
     }
 
     currentPosition.y += verticalVelocity.current;
@@ -193,7 +253,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
     camera.current.position.set(
       CAMERA_DISTANCE,
       currentPosition.y,
-      currentPosition.z
+      currentPosition.z,
     );
     camera.current.lookAt(currentPosition);
   });

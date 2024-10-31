@@ -34,8 +34,8 @@ void main()
     color = mix(color, atmosphereColor, fresnel * atmosphereDayMix);
 
     // Specular
-    vec3 reflection = reflect(- uSunDirection, normal);
-    float specular = - dot(reflection, viewDirection);
+    vec3 reflection = reflect(-uSunDirection, normal);
+    float specular = -dot(reflection, viewDirection);
     specular = max(specular, 0.0);
     specular = pow(specular, 32.0 - uTimeAfterExplode);
     specular *= planetColor.b;

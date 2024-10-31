@@ -1,5 +1,5 @@
-import { getGPUTier } from 'detect-gpu';
-import { create } from 'zustand';
+import { getGPUTier } from "detect-gpu";
+import { create } from "zustand";
 import { isMobile } from "react-device-detect";
 
 interface PerformanceState {
@@ -28,12 +28,12 @@ export const usePerformanceStore = create<PerformanceState>((set) => ({
         return {
           fps,
           tier: state.tier - 1,
-          settings: getDefaultSettings(state.tier - 1)
+          settings: getDefaultSettings(state.tier - 1),
         };
       }
       return { fps };
     });
-  }
+  },
 }));
 
 function getDefaultSettings(tier: number): GameSettings {
@@ -42,13 +42,13 @@ function getDefaultSettings(tier: number): GameSettings {
       return {
         asteroidCount: 2500,
         particleCount: 500,
-        particleSize: 5
+        particleSize: 5,
       };
     case 2: // Mid-range devices
       return {
         asteroidCount: 1250,
         particleCount: 250,
-        particleSize: 7
+        particleSize: 7,
       };
     default: // Low-end devices
       return {
@@ -82,7 +82,7 @@ export async function initializePerformanceDetection() {
     usePerformanceStore.setState({
       tier: performanceTier,
       isMobile,
-      settings
+      settings,
     });
 
     // Setup FPS monitoring
@@ -107,7 +107,7 @@ export async function initializePerformanceDetection() {
 
     return true;
   } catch (error) {
-    console.error('Failed to initialize performance detection:', error);
+    console.error("Failed to initialize performance detection:", error);
     return false;
   }
 }

@@ -1,6 +1,6 @@
 // AudioManager.tsx
-import { useEffect } from 'react';
-import * as THREE from 'three';
+import { useEffect } from "react";
+import * as THREE from "three";
 import useSound from "@/stores/useSound.ts";
 
 export const AudioManager = () => {
@@ -18,7 +18,7 @@ export const AudioManager = () => {
 
   useEffect(() => {
     const audioLoader = new THREE.AudioLoader();
-    audioLoader.load('/musics/ambient.mp3', (buffer) => {
+    audioLoader.load("/musics/ambient.mp3", (buffer) => {
       audio.setBuffer(buffer);
       audio.setLoop(true);
       audio.setVolume(0.2);
@@ -30,7 +30,7 @@ export const AudioManager = () => {
 
     const unsubscribeToggleSound = useSound.subscribe((state) => {
       toggleAudio(state.soundPlaying);
-    })
+    });
 
     return () => {
       unsubscribeToggleSound();

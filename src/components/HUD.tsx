@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
-import { UI } from '@alienkitty/space.js';
+import { useEffect, useRef } from "react";
+import { UI } from "@alienkitty/space.js";
 import { css } from "../../styled-system/css";
 import { isMobile } from "react-device-detect";
 import useSound from "@/stores/useSound.ts";
 import { useJoystickControls } from "@/stores/useJoystickControls.ts";
+import { usePerformanceStore } from "@/stores/performanceStore.ts";
 
 const HUD = () => {
   const containerRef = useRef(null);
@@ -12,6 +13,8 @@ const HUD = () => {
   const isDetailsShown = useRef(true);
   const toggleSound = useSound((state) => state.toggleSound);
   const soundPlaying = useSound((state) => state.soundPlaying);
+
+  const tier = usePerformanceStore((state) => state.tier);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -24,24 +27,24 @@ const HUD = () => {
       header: {
         links: [
           {
-            title: 'Starship - rherault',
-            link: 'https://rherault.dev',
+            title: "Starship - rherault",
+            link: "https://rherault.dev"
           }
         ]
       },
       info: {
-        content: 'Info'
+        content: tier === 1 ? "Performance: Low" : tier === 2 ? "Performance: Medium" : "Performance: High"
       },
       details: {
         background: true,
-        title: 'Controls',
+        title: "Controls",
         content: !isMobile ?
           `Use arrow keys or WASD to control the ship.
            Hold SHIFT to boost. Press any key to discard this message.` :
-          `Use joystick to control the ship. Use right button to boost. Touch to discard this message.`,
+          `Use joystick to control the ship. Use right button to boost. Touch to discard this message.`
       },
       instructions: !isMobile ? {
-        content: 'Use the arrow keys or WASD to move.'
+        content: "Use the arrow keys or WASD to move."
       } : false,
       detailsButton: true,
       muteButton: {
@@ -73,9 +76,9 @@ const HUD = () => {
     };
 
     const unsuscribeJoystickChange = useJoystickControls.subscribe(() => {
-      handleKeyPress()
-    })
-    window.addEventListener('keydown', handleKeyPress);
+      handleKeyPress();
+    });
+    window.addEventListener("keydown", handleKeyPress);
 
     containerRef.current.appendChild(uiInstance.current.element);
 
@@ -91,7 +94,7 @@ const HUD = () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener("keydown", handleKeyPress);
       if (uiInstance.current && uiInstance.current.element && containerRef.current) {
         containerRef.current.removeChild(uiInstance.current.element);
         uiInstance.current = null;
@@ -105,9 +108,9 @@ const HUD = () => {
     <div
       ref={containerRef}
       className={css({
-        position: 'fixed',
+        position: "fixed",
         inset: 0,
-        pointerEvents: 'none',
+        pointerEvents: "none"
       })}
     />
   );

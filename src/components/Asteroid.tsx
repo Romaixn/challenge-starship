@@ -266,7 +266,7 @@ const AsteroidBelt = () => {
     asteroidMinScale: { value: 25, min: 1, max: 100, step: 1 },
     asteroidMaxScale: { value: 70, min: 5, max: 500, step: 1 },
     asteroidMass: { value: 100, min: 1, max: 1000, step: 10 },
-    colliderSize: { value: 1.5, min: 1, max: 10, step: 0.5 },
+    colliderSize: { value: 1, min: 0.1, max: 10, step: 0.1 },
     impactMultiplier: { value: 50, min: 1, max: 200, step: 1 },
   });
 

@@ -5,12 +5,14 @@ import { isMobile } from "react-device-detect";
 import useSound from "@/stores/useSound.ts";
 import { useJoystickControls } from "@/stores/useJoystickControls.ts";
 import { usePerformanceStore } from "@/stores/performanceStore.ts";
+import useGame from "@/stores/useGame.ts";
 
 const HUD = () => {
   const containerRef = useRef(null);
   const uiInstance = useRef(null);
   const animationFrameRef = useRef(null);
   const isDetailsShown = useRef(true);
+  const phase = useGame((state) => state.phase);
   const toggleSound = useSound((state) => state.toggleSound);
   const soundPlaying = useSound((state) => state.soundPlaying);
 
@@ -33,7 +35,7 @@ const HUD = () => {
         ]
       },
       info: {
-        content: tier === 1 ? "Performance: Low" : tier === 2 ? "Performance: Medium" : "Performance: High"
+        content: 'Goal: Reach the planet',
       },
       details: {
         background: true,
@@ -66,6 +68,15 @@ const HUD = () => {
       uiInstance.current.instructions.animateIn();
     }
     uiInstance.current.toggleDetails(true);
+
+    // Update info content based on phase
+    const unsubscribePhase = useGame.subscribe((state) => {
+      if (uiInstance.current) {
+        if (state.phase === "landing") {
+          uiInstance.current.info.animateOut();
+        }
+      }
+    })
 
     // Handle key press for details
     const handleKeyPress = () => {
@@ -101,6 +112,7 @@ const HUD = () => {
       }
 
       unsuscribeJoystickChange();
+      unsubscribePhase();
     };
   }, []);
 

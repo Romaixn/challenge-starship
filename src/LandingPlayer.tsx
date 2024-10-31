@@ -25,6 +25,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
   const completeLandingTransition = useGame((state) => state.completeLandingTransition);
   const landingTransitionComplete = useGame((state) => state.landingTransitionComplete);
+  const setPhase = useGame((state) => state.setPhase);
   const setLandingState = useGame((state) => state.setLandingState);
   const landingState = useGame((state) => state.landingState);
   const getJoystickValues = useJoystickControls((state) => state.getJoystickValues);
@@ -45,6 +46,8 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
     const altitude = ref.current.position.y - planetRadius;
     if (altitude <= MIN_ALTITUDE) {
+      setPhase("landed");
+
       const distance = new THREE.Vector2(
         ref.current.position.x,
         ref.current.position.z
@@ -53,7 +56,6 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
       const isOnPlatform = distance < 5;
 
       if (!isOnPlatform) {
-        console.log("Missed the platform!");
         setLandingState("crash");
         return;
       }
@@ -62,13 +64,8 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
       const isSafeRotation = Math.abs(currentRotation.current) < SAFE_ROTATION_ANGLE;
 
       if (isSafeVelocity && isSafeRotation) {
-        console.log("Perfect landing!");
         setLandingState("success");
       } else {
-        console.log("Bad landing! Speed or rotation wrong", {
-          velocity: verticalVelocity.current,
-          rotation: currentRotation.current
-        });
         setLandingState("crash");
       }
     }
@@ -84,7 +81,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
     MAX_ROTATION,
     DRIFT_FACTOR
   } = useControls("Landing Controls", {
-    STARTING_HEIGHT: { value: 100, min: 100, max: 1000, step: 50},
+    STARTING_HEIGHT: { value: 100, min: 100, max: 1000, step: 50 },
     VERTICAL_SPEED: { value: defaultValues.VERTICAL_SPEED, min: 0.1, max: 2, step: 0.1 },
     GRAVITY_FORCE: { value: defaultValues.GRAVITY_FORCE, min: 0, max: 0.5, step: 0.01 },
     CAMERA_DISTANCE: { value: defaultValues.CAMERA_DISTANCE, min: 10, max: 500, step: 10 },
@@ -210,6 +207,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
         mass={50}
         onCollisionEnter={(e) => {
           if (!e.other.rigidBodyObject?.name?.includes("landing_pad")) {
+            setPhase("landed");
             setLandingState("crash");
           }
         }}

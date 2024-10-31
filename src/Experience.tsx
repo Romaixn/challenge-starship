@@ -10,6 +10,7 @@ import { initializePerformanceDetection } from "@/stores/performanceStore.ts";
 import HUD from "@/components/HUD.tsx";
 import { FadeTransition } from "@/components/FadeTransition.tsx";
 import { AudioManager } from "@/components/AudioManager.tsx";
+import { FinalMessage } from "@/components/FinalMessage.tsx";
 
 const Experience = () => {
   const canvas = useRef();
@@ -46,6 +47,7 @@ const Experience = () => {
       {phase === "landing" && !landingTransitionComplete && (
         <FadeTransition />
       )}
+      {phase === 'landed' && <FinalMessage />}
       <Loader />
     </>
   );

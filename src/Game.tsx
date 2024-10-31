@@ -97,7 +97,7 @@ const Game = () => {
             <Player initialPosition={initialPlayerPosition} />
           )}
 
-          {phase === "landing" && landingTransitionComplete && (
+          {phase !== "space" && landingTransitionComplete && (
             <LandingPlayer planetRadius={PLANET_RADIUS} />
           )}
         </KeyboardControls>
@@ -113,7 +113,7 @@ const Game = () => {
           shouldRotate={phase === 'space'}
         />
 
-        {phase === "landing" && (
+        {phase !== "space" && (
           <LandingPlatform planetRadius={PLANET_RADIUS} scale={3} />
         )}
       </Physics>

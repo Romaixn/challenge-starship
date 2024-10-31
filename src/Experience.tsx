@@ -11,6 +11,7 @@ import HUD from "@/components/HUD.tsx";
 import { FadeTransition } from "@/components/FadeTransition.tsx";
 import { AudioManager } from "@/components/AudioManager.tsx";
 import { FinalMessage } from "@/components/FinalMessage.tsx";
+import useHealth from "@/stores/useHealth.ts";
 
 const Experience = () => {
   const canvas = useRef();
@@ -18,6 +19,7 @@ const Experience = () => {
   const landingTransitionComplete = useGame(
     (state) => state.landingTransitionComplete,
   );
+  const isDead = useHealth((state) => state.isDead);
 
   useEffect(() => {
     initializePerformanceDetection();
@@ -47,7 +49,7 @@ const Experience = () => {
         </>
       )}
       {phase === "landing" && !landingTransitionComplete && <FadeTransition />}
-      {phase === "landed" && <FinalMessage />}
+      {(phase === "landed" || isDead) && <FinalMessage />}
       <Loader />
     </>
   );

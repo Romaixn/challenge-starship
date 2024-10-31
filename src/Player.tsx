@@ -46,6 +46,7 @@ export const Player = ({ initialPosition }) => {
   const startLandingSequence = useGame((state) => state.startLandingSequence);
   const takeDamage = useHealth((state) => state.takeDamage);
   const isInvulnerable = useHealth((state) => state.isInvulnerable);
+  const isDead = useHealth((state) => state.isDead);
 
   const positionTracker = useRef(
     new PositionTracker(400, () => {
@@ -243,128 +244,134 @@ export const Player = ({ initialPosition }) => {
   useFrame((state, delta) => {
     if (!ref.current) return;
 
-    // Get current joystick state and boost state
-    const {
-      joystickDis,
-      joystickAng,
-      button1Pressed: boostButton,
-    } = getJoystickValues();
-    const isBoosting = boostPressed || boostButton;
+    if (!isDead) {
+      // Get current joystick state and boost state
+      const {
+        joystickDis,
+        joystickAng,
+        button1Pressed: boostButton,
+      } = getJoystickValues();
+      const isBoosting = boostPressed || boostButton;
 
-    let direction = "";
-    if (joystickDis > 0) {
-      direction = getJoystickDirection(joystickAng);
-    }
-
-    // Calculate movement intensity
-    const mobileStrength = isMobile
-      ? getMobileMovementStrength(joystickDis)
-      : 1;
-
-    // Smoothly update boost multiplier
-    const targetBoostMultiplier = isBoosting ? BOOST_SPEED_MULTIPLIER : 1;
-    const boostTransitionSpeed = isBoosting
-      ? BOOST_ACCELERATION
-      : BOOST_DECELERATION;
-
-    currentBoostMultiplier.current = THREE.MathUtils.lerp(
-      currentBoostMultiplier.current,
-      targetBoostMultiplier,
-      boostTransitionSpeed,
-    );
-
-    // Calculate final speed with smooth boost
-    const currentSpeed = FORWARD_SPEED * currentBoostMultiplier.current;
-
-    // Normalize pitch to keep it within -PI to PI range
-    pitch.current = pitch.current % (2 * Math.PI);
-    if (pitch.current > Math.PI) {
-      pitch.current -= 2 * Math.PI;
-    } else if (pitch.current < -Math.PI) {
-      pitch.current += 2 * Math.PI;
-    }
-
-    let isTransitioning = false;
-
-    // Handle vertical rotation (pitch)
-    if (upPressed || direction === "up") {
-      if (pitch.current < -Math.PI / 2) {
-        isTransitioning = true;
-        const currentCameraPos = camera.current.position.clone();
-        pitch.current = Math.PI - Math.abs(pitch.current);
-        camera.current.position.copy(currentCameraPos);
-      } else {
-        pitch.current -= PITCH_SPEED * mobileStrength;
+      let direction = "";
+      if (joystickDis > 0) {
+        direction = getJoystickDirection(joystickAng);
       }
-    } else if (downPressed || direction === "down") {
-      if (pitch.current > Math.PI / 2) {
-        isTransitioning = true;
-        const currentCameraPos = camera.current.position.clone();
-        pitch.current = -Math.PI + Math.abs(pitch.current);
-        camera.current.position.copy(currentCameraPos);
-      } else {
-        pitch.current += PITCH_SPEED * mobileStrength;
+
+      // Calculate movement intensity
+      const mobileStrength = isMobile
+        ? getMobileMovementStrength(joystickDis)
+        : 1;
+
+      // Smoothly update boost multiplier
+      const targetBoostMultiplier = isBoosting ? BOOST_SPEED_MULTIPLIER : 1;
+      const boostTransitionSpeed = isBoosting
+        ? BOOST_ACCELERATION
+        : BOOST_DECELERATION;
+
+      currentBoostMultiplier.current = THREE.MathUtils.lerp(
+        currentBoostMultiplier.current,
+        targetBoostMultiplier,
+        boostTransitionSpeed,
+      );
+
+      // Calculate final speed with smooth boost
+      const currentSpeed = FORWARD_SPEED * currentBoostMultiplier.current;
+
+      // Normalize pitch to keep it within -PI to PI range
+      pitch.current = pitch.current % (2 * Math.PI);
+      if (pitch.current > Math.PI) {
+        pitch.current -= 2 * Math.PI;
+      } else if (pitch.current < -Math.PI) {
+        pitch.current += 2 * Math.PI;
       }
-    }
 
-    // Handle horizontal rotation (yaw) and banking effect (roll)
-    if (leftPressed || direction === "left") {
-      yaw.current += TURN_SPEED * mobileStrength;
-      targetRoll.current = -MAX_ROLL * mobileStrength;
-    } else if (rightPressed || direction === "right") {
-      yaw.current -= TURN_SPEED * mobileStrength;
-      targetRoll.current = MAX_ROLL * mobileStrength;
-    } else {
-      targetRoll.current = 0;
-    }
+      let isTransitioning = false;
 
-    // Smooth roll transition
-    roll.current = THREE.MathUtils.lerp(
-      roll.current,
-      targetRoll.current,
-      ROLL_RETURN_SPEED,
-    );
+      // Handle vertical rotation (pitch)
+      if (upPressed || direction === "up") {
+        if (pitch.current < -Math.PI / 2) {
+          isTransitioning = true;
+          const currentCameraPos = camera.current.position.clone();
+          pitch.current = Math.PI - Math.abs(pitch.current);
+          camera.current.position.copy(currentCameraPos);
+        } else {
+          pitch.current -= PITCH_SPEED * mobileStrength;
+        }
+      } else if (downPressed || direction === "down") {
+        if (pitch.current > Math.PI / 2) {
+          isTransitioning = true;
+          const currentCameraPos = camera.current.position.clone();
+          pitch.current = -Math.PI + Math.abs(pitch.current);
+          camera.current.position.copy(currentCameraPos);
+        } else {
+          pitch.current += PITCH_SPEED * mobileStrength;
+        }
+      }
 
-    // Apply rotations in the correct order (yaw -> pitch -> roll)
-    ref.current.rotation.set(0, 0, 0);
-    ref.current.rotateY(yaw.current);
-    ref.current.rotateX(pitch.current);
-    ref.current.rotateZ(roll.current);
+      // Handle horizontal rotation (yaw) and banking effect (roll)
+      if (leftPressed || direction === "left") {
+        yaw.current += TURN_SPEED * mobileStrength;
+        targetRoll.current = -MAX_ROLL * mobileStrength;
+      } else if (rightPressed || direction === "right") {
+        yaw.current -= TURN_SPEED * mobileStrength;
+        targetRoll.current = MAX_ROLL * mobileStrength;
+      } else {
+        targetRoll.current = 0;
+      }
 
-    // Update position based on current direction and speed
-    const direction_vector = new THREE.Vector3();
-    ref.current.getWorldDirection(direction_vector);
-    ref.current.position.add(direction_vector.multiplyScalar(currentSpeed));
+      // Smooth roll transition
+      roll.current = THREE.MathUtils.lerp(
+        roll.current,
+        targetRoll.current,
+        ROLL_RETURN_SPEED,
+      );
 
-    const currentPosition = ref.current.position.clone();
-    const relativePosition = currentPosition
-      .clone()
-      .sub(new THREE.Vector3(0, 0, 0));
-    positionTracker.current.checkPosition(relativePosition);
+      // Apply rotations in the correct order (yaw -> pitch -> roll)
+      ref.current.rotation.set(0, 0, 0);
+      ref.current.rotateY(yaw.current);
+      ref.current.rotateX(pitch.current);
+      ref.current.rotateZ(roll.current);
 
-    // Update physics body
-    setBodyPosition([
-      ref.current.position.x,
-      ref.current.position.y,
-      ref.current.position.z,
-    ]);
-    setBodyRotation([
-      ref.current.rotation.x,
-      ref.current.rotation.y,
-      ref.current.rotation.z,
-    ]);
+      // Update position based on current direction and speed
+      const direction_vector = new THREE.Vector3();
+      ref.current.getWorldDirection(direction_vector);
+      ref.current.position.add(direction_vector.multiplyScalar(currentSpeed));
 
-    // Update camera position and look target
-    if (camera.current && !isTransitioning) {
-      const offsetBase = new THREE.Vector3(0, CAMERA_HEIGHT, -CAMERA_DISTANCE);
-      offsetBase.applyEuler(ref.current.rotation);
-      const targetPosition = ref.current.position.clone().add(offsetBase);
-      camera.current.position.lerp(targetPosition, CAMERA_SMOOTHNESS);
-
-      const lookAtPoint = ref.current.position
+      const currentPosition = ref.current.position.clone();
+      const relativePosition = currentPosition
         .clone()
-        .add(direction_vector.multiplyScalar(5));
-      camera.current.lookAt(lookAtPoint);
+        .sub(new THREE.Vector3(0, 0, 0));
+      positionTracker.current.checkPosition(relativePosition);
+
+      // Update physics body
+      setBodyPosition([
+        ref.current.position.x,
+        ref.current.position.y,
+        ref.current.position.z,
+      ]);
+      setBodyRotation([
+        ref.current.rotation.x,
+        ref.current.rotation.y,
+        ref.current.rotation.z,
+      ]);
+
+      // Update camera position and look target
+      if (camera.current && !isTransitioning) {
+        const offsetBase = new THREE.Vector3(
+          0,
+          CAMERA_HEIGHT,
+          -CAMERA_DISTANCE,
+        );
+        offsetBase.applyEuler(ref.current.rotation);
+        const targetPosition = ref.current.position.clone().add(offsetBase);
+        camera.current.position.lerp(targetPosition, CAMERA_SMOOTHNESS);
+
+        const lookAtPoint = ref.current.position
+          .clone()
+          .add(direction_vector.multiplyScalar(5));
+        camera.current.lookAt(lookAtPoint);
+      }
     }
 
     // Damage animation

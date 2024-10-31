@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import useGame from "@/stores/useGame";
 import { css } from "../../styled-system/css";
 import { center } from "../../styled-system/patterns";
+import useHealth from "@/stores/useHealth.ts";
 
 export const FinalMessage = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,9 +13,11 @@ export const FinalMessage = () => {
   const resetLandingTransition = useGame(
     (state) => state.resetLandingTransition,
   );
+  const isDead = useHealth((state) => state.isDead);
+  const resetHealth = useHealth((state) => state.resetHealth);
 
   useEffect(() => {
-    if (landingState !== "in_progress") {
+    if (landingState !== "in_progress" || isDead) {
       setTimeout(() => setIsVisible(true), 500);
     }
   }, [landingState]);
@@ -24,9 +27,8 @@ export const FinalMessage = () => {
     setPhase("space");
     setLandingState("in_progress");
     resetLandingTransition();
+    resetHealth();
   };
-
-  if (landingState === "in_progress") return null;
 
   const isSuccess = landingState === "success";
 
@@ -131,7 +133,7 @@ export const FinalMessage = () => {
             >
               {isSuccess
                 ? "Congratulations! You successfully landed the spacecraft."
-                : "The landing was too rough. Want to try again?"}
+                : "The universe got the better of you. Want to try again?"}
             </motion.p>
 
             <motion.button

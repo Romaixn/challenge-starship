@@ -45,11 +45,8 @@ const useHealth = create<HealthState>()(
         lastDamageTime: currentTime,
       });
 
-      console.log(`Player took ${amount} damage. New health: ${newHealth}.`);
-
       // Reset invulnerability after duration
       setTimeout(() => {
-        console.log("Player is no longer invulnerable");
         set({ isInvulnerable: false });
       }, state.invulnerabilityDuration);
     },

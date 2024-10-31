@@ -9,6 +9,7 @@ import useGame from "@/stores/useGame";
 import { initializePerformanceDetection } from "@/stores/performanceStore.ts";
 import HUD from "@/components/HUD.tsx";
 import { FadeTransition } from "@/components/FadeTransition.tsx";
+import { AudioManager } from "@/components/AudioManager.tsx";
 
 const Experience = () => {
   const canvas = useRef();
@@ -36,7 +37,12 @@ const Experience = () => {
         </Suspense>
       )}
       {phase !== "welcome" && isMobile && <Joystick />}
-      {phase !== "welcome" && <HUD />}
+      {phase !== "welcome" && (
+        <>
+          <AudioManager />
+          <HUD />
+        </>
+      )}
       {phase === "landing" && !landingTransitionComplete && (
         <FadeTransition />
       )}

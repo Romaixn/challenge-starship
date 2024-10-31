@@ -11,6 +11,7 @@ import React, {
 } from "react";
 import { useSpring, animated } from "@react-spring/three";
 import { useJoystickControls } from "@/stores/useJoystickControls";
+import { css } from "../../../styled-system/css";
 
 const JoystickComponents = (props: JoystickProps) => {
   /**
@@ -485,43 +486,22 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: JoystickProps) => {
 
 export const Joystick = forwardRef<HTMLDivElement, JoystickProps>(
   (props, ref) => {
-    const joystickWrapperStyle: React.CSSProperties = {
-      userSelect: "none",
-      MozUserSelect: "none",
-      WebkitUserSelect: "none",
-      msUserSelect: "none",
-      touchAction: "none",
-      pointerEvents: "none",
-      overscrollBehavior: "none",
-      position: "fixed",
-      zIndex: "9999",
-      height: props.joystickHeightAndWidth || "200px",
-      width: props.joystickHeightAndWidth || "200px",
-      left: props.joystickPositionLeft || "0",
-      bottom: props.joystickPositionBottom || "0",
-    };
-
-    const buttonWrapperStyle: React.CSSProperties = {
-      userSelect: "none",
-      MozUserSelect: "none",
-      WebkitUserSelect: "none",
-      msUserSelect: "none",
-      touchAction: "none",
-      pointerEvents: "none",
-      overscrollBehavior: "none",
-      position: "fixed",
-      zIndex: "9999",
-      height: props.buttonHeightAndWidth || "200px",
-      width: props.buttonHeightAndWidth || "200px",
-      right: props.buttonPositionRight || "0",
-      bottom: props.buttonPositionBottom || "0",
-    };
-
     return (
       <div ref={ref}>
         <div
           id="joystick"
-          style={joystickWrapperStyle}
+          className={css({
+            userSelect: "none",
+            touchAction: "none",
+            pointerEvents: "none",
+            overscrollBehavior: "none",
+            position: "fixed",
+            zIndex: "9999",
+            height: props.joystickHeightAndWidth || "200px",
+            width: props.joystickHeightAndWidth || "200px",
+            left: props.joystickPositionLeft || "0",
+            bottom: props.joystickPositionBottom || "40px",
+          })}
           onContextMenu={(e) => e.preventDefault()}
         >
           <Canvas
@@ -539,7 +519,18 @@ export const Joystick = forwardRef<HTMLDivElement, JoystickProps>(
         {props.buttonNumber !== 0 && (
           <div
             id="-button"
-            style={buttonWrapperStyle}
+            className={css({
+              userSelect: "none",
+              touchAction: "none",
+              pointerEvents: "none",
+              overscrollBehavior: "none",
+              position: "fixed",
+              zIndex: "9999",
+              height: props.buttonHeightAndWidth || "200px",
+              width: props.buttonHeightAndWidth || "200px",
+              right: props.buttonPositionRight || "0",
+              bottom: props.buttonPositionBottom || "40px",
+            })}
             onContextMenu={(e) => e.preventDefault()}
           >
             <Canvas

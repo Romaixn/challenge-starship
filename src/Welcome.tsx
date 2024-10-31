@@ -1,18 +1,37 @@
 import useGame from "@/stores/useGame";
 import SpaceTravelComponent from "@/components/SpaceTravel";
 import { useState, useEffect } from "react";
+import * as THREE from 'three';
 
 import { css } from "../styled-system/css";
+import useSound from "@/stores/useSound.ts";
 
 const Welcome = () => {
   const start = useGame((state) => state.start);
   const phase = useGame((state) => state.phase);
+  const soundPlaying = useSound((state) => state.soundPlaying);
   const [throttle, setThrottle] = useState(0.01);
   const [opacity, setOpacity] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  const audio = new THREE.Audio(new THREE.AudioListener());
+
+  const playAudio = () => {
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load('/musics/launch.mp3', (buffer) => {
+      audio.setBuffer(buffer);
+      audio.setLoop(false);
+      audio.setVolume(0.5);
+      audio.play();
+    })
+  }
+
   useEffect(() => {
     if (isTransitioning) {
+      if (soundPlaying) {
+        playAudio();
+      }
+
       let animationFrame: number;
       let startTime = performance.now();
       const duration = 2500;

@@ -5,8 +5,7 @@ import Experience from "@/Experience.tsx";
 
 import "@/index.css";
 
-const url = new URL(window.location.href);
-const isProd = process.env.NODE_ENV === "production" || !url.searchParams.has('debug');
+const isProd = process.env.NODE_ENV === "production";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

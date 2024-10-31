@@ -40,13 +40,13 @@ function getDefaultSettings(tier: number): GameSettings {
   switch (tier) {
     case 3: // High-end devices
       return {
-        asteroidCount: 5000,
+        asteroidCount: 3000,
         particleCount: 500,
         particleSize: 5
       };
     case 2: // Mid-range devices
       return {
-        asteroidCount: 2500,
+        asteroidCount: 1500,
         particleCount: 250,
         particleSize: 7
       };

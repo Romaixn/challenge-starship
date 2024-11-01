@@ -317,7 +317,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
         {landingState === "success" && (
           <group position={[0, 0, 8]} scale={1.2}>
-            <FireworksEffect count={8} spread={15} />
+            <FireworksEffect count={8} spread={10} />
           </group>
         )}
 

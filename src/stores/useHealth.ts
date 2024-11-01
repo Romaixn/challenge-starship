@@ -20,7 +20,7 @@ const useHealth = create<HealthState>()(
     maxHealth: INITIAL_HEALTH,
     currentHealth: INITIAL_HEALTH,
     isInvulnerable: false,
-    invulnerabilityDuration: 3000,
+    invulnerabilityDuration: 2000,
     lastDamageTime: 0,
     isDead: false,
 

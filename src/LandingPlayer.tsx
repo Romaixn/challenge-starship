@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import {
@@ -14,6 +14,7 @@ import useGame from "@/stores/useGame";
 import { useJoystickControls } from "@/stores/useJoystickControls";
 import { isMobile } from "react-device-detect";
 import { css } from "../styled-system/css";
+import ExplosionEffect from "@/components/ExplosionEffect.tsx";
 
 interface LandingPlayerProps {
   planetRadius: number;
@@ -42,6 +43,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   const getJoystickValues = useJoystickControls(
     (state) => state.getJoystickValues,
   );
+  const [showExplosion, setShowExplosion] = useState(false);
 
   const initialZPosition = useMemo(() => {
     // Generate a random number between -SPAWN_X_RANGE and SPAWN_X_RANGE
@@ -81,6 +83,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
       const isOnPlatform = distance < 4;
 
       if (!isOnPlatform) {
+        setShowExplosion(true);
         setLandingState("crash");
         return;
       }
@@ -93,6 +96,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
       if (isSafeVelocity && isSafeRotation) {
         setLandingState("success");
       } else {
+        setShowExplosion(true);
         setLandingState("crash");
       }
     }
@@ -301,23 +305,14 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
   return (
     <group>
-      <RigidBody
-        ref={body}
-        type="dynamic"
-        colliders={false}
-        mass={50}
-        onCollisionEnter={(e) => {
-          if (!e.other.rigidBodyObject?.name?.includes("landing_pad")) {
-            setPhase("landed");
-            setLandingState("crash");
-          }
-        }}
-      >
+      <RigidBody ref={body} type="dynamic" colliders={false} mass={50}>
         <CuboidCollider args={[1.5, 1.5, 3]} sensor={false} />
       </RigidBody>
 
       <group ref={ref}>
         <Spaceship scale={0.1} rotation={[0, Math.PI / 2, 0]} />
+
+        {showExplosion && <ExplosionEffect scale={0.4} />}
 
         {landingState === "in_progress" && (
           <Html position={[0, 0, 2]} center distanceFactor={5} occlude={false}>

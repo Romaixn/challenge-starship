@@ -11,6 +11,7 @@ import { isMobile } from "react-device-detect";
 import useGame from "@/stores/useGame.ts";
 import { PositionTracker } from "@/utils/positionTracker.ts";
 import useHealth from "@/stores/useHealth.ts";
+import ExplosionEffect from "@/components/ExplosionEffect.tsx";
 
 interface CollisionData {
   target: {
@@ -431,6 +432,7 @@ export const Player = ({ initialPosition }) => {
           distance={50}
           decay={2}
         />
+        {isDead && <ExplosionEffect scale={0.4} />}
       </group>
 
       <PerspectiveCamera

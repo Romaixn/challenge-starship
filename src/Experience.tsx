@@ -1,7 +1,6 @@
 import { Suspense, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { isMobile } from "react-device-detect";
-import Game from "@/Game";
 import Welcome from "@/Welcome";
 import { Joystick } from "@/components/controls/Joystick";
 import useGame from "@/stores/useGame";
@@ -11,6 +10,7 @@ import { FadeTransition } from "@/components/FadeTransition.tsx";
 import { AudioManager } from "@/components/AudioManager.tsx";
 import { FinalMessage } from "@/components/FinalMessage.tsx";
 import useHealth from "@/stores/useHealth.ts";
+import Game from "@/Game.tsx";
 
 const Experience = () => {
   const canvas = useRef();

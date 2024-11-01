@@ -124,7 +124,9 @@ const Game = () => {
         />
 
         {phase !== "space" && (
-          <LandingPlatform planetRadius={PLANET_RADIUS} scale={3} />
+          <>
+            <LandingPlatform planetRadius={PLANET_RADIUS} scale={3} />
+          </>
         )}
       </Physics>
 

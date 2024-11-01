@@ -66,7 +66,7 @@ const LandingModel = (props: JSX.IntrinsicElements["group"]) => {
           material={materials.landingpad}
         />
       </RigidBody>
-      <RigidBody name="landing_arm" type="fixed" colliders="cuboid">
+      {/*   <RigidBody name="landing_arm" type="fixed" colliders="cuboid">
         <mesh
           castShadow
           receiveShadow
@@ -85,7 +85,7 @@ const LandingModel = (props: JSX.IntrinsicElements["group"]) => {
           geometry={nodes.landingarm_2.geometry}
           material={materials.black}
         />
-      </RigidBody>
+      </RigidBody>*/}
     </group>
   );
 };

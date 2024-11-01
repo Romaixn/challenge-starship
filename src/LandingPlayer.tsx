@@ -1,7 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import { PerspectiveCamera, useKeyboardControls } from "@react-three/drei";
+import {
+  Html,
+  PerspectiveCamera,
+  useKeyboardControls,
+} from "@react-three/drei";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
 import { ControlsMap } from "@/Game";
@@ -9,11 +13,13 @@ import Spaceship from "@/components/Spaceship";
 import useGame from "@/stores/useGame";
 import { useJoystickControls } from "@/stores/useJoystickControls";
 import { isMobile } from "react-device-detect";
+import { css } from "../styled-system/css";
 
 interface LandingPlayerProps {
   planetRadius: number;
 }
 
+const SPAWN_Z_RANGE = 50;
 export const INITIAL_Z_POSITION = 0;
 const SAFE_LANDING_VELOCITY = 0.5;
 const SAFE_ROTATION_ANGLE = 0.1;
@@ -22,6 +28,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   const ref = useRef<THREE.Group>();
   const body = useRef();
   const camera = useRef<THREE.PerspectiveCamera>();
+  const arrowRef = useRef<HTMLDivElement>(null);
 
   const completeLandingTransition = useGame(
     (state) => state.completeLandingTransition,
@@ -35,6 +42,18 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   const getJoystickValues = useJoystickControls(
     (state) => state.getJoystickValues,
   );
+
+  const initialZPosition = useMemo(() => {
+    // Generate a random number between -SPAWN_X_RANGE and SPAWN_X_RANGE
+    // But exclude the central area (-20 to 20) to ensure player needs to navigate
+    const minDistance = 20; // Minimum distance from center
+    let randomX;
+    do {
+      randomX = (Math.random() * 2 - 1) * SPAWN_Z_RANGE;
+    } while (Math.abs(randomX) < minDistance);
+
+    return randomX;
+  }, []);
 
   const defaultValues = {
     VERTICAL_SPEED: isMobile ? 0.3 : 0.5,
@@ -59,7 +78,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
         ref.current.position.z,
       ).distanceTo(new THREE.Vector2(0, INITIAL_Z_POSITION));
 
-      const isOnPlatform = distance < 5;
+      const isOnPlatform = distance < 4;
 
       if (!isOnPlatform) {
         setLandingState("crash");
@@ -160,7 +179,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
       ref.current.position.set(
         0,
         planetRadius + STARTING_HEIGHT,
-        INITIAL_Z_POSITION,
+        initialZPosition,
       );
       ref.current.rotation.set(Math.PI / 2, Math.PI, Math.PI / 2);
 
@@ -256,6 +275,28 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
       currentPosition.z,
     );
     camera.current.lookAt(currentPosition);
+
+    // Arrow
+    if (!arrowRef.current) return;
+
+    const playerPosition = ref.current.position;
+    const platformPosition = new THREE.Vector3(0, playerPosition.y, 0);
+
+    const directionToPlatform = platformPosition.clone().sub(playerPosition);
+    const distance = Math.abs(directionToPlatform.z);
+
+    const horizontalAngle = Math.atan2(0, -directionToPlatform.z);
+    const degrees = (horizontalAngle * 180) / Math.PI;
+
+    arrowRef.current.style.transform = `rotate(${degrees}deg)`;
+
+    // Fade out when close
+    const maxDistance = 100;
+    const minDistance = 1;
+    let opacity = 1;
+
+    opacity = (distance - minDistance) / (maxDistance - minDistance);
+    arrowRef.current.style.opacity = opacity.toString();
   });
 
   return (
@@ -277,6 +318,53 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
       <group ref={ref}>
         <Spaceship scale={0.1} rotation={[0, Math.PI / 2, 0]} />
+
+        <Html position={[0, 0, 2]} center distanceFactor={5} occlude={false}>
+          <div
+            ref={arrowRef}
+            className={css({
+              width: "200px",
+              height: "200px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              transition: "transform 0.1s ease-out, opacity 0.3s ease-out",
+              background: "rgba(0, 0, 0, 0.5)",
+              borderRadius: "50%",
+              padding: "20px",
+            })}
+          >
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 24 24"
+              fill="none"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <g style={{ stroke: "black", strokeWidth: "12" }}>
+                <path d="M4 12h12" />
+                <path d="M12 6l6 6-6 6" />
+              </g>
+              <g style={{ stroke: "white", strokeWidth: "6" }}>
+                <path d="M4 12h12" />
+                <path d="M12 6l6 6-6 6" />
+              </g>
+
+              <circle
+                cx="18"
+                cy="12"
+                r="3"
+                fill="white"
+                className={css({
+                  filter: "drop-shadow(0 0 12px rgba(255,255,255,0.9))",
+                  transformOrigin: "center",
+                })}
+              />
+            </svg>
+          </div>
+        </Html>
       </group>
 
       <PerspectiveCamera

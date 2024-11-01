@@ -35,7 +35,7 @@ const TypewriterText = ({
 
   const getOpacityValues = () => {
     if (!isFirstElement || !isTypingComplete) return [1];
-    return [0, 1, 1, 1, 1, 1, 1, 1, 1, 0.8, 1, 0.8, 1];
+    return [1, 1, 1, 0.8, 1, 1, 1, 1, 1, 0.8, 1, 0.8, 1];
   };
 
   return (

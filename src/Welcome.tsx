@@ -138,7 +138,7 @@ const Welcome = () => {
           <header
             className={css({
               textAlign: { base: "center", md: "left" },
-              marginBottom: { base: "2rem", md: "2rem" },
+              marginBottom: "1.5rem",
               textTransform: "uppercase",
               opacity: isTransitioning ? 0 : 1,
               transition: "opacity 0.4s ease-in-out",

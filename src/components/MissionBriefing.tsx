@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { css } from "../../styled-system/css";
 
 interface MissionBriefingProps {
@@ -93,18 +93,20 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isCurrentLineComplete, setIsCurrentLineComplete] = useState(false);
 
+  const missionCode = useMemo(() => generateMissionCode(), []);
+
   const missionTexts = [
     "INCOMING TRANSMISSION...",
-    "MISSION BRIEFING: PLANETARY RECONNAISSANCE",
+    `MISSION BRIEFING: PLANETARY RECONNAISSANCE - CODE ${missionCode}`,
     "You are tasked with landing on an uncharted planet in the Kepler system.",
     "WARNING: Asteroid field detected in planetary orbit.",
     "PRIMARY OBJECTIVES:",
     "1. Navigate through the asteroid field",
-    "2. Approach planetary orbit to initiate landing sequence",
+    "2. Approach planetary atmosphere to initiate landing sequence",
     "3. Execute controlled landing sequence",
     "CAUTION: Ship integrity critical for atmospheric entry.",
     "Good luck, pilot. The fate of the mission rests in your hands.",
-    "PRESS LAUNCH WHEN READY",
+    "INITIATE LAUNCH SEQUENCE WHEN READY",
   ];
 
   useEffect(() => {
@@ -125,7 +127,7 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
     if (text.includes("WARNING:")) return "#ef4444";
     if (text.includes("MISSION BRIEFING:")) return "#60a5fa";
     if (text.includes("CAUTION:")) return "#fbbf24";
-    if (text === "PRESS LAUNCH WHEN READY") return "#4ade80";
+    if (text === "INITIATE LAUNCH SEQUENCE WHEN READY") return "#4ade80";
     return "#e5e7eb";
   };
 
@@ -181,3 +183,23 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
     </AnimatePresence>
   );
 }
+
+/**
+ * Generates a random mission code in the format "ABC-123"
+ * Where ABC are uppercase letters and 123 are numbers
+ *
+ * @example
+ * generateMissionCode() // "XKP-847"
+ * generateMissionCode() // "ABC-123"
+ */
+export const generateMissionCode = (): string => {
+  const letters = Array.from({ length: 3 }, () =>
+    String.fromCharCode(65 + Math.floor(Math.random() * 26)),
+  ).join("");
+
+  const numbers = Array.from({ length: 3 }, () =>
+    Math.floor(Math.random() * 10),
+  ).join("");
+
+  return `${letters}-${numbers}`;
+};

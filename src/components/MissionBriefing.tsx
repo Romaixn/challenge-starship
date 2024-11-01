@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { css } from "../../styled-system/css";
 
 interface MissionBriefingProps {
@@ -16,7 +16,6 @@ const TypewriterText = ({
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
-  const textContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (currentIndex === text.length) {
@@ -34,7 +33,6 @@ const TypewriterText = ({
     return () => clearTimeout(timer);
   }, [currentIndex, text, onComplete]);
 
-  // Animation plus sophistiquée pour le premier élément
   const getOpacityValues = () => {
     if (!isFirstElement || !isTypingComplete) return [1];
     return [0, 1, 1, 1, 1, 1, 1, 1, 1, 0.8, 1, 0.8, 1];
@@ -42,7 +40,6 @@ const TypewriterText = ({
 
   return (
     <motion.div
-      ref={textContainerRef}
       initial={{ opacity: 0 }}
       animate={{
         opacity: getOpacityValues(),
@@ -60,25 +57,26 @@ const TypewriterText = ({
         lineHeight: "1.5",
         fontFamily: "var(--ui-font-family)",
         textShadow: "0 0 10px currentColor",
-        position: "relative",
-        display: "inline-block",
+        display: "inline",
+        whiteSpace: "break-spaces", // Important pour la gestion des sauts de ligne
       })}
     >
-      {/* Texte affiché */}
-      <span>{displayedText}</span>
+      {/* On enveloppe chaque caractère pour permettre au curseur de suivre correctement */}
+      {displayedText.split("").map((char, index) => (
+        <span key={index}>{char}</span>
+      ))}
 
-      {/* Curseur */}
+      {/* Curseur qui suit naturellement le flux du texte */}
       {!isTypingComplete && (
         <motion.span
-          initial={false}
+          aria-hidden="true"
           className={css({
-            position: "absolute",
-            top: "0",
-            left: "100%",
+            display: "inline-block",
             width: "0.5em",
             height: "1.1em",
             backgroundColor: "currentColor",
-            display: "inline-block",
+            marginLeft: "1px",
+            verticalAlign: "middle",
             animation: "blink 1s step-end infinite",
             "@keyframes blink": {
               "0%, 100%": { opacity: 1 },
@@ -163,6 +161,7 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
                 }}
                 className={css({
                   marginBottom: "1rem",
+                  wordWrap: "break-word", // Assure que les mots longs se cassent correctement
                 })}
               >
                 <TypewriterText

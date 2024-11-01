@@ -17,6 +17,13 @@ import { css } from "../styled-system/css";
 import ExplosionEffect from "@/components/ExplosionEffect.tsx";
 import FireworksEffect from "@/components/FireworksEffect.tsx";
 
+interface JoystickDirections {
+  up: boolean;
+  down: boolean;
+  left: boolean;
+  right: boolean;
+}
+
 interface LandingPlayerProps {
   planetRadius: number;
 }
@@ -166,13 +173,55 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   const leftPressed = useKeyboardControls((state) => state[ControlsMap.left]);
   const rightPressed = useKeyboardControls((state) => state[ControlsMap.right]);
 
-  const getJoystickDirection = (angle: number): string => {
-    const normalizedAngle =
-      ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-    if (normalizedAngle >= 5.5 || normalizedAngle <= 1.3) return "right";
-    if (normalizedAngle > 1.3 && normalizedAngle <= 1.6) return "up";
-    if (normalizedAngle > 1.6 && normalizedAngle <= 3.9) return "left";
-    return "down";
+  const radToDeg = (rad: number) => (rad * 180) / Math.PI;
+
+  const getJoystickDirections = (
+    angle: number,
+    distance: number,
+  ): JoystickDirections => {
+    const degrees = radToDeg(angle);
+    const normalizedDegrees = ((degrees % 360) + 360) % 360;
+
+    const MIN_DISTANCE = 10;
+
+    if (distance < MIN_DISTANCE) {
+      return { up: false, down: false, left: false, right: false };
+    }
+
+    const directions: JoystickDirections = {
+      up: false,
+      down: false,
+      left: false,
+      right: false,
+    };
+
+    if (normalizedDegrees > 45 && normalizedDegrees < 135) {
+      directions.up = true;
+    } else if (normalizedDegrees > 225 && normalizedDegrees < 315) {
+      directions.down = true;
+    }
+
+    if (normalizedDegrees > 135 && normalizedDegrees < 225) {
+      directions.left = true;
+    } else if (normalizedDegrees < 45 || normalizedDegrees > 315) {
+      directions.right = true;
+    }
+
+    if (normalizedDegrees > 45 && normalizedDegrees < 135) {
+      if (normalizedDegrees < 90) {
+        directions.right = true;
+      } else {
+        directions.left = true;
+      }
+    } else if (normalizedDegrees > 225 && normalizedDegrees < 315) {
+      if (normalizedDegrees < 270) {
+        directions.left = true;
+      } else {
+        directions.right = true;
+      }
+    }
+
+    return directions;
   };
 
   const getMobileMovementStrength = (joystickDis: number): number => {
@@ -212,10 +261,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
     // Get joystick state
     const { joystickDis, joystickAng } = getJoystickValues();
-    let direction = "";
-    if (joystickDis > 0) {
-      direction = getJoystickDirection(joystickAng);
-    }
+    const direction = getJoystickDirections(joystickAng, joystickDis);
 
     // Calculate movement intensity for mobile
     const mobileStrength = isMobile
@@ -223,13 +269,11 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
       : 1;
 
     // Handle rotation with both keyboard and joystick inputs
-    if (leftPressed || direction === "left") {
-      currentRotation.current +=
-        ROTATION_SPEED * delta * (isMobile ? mobileStrength : 1);
+    if (leftPressed || direction.left) {
+      currentRotation.current += ROTATION_SPEED * delta * mobileStrength;
     }
-    if (rightPressed || direction === "right") {
-      currentRotation.current -=
-        ROTATION_SPEED * delta * (isMobile ? mobileStrength : 1);
+    if (rightPressed || direction.right) {
+      currentRotation.current -= ROTATION_SPEED * delta * mobileStrength;
     }
 
     // Clamp rotation
@@ -254,13 +298,11 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
     verticalVelocity.current -= GRAVITY_FORCE * delta;
 
     // Handle vertical movement with both keyboard and joystick inputs
-    if (upPressed || direction === "up") {
-      verticalVelocity.current +=
-        VERTICAL_SPEED * delta * (isMobile ? mobileStrength : 1);
+    if (upPressed || direction.up) {
+      verticalVelocity.current += VERTICAL_SPEED * delta * mobileStrength;
     }
-    if (downPressed || direction === "down") {
-      verticalVelocity.current -=
-        VERTICAL_SPEED * delta * (isMobile ? mobileStrength : 1);
+    if (downPressed || direction.down) {
+      verticalVelocity.current -= VERTICAL_SPEED * delta * mobileStrength;
     }
 
     currentPosition.y += verticalVelocity.current;

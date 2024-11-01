@@ -58,6 +58,12 @@
         --ui-color-range-2: #21918c;
         --ui-color-range-3: #5ec962;
         --ui-color-range-4: #fde725;
+
+        --color-danger: #ef4444;
+        --color-info: #60a5fa;
+        --color-warning: #fbbf24;
+        --color-success: #4ade80;
+        --color-default: #e5e7eb;
     }
 
     *, :after, :before {
@@ -174,5 +180,25 @@
 
     .menu > * {
         width: 44px;
+    }
+
+    .color-danger {
+        color: var(--color-danger);
+    }
+
+    .color-info {
+        color: var(--color-info);
+    }
+
+    .color-warning {
+        color: var(--color-warning);
+    }
+
+    .color-success {
+        color: var(--color-success);
+    }
+
+    .color-default {
+        color: var(--color-default);
     }
 }

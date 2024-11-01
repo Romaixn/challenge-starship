@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
-import { css } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
 
 interface MissionBriefingProps {
   hide: boolean;
@@ -48,18 +48,20 @@ const TypewriterText = ({
         duration: isFirstElement && isTypingComplete ? 2 : 0.5,
         repeat: isFirstElement && isTypingComplete ? Infinity : 0,
       }}
-      className={css({
-        color: color,
-        fontSize: {
-          base: "0.875rem",
-          md: "1rem",
-        },
-        lineHeight: "1.5",
-        fontFamily: "var(--ui-font-family)",
-        textShadow: "0 0 10px currentColor",
-        display: "inline",
-        whiteSpace: "break-spaces", // Important pour la gestion des sauts de ligne
-      })}
+      className={cx(
+        color,
+        css({
+          fontSize: {
+            base: "0.875rem",
+            md: "1rem",
+          },
+          lineHeight: "1.5",
+          fontFamily: "var(--ui-font-family)",
+          textShadow: "0 0 10px currentColor",
+          display: "inline",
+          whiteSpace: "break-spaces", // Important pour la gestion des sauts de ligne
+        }),
+      )}
     >
       {/* On enveloppe chaque caractère pour permettre au curseur de suivre correctement */}
       {displayedText.split("").map((char, index) => (
@@ -124,11 +126,11 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
   }, [isCurrentLineComplete, currentTextIndex, hide]);
 
   const getTextColor = (text: string) => {
-    if (text.includes("WARNING:")) return "#ef4444";
-    if (text.includes("MISSION BRIEFING:")) return "#60a5fa";
-    if (text.includes("CAUTION:")) return "#fbbf24";
-    if (text === "INITIATE LAUNCH SEQUENCE WHEN READY") return "#4ade80";
-    return "#e5e7eb";
+    if (text.includes("WARNING:")) return "color-danger";
+    if (text.includes("MISSION BRIEFING:")) return "color-info";
+    if (text.includes("CAUTION:")) return "color-warning";
+    if (text === "INITIATE LAUNCH SEQUENCE WHEN READY") return "color-success";
+    return "color-default";
   };
 
   const handleLineComplete = () => {

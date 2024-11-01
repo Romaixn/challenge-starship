@@ -432,7 +432,7 @@ export const Player = ({ initialPosition }) => {
           distance={50}
           decay={2}
         />
-        {isDead && <ExplosionEffect scale={0.4} />}
+        {isDead && <ExplosionEffect scale={0.1} />}
       </group>
 
       <PerspectiveCamera

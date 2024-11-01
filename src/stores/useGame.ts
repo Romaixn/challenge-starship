@@ -24,7 +24,7 @@ interface GameState {
 
 const useGame = create<GameState>()(
   devtools((set) => ({
-    phase: "welcome",
+    phase: "landing",
     landingTransitionComplete: false,
     lastKnownPosition: new THREE.Vector3(),
 

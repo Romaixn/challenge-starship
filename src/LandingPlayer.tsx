@@ -15,6 +15,7 @@ import { useJoystickControls } from "@/stores/useJoystickControls";
 import { isMobile } from "react-device-detect";
 import { css } from "../styled-system/css";
 import ExplosionEffect from "@/components/ExplosionEffect.tsx";
+import FireworksEffect from "@/components/FireworksEffect.tsx";
 
 interface LandingPlayerProps {
   planetRadius: number;
@@ -312,7 +313,13 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
       <group ref={ref}>
         <Spaceship scale={0.1} rotation={[0, Math.PI / 2, 0]} />
 
-        {showExplosion && <ExplosionEffect scale={0.4} />}
+        {showExplosion && <ExplosionEffect scale={0.1} />}
+
+        {landingState === "success" && (
+          <group position={[0, 0, 8]} scale={1.2}>
+            <FireworksEffect count={8} spread={15} />
+          </group>
+        )}
 
         {landingState === "in_progress" && (
           <Html position={[0, 0, 2]} center distanceFactor={5} occlude={false}>

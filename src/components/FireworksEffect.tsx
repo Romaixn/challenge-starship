@@ -27,22 +27,17 @@ const fireworksVertexShader = `
     vec3 pos = position;
 
     if (explosionProgress > 0.0 && explosionProgress < 1.0) {
-      // Montée de la fusée plus courte
       if (explosionProgress < 0.3) {
         float rocketProgress = explosionProgress / 0.3;
         pos.y += rocketProgress * 5.0; // Réduit de 30.0 à 5.0
       } 
-      // Explosion plus concentrée
       else {
         float dispersalProgress = (explosionProgress - 0.3) / 0.7;
         
-        // Réduction de la dispersion des particules
         vec3 movement = velocity * dispersalProgress * 4.0; // Réduit de 20.0 à 4.0
         
-        // Gravité plus légère
         movement.y -= dispersalProgress * dispersalProgress * 2.0; // Réduit de 10.0 à 2.0
         
-        // Turbulence réduite
         float turbulence = sin(time * 5.0 + random(seed + float(gl_VertexID)) * 10.0) * 0.1;
         movement.xz += vec2(turbulence);
         
@@ -60,7 +55,6 @@ const fireworksVertexShader = `
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
     
-    // Particules plus petites
     float finalSize = size * (1.0 - explosionProgress * 0.5);
     gl_PointSize = finalSize * (100.0 / -mvPosition.z); // Réduit de 300.0 à 100.0
   }
@@ -88,19 +82,19 @@ interface FireworkProps {
   position?: [number, number, number];
   count?: number;
   scale?: number;
-  spread?: number; // Nouveau paramètre pour contrôler la dispersion
+  spread?: number;
 }
 
 const generateRandomColor = () => {
   const colors = [
-    new THREE.Color(0xff0000), // Rouge
-    new THREE.Color(0x00ff00), // Vert
-    new THREE.Color(0x0000ff), // Bleu
-    new THREE.Color(0xffff00), // Jaune
-    new THREE.Color(0xff00ff), // Magenta
-    new THREE.Color(0x00ffff), // Cyan
-    new THREE.Color(0xffa500), // Orange
-    new THREE.Color(0xff1493), // Rose
+    new THREE.Color(0xff0000),
+    new THREE.Color(0x00ff00),
+    new THREE.Color(0x0000ff),
+    new THREE.Color(0xffff00),
+    new THREE.Color(0xff00ff),
+    new THREE.Color(0x00ffff),
+    new THREE.Color(0xffa500),
+    new THREE.Color(0xff1493),
   ];
   return colors[Math.floor(Math.random() * colors.length)];
 };
@@ -109,7 +103,7 @@ const FireworksEffect = ({
   position = [0, 0, 0],
   count = 5,
   scale = 1,
-  spread = 10, // Valeur par défaut pour la dispersion
+  spread = 10,
 }: FireworkProps) => {
   const groupRef = useRef<THREE.Group>();
   const startTime = useRef(Date.now() / 1000);
@@ -118,14 +112,13 @@ const FireworksEffect = ({
     const systems = [];
 
     for (let f = 0; f < count; f++) {
-      // Distribution en cercle autour du point central
       const angle = (f / count) * Math.PI * 2 + Math.random() * 0.5;
-      const radiusVariation = Math.random() * 0.4 + 0.8; // 80% à 120% du spread
+      const radiusVariation = Math.random() * 0.4 + 0.8;
       const radius = spread * radiusVariation;
 
       const offset = new THREE.Vector3(
         Math.cos(angle) * radius,
-        Math.random() * 2, // Légère variation en hauteur
+        Math.random() * 2,
         Math.sin(angle) * radius,
       );
 
@@ -140,22 +133,19 @@ const FireworksEffect = ({
       const explosionTimes = new Float32Array(PARTICLES_PER_FIREWORK);
 
       for (let i = 0; i < PARTICLES_PER_FIREWORK; i++) {
-        // Position initiale au point de lancement
         positions[i * 3] = offset.x + (Math.random() - 0.5) * 0.1;
         positions[i * 3 + 1] = offset.y;
         positions[i * 3 + 2] = offset.z + (Math.random() - 0.5) * 0.1;
 
-        // Vitesses avec légère tendance vers l'extérieur
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos(2 * Math.random() - 1);
         const speed = Math.random() * 1 + 0.5;
 
-        // Ajout d'une composante radiale à la vitesse
         const outwardDirection = new THREE.Vector3(
           Math.cos(angle),
           0,
           Math.sin(angle),
-        ).multiplyScalar(0.3); // Force vers l'extérieur
+        ).multiplyScalar(0.3);
 
         velocities[i * 3] =
           Math.sin(phi) * Math.cos(theta) * speed + outwardDirection.x;
@@ -170,7 +160,6 @@ const FireworksEffect = ({
 
         sizes[i] = Math.random() * 6 + 4;
 
-        // Délais progressifs du centre vers l'extérieur
         delays[i] = Math.random() * 0.2 + f * 0.1;
         explosionTimes[i] = Math.random() * 0.3 + 0.7;
       }
@@ -215,7 +204,6 @@ const FireworksEffect = ({
     if (!groupRef.current) return;
     const elapsedTime = Date.now() / 1000 - startTime.current;
 
-    // Assurer que les feux d'artifice restent visibles par la caméra
     const cameraDistance = state.camera.position.distanceTo(
       new THREE.Vector3(...position),
     );

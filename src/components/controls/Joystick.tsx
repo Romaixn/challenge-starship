@@ -63,15 +63,30 @@ const JoystickComponents = (props: JoystickProps) => {
    * Joystick component materials
    */
   const joystickBaseMaterial = useMemo(
-    () => new THREE.MeshNormalMaterial({ transparent: true, opacity: 0.3 }),
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 0x00ffff, // Cyan électrique
+        transparent: true,
+        opacity: 0.3,
+      }),
     [],
   );
   const joystickStickMaterial = useMemo(
-    () => new THREE.MeshNormalMaterial({ transparent: true, opacity: 0.3 }),
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 0x00ccff, // Bleu électrique
+        transparent: true,
+        opacity: 0.3,
+      }),
     [],
   );
   const joystickHandleMaterial = useMemo(
-    () => new THREE.MeshNormalMaterial({ transparent: true, opacity: 0.7 }),
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 0x00ffff, // Cyan électrique
+        transparent: true,
+        opacity: 0.7,
+      }),
     [],
   );
 
@@ -235,13 +250,25 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: JoystickProps) => {
    * Button component materials
    */
   const buttonBaseMaterial = useMemo(
-    () => new THREE.MeshNormalMaterial({ transparent: true, opacity: 0.3 }),
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 0x00ffff, // Cyan électrique assorti au joystick
+        transparent: true,
+        opacity: 0.3,
+      }),
     [],
   );
+
   const buttonTop1Material = useMemo(
-    () => new THREE.MeshNormalMaterial({ transparent: true, opacity: 0.5 }),
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 0x00ccff, // Bleu électrique légèrement plus foncé
+        transparent: true,
+        opacity: 0.7, // Plus opaque pour le dessus du bouton
+      }),
     [],
   );
+
   const buttonTop2Material = useMemo(
     () => new THREE.MeshNormalMaterial({ transparent: true, opacity: 0.5 }),
     [],

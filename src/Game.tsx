@@ -5,7 +5,6 @@ import {
   KeyboardControls,
   KeyboardControlsEntry,
 } from "@react-three/drei";
-import { Perf } from "r3f-perf";
 import AsteroidBelt from "@/components/Asteroid";
 import Planet from "@/components/Planet";
 import { Physics } from "@react-three/rapier";
@@ -89,7 +88,7 @@ const Game = () => {
 
   return (
     <>
-      {!isProd && <Perf position="top-left" />}
+      {/*{!isProd && <Perf position="top-left" />}*/}
       <Lights />
 
       <Environment

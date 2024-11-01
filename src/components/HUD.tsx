@@ -73,6 +73,12 @@ const HUD = () => {
             "Goal: Land on the planet without crashing",
           );
         }
+
+        if (state.phase === "space") {
+          uiInstance.current.instructions.content.html(
+            "Goal: Reach the planet.",
+          );
+        }
       }
     });
 

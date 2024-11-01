@@ -319,52 +319,54 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
       <group ref={ref}>
         <Spaceship scale={0.1} rotation={[0, Math.PI / 2, 0]} />
 
-        <Html position={[0, 0, 2]} center distanceFactor={5} occlude={false}>
-          <div
-            ref={arrowRef}
-            className={css({
-              width: "200px",
-              height: "200px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              transition: "transform 0.1s ease-out, opacity 0.3s ease-out",
-              background: "rgba(0, 0, 0, 0.5)",
-              borderRadius: "50%",
-              padding: "20px",
-            })}
-          >
-            <svg
-              width="100%"
-              height="100%"
-              viewBox="0 0 24 24"
-              fill="none"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        {landingState === "in_progress" && (
+          <Html position={[0, 0, 2]} center distanceFactor={5} occlude={false}>
+            <div
+              ref={arrowRef}
+              className={css({
+                width: "200px",
+                height: "200px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                transition: "transform 0.1s ease-out, opacity 0.3s ease-out",
+                background: "rgba(0, 0, 0, 0.5)",
+                borderRadius: "50%",
+                padding: "20px",
+              })}
             >
-              <g style={{ stroke: "black", strokeWidth: "12" }}>
-                <path d="M4 12h12" />
-                <path d="M12 6l6 6-6 6" />
-              </g>
-              <g style={{ stroke: "white", strokeWidth: "6" }}>
-                <path d="M4 12h12" />
-                <path d="M12 6l6 6-6 6" />
-              </g>
+              <svg
+                width="100%"
+                height="100%"
+                viewBox="0 0 24 24"
+                fill="none"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <g style={{ stroke: "black", strokeWidth: "12" }}>
+                  <path d="M4 12h12" />
+                  <path d="M12 6l6 6-6 6" />
+                </g>
+                <g style={{ stroke: "white", strokeWidth: "6" }}>
+                  <path d="M4 12h12" />
+                  <path d="M12 6l6 6-6 6" />
+                </g>
 
-              <circle
-                cx="18"
-                cy="12"
-                r="3"
-                fill="white"
-                className={css({
-                  filter: "drop-shadow(0 0 12px rgba(255,255,255,0.9))",
-                  transformOrigin: "center",
-                })}
-              />
-            </svg>
-          </div>
-        </Html>
+                <circle
+                  cx="18"
+                  cy="12"
+                  r="3"
+                  fill="white"
+                  className={css({
+                    filter: "drop-shadow(0 0 12px rgba(255,255,255,0.9))",
+                    transformOrigin: "center",
+                  })}
+                />
+              </svg>
+            </div>
+          </Html>
+        )}
       </group>
 
       <PerspectiveCamera

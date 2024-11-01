@@ -231,7 +231,7 @@ const Welcome = () => {
                   pointerEvents: "none",
                 }}
               >
-                {isLoaded ? "Launch" : `${Math.round(progress)}%`}
+                {isLoaded ? "Initiate" : `${Math.round(progress)}%`}
               </text>
             </svg>
           </div>

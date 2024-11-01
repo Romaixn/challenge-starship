@@ -1,10 +1,11 @@
 import useGame from "@/stores/useGame";
 import SpaceTravelComponent from "@/components/SpaceTravel";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 import { css } from "../styled-system/css";
 import useSound from "@/stores/useSound.ts";
+import { useProgress } from "@react-three/drei";
 
 const Welcome = () => {
   const start = useGame((state) => state.start);
@@ -13,6 +14,21 @@ const Welcome = () => {
   const [throttle, setThrottle] = useState(0.01);
   const [opacity, setOpacity] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Loader
+  const svgRef = useRef<SVGSVGElement>(null);
+  const circleRef = useRef<SVGCircleElement>(null);
+  const { progress, active } = useProgress();
+
+  const size = 140;
+  const strokeWidth = 1.5;
+  const color = "var(--ui-color)";
+  const center = size / 2;
+  const radius = size * 0.4;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDasharray = circumference;
+  const strokeDashoffset = circumference * (1 - progress / 100);
+  const isLoaded = progress === 100;
 
   const audio = new THREE.Audio(new THREE.AudioListener());
 
@@ -112,29 +128,75 @@ const Welcome = () => {
             transition: "opacity 0.5s",
           })}
         >
-          <button
-            onClick={handleEnter}
-            disabled={isTransitioning}
+          <div
             className={css({
-              padding: "1rem 2rem",
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
-              color: "white",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              borderRadius: "0.5rem",
-              cursor: "pointer",
-              transition: "all 0.3s",
-              _hover: {
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                transform: "scale(1.05)",
-              },
-              _disabled: {
-                opacity: 0,
-                pointerEvents: "none",
-              },
+              position: "fixed",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              opacity: isTransitioning ? 0 : 1,
+              transition: "all 0.4s ease-in-out",
+              zIndex: 1000,
+              cursor: isLoaded && !isTransitioning ? "pointer" : "default",
             })}
+            onClick={handleEnter}
           >
-            Enter
-          </button>
+            <svg
+              ref={svgRef}
+              width={size}
+              height={size}
+              viewBox={`0 0 ${size} ${size}`}
+              className={css({
+                transition: "transform 0.3s ease-out",
+              })}
+            >
+              {/* Background circle */}
+              <circle
+                cx={center}
+                cy={center}
+                r={radius}
+                fill="none"
+                stroke={color}
+                strokeWidth={strokeWidth}
+                opacity={0.2}
+              />
+              {/* Progress circle */}
+              <circle
+                ref={circleRef}
+                cx={center}
+                cy={center}
+                r={radius}
+                fill="none"
+                stroke={color}
+                strokeWidth={strokeWidth}
+                strokeDasharray={strokeDasharray}
+                strokeDashoffset={strokeDashoffset}
+                transform={`rotate(-90 ${center} ${center})`}
+                style={{
+                  transition: "stroke-dashoffset 0.1s ease-out",
+                }}
+              />
+              {/* Center text: Loading percentage or Launch */}
+              <text
+                x={center}
+                y={center}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill={color}
+                style={{
+                  fontFamily: "var(--ui-font-family)",
+                  fontSize: isLoaded ? "14px" : "12px",
+                  textTransform: isLoaded ? "uppercase" : "none",
+                  letterSpacing: isLoaded ? "0.05em" : "normal",
+                  opacity: active ? 0.7 : 1,
+                  transition: "all 0.3s ease-out",
+                  pointerEvents: "none", // Empêche le texte d'interférer avec les clics
+                }}
+              >
+                {isLoaded ? "Launch" : `${Math.round(progress)}%`}
+              </text>
+            </svg>
+          </div>
         </div>
       </div>
     </div>

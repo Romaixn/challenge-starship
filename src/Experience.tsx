@@ -1,6 +1,5 @@
 import { Suspense, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Loader } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
 import Game from "@/Game";
 import Welcome from "@/Welcome";
@@ -50,7 +49,6 @@ const Experience = () => {
       )}
       {phase === "landing" && !landingTransitionComplete && <FadeTransition />}
       {(phase === "landed" || isDead) && <FinalMessage />}
-      <Loader />
     </>
   );
 };

@@ -6,6 +6,8 @@ import * as THREE from "three";
 import { css } from "../styled-system/css";
 import useSound from "@/stores/useSound.ts";
 import { useProgress } from "@react-three/drei";
+import MissionBriefing from "@/components/MissionBriefing.tsx";
+import { isMobile } from "react-device-detect";
 
 const Welcome = () => {
   const start = useGame((state) => state.start);
@@ -132,8 +134,10 @@ const Welcome = () => {
             className={css({
               position: "fixed",
               left: "50%",
-              top: "50%",
-              transform: "translate(-50%, -50%)",
+              top: isMobile ? "82%" : "50%",
+              transform: isMobile
+                ? "translateX(-50%)"
+                : "translate(-50%, -50%)",
               opacity: isTransitioning ? 0 : 1,
               transition: "all 0.4s ease-in-out",
               zIndex: 1000,
@@ -198,6 +202,22 @@ const Welcome = () => {
             </svg>
           </div>
         </div>
+
+        <MissionBriefing hide={isTransitioning} />
+
+        <p
+          className={css({
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 20,
+            opacity: isTransitioning ? 0 : 1,
+            padding: "1.5rem",
+            textTransform: "uppercase",
+          })}
+        >
+          Challenge by Benjamin Code, made by Romain Herault
+        </p>
       </div>
     </div>
   );

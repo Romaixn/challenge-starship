@@ -2,12 +2,10 @@ import useGame from "@/stores/useGame";
 import SpaceTravelComponent from "@/components/SpaceTravel";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-
 import { css } from "../styled-system/css";
 import useSound from "@/stores/useSound.ts";
 import { useProgress } from "@react-three/drei";
 import MissionBriefing from "@/components/MissionBriefing.tsx";
-import { isMobile } from "react-device-detect";
 
 const Welcome = () => {
   const start = useGame((state) => state.start);
@@ -17,7 +15,7 @@ const Welcome = () => {
   const [opacity, setOpacity] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Loader
+  // Loader configuration
   const svgRef = useRef<SVGSVGElement>(null);
   const circleRef = useRef<SVGCircleElement>(null);
   const { progress, active } = useProgress();
@@ -32,6 +30,7 @@ const Welcome = () => {
   const strokeDashoffset = circumference * (1 - progress / 100);
   const isLoaded = progress === 100;
 
+  // Audio setup and handlers
   const audio = new THREE.Audio(new THREE.AudioListener());
 
   const playAudio = () => {
@@ -44,6 +43,7 @@ const Welcome = () => {
     });
   };
 
+  // Transition effect
   useEffect(() => {
     if (isTransitioning) {
       if (soundPlaying) {
@@ -97,53 +97,90 @@ const Welcome = () => {
     <div
       className={css({
         position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
+        inset: 0,
+        display: "flex",
         zIndex: 1000,
         pointerEvents: phase !== "welcome" ? "none" : "auto",
         opacity: phase !== "welcome" ? 0 : opacity,
         transition: "opacity 1.5s",
       })}
     >
+      {/* Background Space Travel */}
+      <div className={css({ position: "absolute", inset: 0, zIndex: 1 })}>
+        <SpaceTravelComponent
+          throttle={throttle}
+          backgroundColor={"#0B192C"}
+          className={css({ width: "100%", height: "100%" })}
+        />
+      </div>
+
+      {/* Main Content Container */}
       <div
-        className={css({ position: "relative", width: "100%", height: "100%" })}
+        className={css({
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          width: "100%",
+          height: "100%",
+        })}
       >
-        <div className={css({ position: "absolute", inset: 0 })}>
-          <SpaceTravelComponent
-            throttle={throttle}
-            backgroundColor={"#0B192C"}
-            className={css({ width: "100%", height: "100%" })}
-          />
+        {/* Left Side Content */}
+        <div
+          className={css({
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            padding: "1.5rem",
+            maxWidth: { base: "100%", md: "50%" },
+          })}
+        >
+          {/* Header */}
+          <header
+            className={css({
+              textAlign: { base: "center", md: "left" },
+              marginBottom: { base: "2rem", md: "2rem" },
+              textTransform: "uppercase",
+              opacity: isTransitioning ? 0 : 1,
+              transition: "opacity 0.4s ease-in-out",
+            })}
+          >
+            Challenge by Benjamin Code, made by Romain Herault
+          </header>
+
+          {/* Mission Briefing */}
+          <div
+            className={css({
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: { base: "flex-start", md: "center" },
+            })}
+          >
+            <MissionBriefing hide={isTransitioning} />
+          </div>
         </div>
 
+        {/* Center Launch Button Container */}
         <div
           className={css({
             position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 20,
+            left: "50%",
+            top: { base: "auto", md: "50%" },
+            bottom: { base: "1%", md: "auto" },
+            transform: {
+              base: "translateX(-50%)",
+              md: "translate(-50%, -50%)",
+            },
             opacity: isTransitioning ? 0 : 1,
-            transition: "opacity 0.5s",
+            transition: "opacity 0.4s ease-in-out",
+            zIndex: 3,
           })}
         >
           <div
-            className={css({
-              position: "fixed",
-              left: "50%",
-              top: isMobile ? "82%" : "50%",
-              transform: isMobile
-                ? "translateX(-50%)"
-                : "translate(-50%, -50%)",
-              opacity: isTransitioning ? 0 : 1,
-              transition: "all 0.4s ease-in-out",
-              zIndex: 1000,
+            onClick={isLoaded && !isTransitioning ? handleEnter : undefined}
+            style={{
               cursor: isLoaded && !isTransitioning ? "pointer" : "default",
-            })}
-            onClick={handleEnter}
+            }}
           >
             <svg
               ref={svgRef}
@@ -151,10 +188,9 @@ const Welcome = () => {
               height={size}
               viewBox={`0 0 ${size} ${size}`}
               className={css({
-                transition: "transform 0.3s ease-out",
+                transition: "transform 0.4s ease-out",
               })}
             >
-              {/* Background circle */}
               <circle
                 cx={center}
                 cy={center}
@@ -164,7 +200,6 @@ const Welcome = () => {
                 strokeWidth={strokeWidth}
                 opacity={0.2}
               />
-              {/* Progress circle */}
               <circle
                 ref={circleRef}
                 cx={center}
@@ -180,7 +215,6 @@ const Welcome = () => {
                   transition: "stroke-dashoffset 0.1s ease-out",
                 }}
               />
-              {/* Center text: Loading percentage or Launch */}
               <text
                 x={center}
                 y={center}
@@ -193,8 +227,8 @@ const Welcome = () => {
                   textTransform: isLoaded ? "uppercase" : "none",
                   letterSpacing: isLoaded ? "0.05em" : "normal",
                   opacity: active ? 0.7 : 1,
-                  transition: "all 0.3s ease-out",
-                  pointerEvents: "none", // Empêche le texte d'interférer avec les clics
+                  transition: "all 0.4s ease-out",
+                  pointerEvents: "none",
                 }}
               >
                 {isLoaded ? "Launch" : `${Math.round(progress)}%`}
@@ -202,22 +236,6 @@ const Welcome = () => {
             </svg>
           </div>
         </div>
-
-        <MissionBriefing hide={isTransitioning} />
-
-        <p
-          className={css({
-            position: "absolute",
-            top: 0,
-            left: 0,
-            zIndex: 20,
-            opacity: isTransitioning ? 0 : 1,
-            padding: "1.5rem",
-            textTransform: "uppercase",
-          })}
-        >
-          Challenge by Benjamin Code, made by Romain Herault
-        </p>
       </div>
     </div>
   );

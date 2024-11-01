@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { css } from "../../styled-system/css";
-import { isMobile } from "react-device-detect";
 
 interface MissionBriefingProps {
   hide: boolean;
@@ -42,14 +41,8 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
           className={css({
-            position: "absolute",
-            left: "0",
-            top: isMobile ? "47%" : "50%",
-            transform: "translateY(-50%)",
-            zIndex: "30",
             width: "100%",
             maxWidth: "42rem",
-            paddingX: "1.5rem",
           })}
         >
           <AnimatePresence mode="sync">
@@ -103,6 +96,7 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
                       base: "0.875rem",
                       md: "1rem",
                     },
+                    lineHeight: "1.5",
                     fontFamily: "var(--ui-font-family)",
                     textShadow: "0 0 10px currentColor",
                   })}

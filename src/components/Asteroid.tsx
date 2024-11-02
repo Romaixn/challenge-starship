@@ -11,6 +11,8 @@ import {
 } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { usePerformanceStore } from "@/stores/performanceStore.ts";
+import vertexShader from "@/shaders/asteroids/vertex.glsl";
+import fragmentShader from "@/shaders/asteroids/fragment.glsl";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -288,6 +290,17 @@ const AsteroidBelt = () => {
     colliderSize: { value: 1, min: 0.1, max: 10, step: 0.1 },
   });
 
+  const asteroidMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        sunDirection: { value: new THREE.Vector3(0, 0, -1) },
+      },
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
+      side: THREE.DoubleSide,
+    });
+  }, [materials.asteroid]);
+
   const hitAsteroids = useRef(new Set<number>());
 
   const instances = useMemo(() => {
@@ -355,6 +368,9 @@ const AsteroidBelt = () => {
   useFrame((state, delta) => {
     if (!rigidBodies.current) return;
 
+    const sunDirection = new THREE.Vector3(0, 0, -1);
+    asteroidMaterial.uniforms.sunDirection.value.copy(sunDirection);
+
     rigidBodies.current.forEach((body, index) => {
       if (!body || !body.isValid() || hitAsteroids.current.has(index)) return;
 
@@ -402,11 +418,7 @@ const AsteroidBelt = () => {
       ]}
     >
       <instancedMesh
-        args={[
-          nodes.Asteroid_Small.geometry,
-          materials.asteroid,
-          asteroidCount,
-        ]}
+        args={[nodes.Asteroid_Small.geometry, asteroidMaterial, asteroidCount]}
         count={asteroidCount}
       />
     </InstancedRigidBodies>

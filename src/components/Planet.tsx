@@ -1,5 +1,5 @@
 import { forwardRef, useMemo, useRef } from "react";
-import { useFrame, useLoader } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 // @ts-ignore
 import { TextureLoader } from "three/src/loaders/TextureLoader";
 import * as THREE from "three";
@@ -19,40 +19,62 @@ interface PlanetProps {
   speed?: number;
   offset?: number;
   rotationSpeed?: number;
-  texture?: string;
-  color?: string;
   shouldRotate?: boolean;
   seed?: number;
 }
 
+const textures = [
+  // Habitable
+  { texture: "/planets/habitable/Alpine.png", color: "#334635" },
+  { texture: "/planets/habitable/Savannah.png", color: "#A8B624" },
+  { texture: "/planets/habitable/Swamp.png", color: "#232B06" },
+  { texture: "/planets/habitable/Tropical.png", color: "#017DA9" },
+  // Gas
+  { texture: "/planets/gaseous/Gaseous1.jpg", color: "#655A46" },
+  { texture: "/planets/gaseous/Gaseous2.jpg", color: "#AA777D" },
+  { texture: "/planets/gaseous/Gaseous3.jpg", color: "#9CBF89" },
+  { texture: "/planets/gaseous/Gaseous4.jpg", color: "#D1466D" },
+  // Inhospitable
+  { texture: "/planets/inhospitable/Icy.png", color: "#AAC3CD" },
+  { texture: "/planets/inhospitable/Martian.png", color: "#784233" },
+  { texture: "/planets/inhospitable/Venusian.png", color: "#73370B" },
+  { texture: "/planets/inhospitable/Volcanic.png", color: "#B6412D" },
+  // Terrestrial
+  { texture: "/planets/terrestrial/Terrestrial1.png", color: "#00AAFF" },
+  { texture: "/planets/terrestrial/Terrestrial2.png", color: "#00AAFF" },
+  { texture: "/planets/terrestrial/Terrestrial3.png", color: "#00AAFF" },
+  { texture: "/planets/terrestrial/Terrestrial4.png", color: "#00AAFF" },
+];
+
 const Planet = forwardRef<THREE.Mesh, PlanetProps>(
   (
-    {
-      position,
-      size = 1,
-      rotationSpeed = 0.1,
-      texture = "/planets/habitable/Tropical.png",
-      color = "#00aaff",
-      shouldRotate = true,
-      seed = 0,
-    },
+    { position, size = 1, rotationSpeed = 0.1, shouldRotate = true, seed = 0 },
     ref,
   ) => {
-    const planetTexture = useLoader(TextureLoader, texture);
-
-    planetTexture.colorSpace = THREE.SRGBColorSpace;
-    planetTexture.anisotropy = 8;
-
     const planet = useRef();
+
+    const { texture, color } = useMemo(() => {
+      const index =
+        Math.abs(Math.floor(seed * textures.length)) % textures.length;
+      return textures[index];
+    }, [seed]);
+
+    const planetTexture = useMemo(() => {
+      const loader = new THREE.TextureLoader();
+      const tex = loader.load(texture);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 8;
+      return tex;
+    }, [texture]);
 
     const uniforms = useMemo(
       () => ({
-        uPlanetTexture: new THREE.Uniform(planetTexture),
-        uSunDirection: new THREE.Uniform(new THREE.Vector3(0, 0, 0)),
-        uAtmosphereDayColor: new THREE.Uniform(new THREE.Color(color)),
-        uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color("#ff6600")),
+        uPlanetTexture: { value: planetTexture },
+        uSunDirection: { value: new THREE.Vector3(0, 0, 0) },
+        uAtmosphereDayColor: { value: new THREE.Color(color) },
+        uAtmosphereTwilightColor: { value: new THREE.Color("#ff6600") },
       }),
-      [seed],
+      [planetTexture, color],
     );
 
     useFrame((state) => {

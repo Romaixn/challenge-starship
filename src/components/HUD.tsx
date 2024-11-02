@@ -105,13 +105,13 @@ const HUD = () => {
           isDetailsShown.current = true;
 
           uiInstance.current.instructions.content.html(
-            "CRITICAL MISSION: EXECUTE PRECISION LANDING MANEUVER",
+            "CRITICAL MISSION: EXECUTE LANDING MANEUVER",
           );
         }
 
         if (state.phase === "space") {
           uiInstance.current.instructions.content.html(
-            "MISSION DIRECTIVE: APPROACH DESIGNATED PLANETARY COORDINATES",
+            "MISSION DIRECTIVE: REACH THE PLANET",
           );
         }
       }

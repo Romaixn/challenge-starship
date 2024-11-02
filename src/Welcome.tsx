@@ -29,18 +29,15 @@ const Welcome = () => {
 
     const container = briefingContainerRef.current;
 
-    // Observer les changements de taille ET de contenu
     const resizeObserver = new ResizeObserver(scrollToBottom);
     const mutationObserver = new MutationObserver(scrollToBottom);
 
-    // Observer les changements de taille
     resizeObserver.observe(container);
 
-    // Observer les changements de contenu
     mutationObserver.observe(container, {
-      childList: true, // Observer l'ajout/suppression d'enfants
-      subtree: true, // Observer les modifications dans l'arbre complet
-      characterData: true, // Observer les changements de texte
+      childList: true,
+      subtree: true,
+      characterData: true,
     });
 
     return () => {
@@ -190,9 +187,8 @@ const Welcome = () => {
               flexDirection: "column",
               justifyContent: { base: "flex-start", md: "center" },
               position: "relative",
-              overflow: "hidden", // Cache le débordement initial
-              marginBottom: { base: "120px", md: 0 }, // Espace pour le bouton sur mobile
-              // Activation du scroll avec animation douce
+              overflow: "hidden",
+              marginBottom: { base: "120px", md: 0 },
               overflowY: "auto",
               scrollBehavior: "smooth",
             })}

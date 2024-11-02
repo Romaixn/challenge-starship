@@ -64,6 +64,22 @@
         --color-warning: #fbbf24;
         --color-success: #4ade80;
         --color-default: #e5e7eb;
+
+        /* Health Status Colors */
+        --health-optimal: #4ade80;
+        --health-good: #22c55e;
+        --health-stable: #facc15;
+        --health-warning: #fb923c;
+        --health-critical: #ef4444;
+        --health-danger: #dc2626;
+
+        /* Health Status Glow Effects */
+        --health-glow-optimal: rgba(74, 222, 128, 0.2);
+        --health-glow-good: rgba(34, 197, 94, 0.2);
+        --health-glow-stable: rgba(250, 204, 21, 0.2);
+        --health-glow-warning: rgba(251, 146, 60, 0.2);
+        --health-glow-critical: rgba(239, 68, 68, 0.2);
+        --health-glow-danger: rgba(220, 38, 38, 0.2);
     }
 
     *, :after, :before {
@@ -200,5 +216,54 @@
 
     .color-default {
         color: var(--color-default);
+    }
+
+    /* Classes utilitaires pour les états de santé */
+    .health-status {
+        font-family: var(--ui-font-family);
+        font-weight: var(--ui-font-weight);
+        text-shadow: 0 0 10px currentColor;
+        transition: color 0.3s ease;
+    }
+
+    .health-optimal {
+        color: var(--health-optimal);
+        text-shadow: 0 0 10px var(--health-glow-optimal);
+    }
+
+    .health-good {
+        color: var(--health-good);
+        text-shadow: 0 0 10px var(--health-glow-good);
+    }
+
+    .health-stable {
+        color: var(--health-stable);
+        text-shadow: 0 0 10px var(--health-glow-stable);
+    }
+
+    .health-warning {
+        color: var(--health-warning);
+        text-shadow: 0 0 10px var(--health-glow-warning);
+    }
+
+    .health-critical {
+        color: var(--health-critical);
+        text-shadow: 0 0 10px var(--health-glow-critical);
+    }
+
+    .health-danger {
+        color: var(--health-danger);
+        text-shadow: 0 0 10px var(--health-glow-danger);
+    }
+
+    /* Animation pour l'état critique */
+    @keyframes health-pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    .health-pulse {
+        animation: health-pulse 1s ease-in-out infinite;
     }
 }

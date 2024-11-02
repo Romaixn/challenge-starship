@@ -35,18 +35,24 @@ const HUD = () => {
         ],
       },
       info: {
-        content: `Health: ${currentHealth}`,
+        content: `<div class="health-status health-optimal">
+             HULL INTEGRITY OPTIMAL<br>
+             <span style="font-size: 0.9em; opacity: 0.9">Integrity: ${currentHealth}%</span>
+           </div>`,
       },
       details: {
         background: true,
-        title: "Controls",
+        title: "Flight Systems",
         content: !isMobile
-          ? `Use arrow keys or WASD to control the ship.
-           Hold SPACE or SHIFT to boost. Press any key to discard this message.`
-          : `Use joystick to control the ship. Use right button to boost. Touch to discard this message.`,
+          ? `⬆️ WASD or Arrow Keys - Navigation Control<br>
+         SHIFT/SPACE - Thruster Boost<br><br>
+         <span style="opacity: var(--ui-secondary-opacity)">Press any key to acknowledge...</span>`
+          : `Joystick - Navigation Control<br>
+         Right Button - Thruster Boost<br><br>
+         <span style="opacity: var(--ui-secondary-opacity)">Touch to acknowledge...</span>`,
       },
       instructions: {
-        content: "Goal: Reach the planet.",
+        content: "MISSION DIRECTIVE: APPROACH DESIGNATED PLANETARY COORDINATES",
       },
       detailsButton: true,
       muteButton: {
@@ -75,38 +81,96 @@ const HUD = () => {
 
           uiInstance.current.details.content.html(
             !isMobile
-              ? `⬆️ UP - Slow down / Brake<br>
-       ⬇️ DOWN - Accelerate<br>
-       ⬅️ RIGHT / LEFT ➡️ - Control direction<br><br>
-       <span style="color: #4ade80;">OBJECTIVE:</span><br>
-       Land gently on the platform to succeed!<br><br>
-       <span style="opacity: 0.8;">Press any key to begin landing phase...</span>`
-              : `⬆️ Push UP - Slow down / Brake<br>
-       ⬇️ Pull DOWN - Accelerate<br>
-       ⬅️ LEFT / RIGHT ➡️ - Control direction<br><br>
-       <span style="color: #4ade80;">OBJECTIVE:</span><br>
-       Land gently on the platform to succeed!<br><br>
-       <span style="opacity: 0.8;">Touch anywhere to begin landing phase...</span>`,
+              ? `<span style="opacity: var(--ui-secondary-opacity)">LANDING SEQUENCE PROTOCOLS:</span><br>
+         ⬆️ UP - Retro Thrusters (Decelerate)<br>
+         ⬇️ DOWN - Forward Thrusters (Accelerate)<br>
+         ⬅️ LEFT/RIGHT ➡️ - Attitude Control<br><br>
+         <span style="color: var(--ui-color-range-3)">MISSION PARAMETERS:</span><br>
+         • Maintain structural integrity<br>
+         • Achieve optimal landing velocity<br>
+         • Align with designated landing zone<br><br>
+         <span style="opacity: var(--ui-secondary-opacity)">Press any key to initiate landing sequence...</span>`
+              : `<span style="opacity: var(--ui-secondary-opacity)">LANDING SEQUENCE PROTOCOLS:</span><br>
+         ⬆️ UP - Retro Thrusters<br>
+         ⬇️ DOWN - Forward Thrusters<br>
+         ⬅️ LEFT/RIGHT ➡️ - Attitude Control<br><br>
+         <span style="color: var(--ui-color-range-3)">MISSION PARAMETERS:</span><br>
+         • Maintain structural integrity<br>
+         • Achieve optimal landing velocity<br>
+         • Align with designated landing zone<br><br>
+         <span style="opacity: var(--ui-secondary-opacity)">Touch to initiate landing sequence...</span>`,
           );
+
           uiInstance.current.toggleDetails(true);
           isDetailsShown.current = true;
 
           uiInstance.current.instructions.content.html(
-            "Goal: Land on the planet without crashing",
+            "CRITICAL MISSION: EXECUTE PRECISION LANDING MANEUVER",
           );
         }
 
         if (state.phase === "space") {
           uiInstance.current.instructions.content.html(
-            "Goal: Reach the planet.",
+            "MISSION DIRECTIVE: APPROACH DESIGNATED PLANETARY COORDINATES",
           );
         }
       }
     });
 
+    const getHealthStatus = (
+      health: number,
+    ): { color: string; text: string; class: string } => {
+      if (health > 90) {
+        return {
+          color: "health-optimal",
+          text: "HULL INTEGRITY OPTIMAL",
+          class: "health-optimal",
+        };
+      }
+      if (health > 75) {
+        return {
+          color: "health-good",
+          text: "HULL INTEGRITY GOOD",
+          class: "health-good",
+        };
+      }
+      if (health > 50) {
+        return {
+          color: "health-stable",
+          text: "HULL INTEGRITY STABLE",
+          class: "health-stable",
+        };
+      }
+      if (health > 25) {
+        return {
+          color: "health-warning",
+          text: "HULL INTEGRITY WARNING",
+          class: "health-warning health-pulse",
+        };
+      }
+      if (health > 10) {
+        return {
+          color: "health-critical",
+          text: "HULL BREACH DETECTED",
+          class: "health-critical health-pulse",
+        };
+      }
+      return {
+        color: "health-danger",
+        text: "CRITICAL HULL FAILURE",
+        class: "health-danger health-pulse",
+      };
+    };
+
     const unsubscribeHealth = useHealth.subscribe((state) => {
       if (uiInstance.current) {
-        uiInstance.current.info.content.html(`Health: ${state.currentHealth}`);
+        const healthStatus = getHealthStatus(state.currentHealth);
+        uiInstance.current.info.content.html(
+          `<div class="health-status ${healthStatus.class}">
+             ${healthStatus.text}<br>
+             <span style="font-size: 0.9em; opacity: 0.9">Integrity: ${state.currentHealth}%</span>
+           </div>`,
+        );
       }
     });
 

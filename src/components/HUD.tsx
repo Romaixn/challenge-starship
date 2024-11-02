@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { UI } from "@alienkitty/space.js";
 import { css } from "../../styled-system/css";
 import { isMobile } from "react-device-detect";
@@ -15,8 +15,7 @@ const HUD = () => {
   const toggleSound = useSound((state) => state.toggleSound);
   const soundPlaying = useSound((state) => state.soundPlaying);
   const currentHealth = useHealth((state) => state.currentHealth);
-  const [displayLandingInstructions, setDisplayLandingInstructions] =
-    useState(false);
+  const initialLandingInstructionsShown = useRef(false);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -75,9 +74,13 @@ const HUD = () => {
 
     // Update info content based on phase
     const unsubscribePhase = useGame.subscribe((state) => {
-      if (uiInstance.current && !displayLandingInstructions) {
-        if (state.phase === "landing" && state.landingTransitionComplete) {
-          setDisplayLandingInstructions(true);
+      if (uiInstance.current) {
+        if (
+          state.phase === "landing" &&
+          state.landingTransitionComplete &&
+          !initialLandingInstructionsShown.current
+        ) {
+          initialLandingInstructionsShown.current = true;
 
           uiInstance.current.details.content.html(
             !isMobile
@@ -113,6 +116,8 @@ const HUD = () => {
           uiInstance.current.instructions.content.html(
             "MISSION DIRECTIVE: REACH THE PLANET",
           );
+
+          initialLandingInstructionsShown.current = false;
         }
       }
     });

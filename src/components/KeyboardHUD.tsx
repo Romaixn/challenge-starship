@@ -10,7 +10,7 @@ const KeyContainer = ({
   children,
   isPressed,
   isDiscovered,
-  width = "40px",
+  large = false,
   delay = 0,
   shouldHide,
 }) => (
@@ -32,7 +32,7 @@ const KeyContainer = ({
       damping: 15,
     }}
     className={css({
-      width,
+      width: large ? "136px" : "40px",
       height: "40px",
       margin: "4px",
       border: "2px solid",
@@ -252,7 +252,7 @@ export default function KeyboardHUD() {
             <KeyContainer
               isPressed={boostPressed}
               isDiscovered={pressedKeys.has("boost")}
-              width="144px"
+              large={true}
               delay={0.5}
               shouldHide={!shouldShowHUD}
             >

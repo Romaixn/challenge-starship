@@ -52,7 +52,7 @@ const HUD = () => {
          <span style="opacity: var(--ui-secondary-opacity)">Touch to acknowledge...</span>`,
       },
       instructions: {
-        content: "MISSION DIRECTIVE: APPROACH DESIGNATED PLANETARY COORDINATES",
+        content: "MISSION DIRECTIVE: REACH THE PLANET",
       },
       detailsButton: true,
       muteButton: {

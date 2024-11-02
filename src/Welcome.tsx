@@ -15,6 +15,40 @@ const Welcome = () => {
   const [opacity, setOpacity] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  const briefingContainerRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    if (briefingContainerRef.current) {
+      const container = briefingContainerRef.current;
+      requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+      });
+    }
+  };
+  useEffect(() => {
+    if (!briefingContainerRef.current) return;
+
+    const container = briefingContainerRef.current;
+
+    // Observer les changements de taille ET de contenu
+    const resizeObserver = new ResizeObserver(scrollToBottom);
+    const mutationObserver = new MutationObserver(scrollToBottom);
+
+    // Observer les changements de taille
+    resizeObserver.observe(container);
+
+    // Observer les changements de contenu
+    mutationObserver.observe(container, {
+      childList: true, // Observer l'ajout/suppression d'enfants
+      subtree: true, // Observer les modifications dans l'arbre complet
+      characterData: true, // Observer les changements de texte
+    });
+
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, []);
+
   // Loader configuration
   const svgRef = useRef<SVGSVGElement>(null);
   const circleRef = useRef<SVGCircleElement>(null);
@@ -149,11 +183,18 @@ const Welcome = () => {
 
           {/* Mission Briefing */}
           <div
+            ref={briefingContainerRef}
             className={css({
               flex: 1,
               display: "flex",
               flexDirection: "column",
               justifyContent: { base: "flex-start", md: "center" },
+              position: "relative",
+              overflow: "hidden", // Cache le débordement initial
+              marginBottom: { base: "120px", md: 0 }, // Espace pour le bouton sur mobile
+              // Activation du scroll avec animation douce
+              overflowY: "auto",
+              scrollBehavior: "smooth",
             })}
           >
             <MissionBriefing hide={isTransitioning} />

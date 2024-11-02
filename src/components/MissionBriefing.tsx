@@ -120,7 +120,7 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
       const timer = setTimeout(() => {
         setCurrentTextIndex((prev) => prev + 1);
         setIsCurrentLineComplete(false);
-      }, 500); // Délai entre les lignes
+      }, 250);
       return () => clearTimeout(timer);
     }
   }, [isCurrentLineComplete, currentTextIndex, hide]);

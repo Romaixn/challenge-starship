@@ -8,7 +8,7 @@ export const FinalMessage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [messageLines, setMessageLines] = useState<string[]>([]);
   const landingState = useGame((state) => state.landingState);
-  const setPhase = useGame((state) => state.setPhase);
+  const restart = useGame((state) => state.restart);
   const setLandingState = useGame((state) => state.setLandingState);
   const resetLandingTransition = useGame(
     (state) => state.resetLandingTransition,
@@ -62,7 +62,7 @@ export const FinalMessage = () => {
 
   const handleRestart = () => {
     setIsVisible(false);
-    setPhase("space");
+    restart();
     setLandingState("in_progress");
     resetLandingTransition();
     resetHealth();

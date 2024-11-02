@@ -24,6 +24,7 @@ export enum ControlsMap {
 
 const Game = () => {
   const phase = useGame((state) => state.phase);
+  const seed = useGame((state) => state.seed);
   const landingTransitionComplete = useGame(
     (state) => state.landingTransitionComplete,
   );
@@ -53,7 +54,7 @@ const Game = () => {
     ];
 
     return textures[Math.floor(Math.random() * textures.length)];
-  }, []);
+  }, [seed]);
 
   const planet = useRef<THREE.Mesh>();
   const planetPosition = new THREE.Vector3(0, 0, 0);
@@ -104,6 +105,7 @@ const Game = () => {
           texture={texture}
           color={color}
           shouldRotate={phase === "space"}
+          seed={seed}
         />
 
         {phase !== "space" && (

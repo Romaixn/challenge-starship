@@ -10,9 +10,11 @@ export type LandingState = "in_progress" | "success" | "crash";
 
 interface GameState {
   phase: GamePhase;
+  seed: number;
   landingTransitionComplete: boolean;
   lastKnownPosition: THREE.Vector3;
   start: () => void;
+  restart: () => void;
   setPhase: (phase: GamePhase) => void;
   startLandingSequence: () => void;
   completeLandingTransition: () => void;
@@ -26,6 +28,7 @@ interface GameState {
 const useGame = create<GameState>()(
   devtools((set) => ({
     phase: "welcome",
+    seed: 0,
     landingTransitionComplete: false,
     lastKnownPosition: new THREE.Vector3(),
 
@@ -36,6 +39,10 @@ const useGame = create<GameState>()(
         }
         return {};
       }),
+
+    restart: () => {
+      set({ phase: "space", seed: Math.random() });
+    },
 
     setPhase: (phase) => set({ phase }),
 

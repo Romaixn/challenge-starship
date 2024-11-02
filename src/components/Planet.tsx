@@ -22,6 +22,7 @@ interface PlanetProps {
   texture?: string;
   color?: string;
   shouldRotate?: boolean;
+  seed?: number;
 }
 
 const Planet = forwardRef<THREE.Mesh, PlanetProps>(
@@ -33,10 +34,12 @@ const Planet = forwardRef<THREE.Mesh, PlanetProps>(
       texture = "/planets/habitable/Tropical.png",
       color = "#00aaff",
       shouldRotate = true,
+      seed = 0,
     },
     ref,
   ) => {
     const planetTexture = useLoader(TextureLoader, texture);
+
     planetTexture.colorSpace = THREE.SRGBColorSpace;
     planetTexture.anisotropy = 8;
 
@@ -49,7 +52,7 @@ const Planet = forwardRef<THREE.Mesh, PlanetProps>(
         uAtmosphereDayColor: new THREE.Uniform(new THREE.Color(color)),
         uAtmosphereTwilightColor: new THREE.Uniform(new THREE.Color("#ff6600")),
       }),
-      [],
+      [seed],
     );
 
     useFrame((state) => {

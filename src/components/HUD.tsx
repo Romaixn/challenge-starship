@@ -44,7 +44,7 @@ const HUD = () => {
         background: true,
         title: "Flight Systems",
         content: !isMobile
-          ? `⬆️ WASD or Arrow Keys - Navigation Control<br>
+          ? `WASD or Arrow Keys - Navigation Control<br>
          SHIFT/SPACE - Thruster Boost<br><br>
          <span style="opacity: var(--ui-secondary-opacity)">Press any key to acknowledge...</span>`
           : `Joystick - Navigation Control<br>

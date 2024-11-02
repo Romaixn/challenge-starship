@@ -56,9 +56,7 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   const [showExplosion, setShowExplosion] = useState(false);
 
   const initialZPosition = useMemo(() => {
-    // Generate a random number between -SPAWN_X_RANGE and SPAWN_X_RANGE
-    // But exclude the central area (-20 to 20) to ensure player needs to navigate
-    const minDistance = 20; // Minimum distance from center
+    const minDistance = 20;
     let randomX;
     do {
       randomX = (Math.random() * 2 - 1) * SPAWN_Z_RANGE;

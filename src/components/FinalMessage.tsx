@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { css } from "../../styled-system/css";
 import useGame from "@/stores/useGame";
 import useHealth from "@/stores/useHealth";
+import { useShieldSystem } from "@/stores/useShieldSystem.ts";
 
 export const FinalMessage = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -15,6 +16,7 @@ export const FinalMessage = () => {
   );
   const isDead = useHealth((state) => state.isDead);
   const resetHealth = useHealth((state) => state.resetHealth);
+  const initializeOrbs = useShieldSystem((state) => state.initializeOrbs);
 
   useEffect(() => {
     if (landingState !== "in_progress" || isDead) {
@@ -66,6 +68,7 @@ export const FinalMessage = () => {
     setLandingState("in_progress");
     resetLandingTransition();
     resetHealth();
+    initializeOrbs();
   };
 
   const isSuccess = landingState === "success";

@@ -12,6 +12,7 @@ import useGame from "@/stores/useGame.ts";
 import { PositionTracker } from "@/utils/positionTracker.ts";
 import useHealth from "@/stores/useHealth.ts";
 import ExplosionEffect from "@/components/ExplosionEffect.tsx";
+import { useShieldSystem } from "@/stores/useShieldSystem.ts";
 
 interface CollisionData {
   target: {
@@ -49,11 +50,49 @@ export const Player = ({ initialPosition }) => {
   const isInvulnerable = useHealth((state) => state.isInvulnerable);
   const isDead = useHealth((state) => state.isDead);
 
+  const isShieldActive = useShieldSystem((state) => state.isShieldActive);
+
   const positionTracker = useRef(
     new PositionTracker(400, () => {
       startLandingSequence();
     }),
   );
+
+  const shieldTracker = useRef(
+    new PositionTracker(550, () => {
+      approchShield();
+    }),
+  );
+
+  const approchShield = () => {
+    if (!ref.current || !isShieldActive) return;
+
+    const currentPosition = ref.current.position.clone();
+    const bounceDirection = currentPosition.clone().normalize();
+
+    const safeDistance = 850;
+    ref.current.position.copy(bounceDirection.multiplyScalar(safeDistance));
+
+    yaw.current = (yaw.current + Math.PI) % (2 * Math.PI);
+    pitch.current = -pitch.current;
+
+    roll.current = Math.sign(roll.current) * MAX_ROLL * 1.5;
+
+    setBodyPosition([
+      ref.current.position.x,
+      ref.current.position.y,
+      ref.current.position.z,
+    ]);
+    setBodyRotation([
+      ref.current.rotation.x,
+      ref.current.rotation.y,
+      ref.current.rotation.z,
+    ]);
+
+    setTimeout(() => {
+      shieldTracker.current.reset();
+    }, 100);
+  };
 
   const startDamageAnimation = () => {
     if (damageAnimationRef.current) {
@@ -343,7 +382,11 @@ export const Player = ({ initialPosition }) => {
       const relativePosition = currentPosition
         .clone()
         .sub(new THREE.Vector3(0, 0, 0));
-      positionTracker.current.checkPosition(relativePosition);
+      if (!isShieldActive) {
+        positionTracker.current.checkPosition(relativePosition);
+      } else {
+        shieldTracker.current.checkPosition(relativePosition);
+      }
 
       // Update physics body
       setBodyPosition([
@@ -373,28 +416,28 @@ export const Player = ({ initialPosition }) => {
           .add(direction_vector.multiplyScalar(5));
         camera.current.lookAt(lookAtPoint);
       }
+
+      // Damage animation
+      if (damageLight.current && damageAnimationRef.current.active) {
+        const animation = damageAnimationRef.current;
+        const elapsed = performance.now() - animation.startTime;
+
+        if (elapsed > animation.duration) {
+          damageLight.current.intensity = 0;
+          animation.active = false;
+        } else {
+          const progress = elapsed / animation.duration;
+          const flashSpeed = animation.flashCount * Math.PI * 2;
+          const flashIntensity = Math.sin(progress * flashSpeed);
+          const fadeOut = 1 - progress;
+
+          damageLight.current.intensity = Math.max(
+            0,
+            flashIntensity * fadeOut * animation.maxIntensity,
+          );
+        }
+      }
     }
-
-    // Damage animation
-    if (!damageLight.current || !damageAnimationRef.current.active) return;
-    const animation = damageAnimationRef.current;
-    const elapsed = performance.now() - animation.startTime;
-
-    if (elapsed > animation.duration) {
-      damageLight.current.intensity = 0;
-      animation.active = false;
-      return;
-    }
-
-    const progress = elapsed / animation.duration;
-    const flashSpeed = animation.flashCount * Math.PI * 2;
-    const flashIntensity = Math.sin(progress * flashSpeed);
-    const fadeOut = 1 - progress;
-
-    damageLight.current.intensity = Math.max(
-      0,
-      flashIntensity * fadeOut * animation.maxIntensity,
-    );
   });
 
   return (
@@ -408,6 +451,7 @@ export const Player = ({ initialPosition }) => {
         mass={50}
         restitution={1}
         friction={0}
+        userData={{ type: "player" }}
       >
         <CuboidCollider
           args={[1.5, 1.5, 3]}

@@ -6,6 +6,7 @@ import useSound from "@/stores/useSound.ts";
 import { useJoystickControls } from "@/stores/useJoystickControls.ts";
 import useGame from "@/stores/useGame.ts";
 import useHealth from "@/stores/useHealth.ts";
+import { useShieldSystem } from "@/stores/useShieldSystem.ts";
 
 const HUD = () => {
   const containerRef = useRef(null);
@@ -16,6 +17,8 @@ const HUD = () => {
   const soundPlaying = useSound((state) => state.soundPlaying);
   const currentHealth = useHealth((state) => state.currentHealth);
   const initialLandingInstructionsShown = useRef(false);
+  const { orbsCollected, totalRequiredOrbs, isShieldActive } =
+    useShieldSystem();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -51,7 +54,7 @@ const HUD = () => {
          <span style="opacity: var(--ui-secondary-opacity)">Touch to acknowledge...</span>`,
       },
       instructions: {
-        content: "MISSION DIRECTIVE: REACH THE PLANET",
+        content: `COLLECT ENERGY ORBS TO DISABLE PLANETARY SHIELD (${orbsCollected}/${totalRequiredOrbs})`,
       },
       detailsButton: true,
       muteButton: {
@@ -113,10 +116,6 @@ const HUD = () => {
         }
 
         if (state.phase === "space") {
-          uiInstance.current.instructions.content.html(
-            "MISSION DIRECTIVE: REACH THE PLANET",
-          );
-
           initialLandingInstructionsShown.current = false;
         }
       }
@@ -179,6 +178,19 @@ const HUD = () => {
       }
     });
 
+    const unsuscribeOrbsCollected = useShieldSystem.subscribe(
+      (state) => state.orbsCollected,
+      (value) => {
+        if (uiInstance.current) {
+          uiInstance.current.instructions.content.html(
+            isShieldActive
+              ? `COLLECT ENERGY ORBS TO DISABLE PLANETARY SHIELD (${value}/${totalRequiredOrbs})`
+              : "SHIELD DISABLED - PROCEED TO LANDING",
+          );
+        }
+      },
+    );
+
     // Handle key press for details
     const handleKeyPress = () => {
       if (isDetailsShown.current) {
@@ -219,6 +231,7 @@ const HUD = () => {
       unsuscribeJoystickChange();
       unsubscribePhase();
       unsubscribeHealth();
+      unsuscribeOrbsCollected();
     };
   }, []);
 

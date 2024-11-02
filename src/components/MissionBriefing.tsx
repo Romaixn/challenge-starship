@@ -59,16 +59,14 @@ const TypewriterText = ({
           fontFamily: "var(--ui-font-family)",
           textShadow: "0 0 10px currentColor",
           display: "inline",
-          whiteSpace: "break-spaces", // Important pour la gestion des sauts de ligne
+          whiteSpace: "break-spaces",
         }),
       )}
     >
-      {/* On enveloppe chaque caractère pour permettre au curseur de suivre correctement */}
       {displayedText.split("").map((char, index) => (
         <span key={index}>{char}</span>
       ))}
 
-      {/* Curseur qui suit naturellement le flux du texte */}
       {!isTypingComplete && (
         <motion.span
           aria-hidden="true"
@@ -102,11 +100,13 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
     `MISSION BRIEFING: PLANETARY RECONNAISSANCE - CODE ${missionCode}`,
     "You are tasked with landing on an uncharted planet in the Kepler system.",
     "WARNING: Asteroid field detected in planetary orbit.",
+    "CAUTION: Planetary defense shield active.",
     "PRIMARY OBJECTIVES:",
     "1. Navigate through the asteroid field",
-    "2. Approach planetary atmosphere to initiate landing sequence",
-    "3. Execute controlled landing sequence",
-    "CAUTION: Ship integrity critical for atmospheric entry.",
+    "2. Collect energy orbs (3) to deactivate planetary shield",
+    "3. Approach planetary atmosphere to initiate landing sequence",
+    "4. Execute controlled landing sequence",
+    "CRITICAL INFO: Energy orbs detected among asteroid field",
     "Good luck, pilot. The fate of the mission rests in your hands.",
     "INITIATE LAUNCH SEQUENCE WHEN READY",
   ];
@@ -129,6 +129,7 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
     if (text.includes("WARNING:")) return "color-danger";
     if (text.includes("MISSION BRIEFING:")) return "color-info";
     if (text.includes("CAUTION:")) return "color-warning";
+    if (text.includes("CRITICAL INFO:")) return "color-warning";
     if (text === "INITIATE LAUNCH SEQUENCE WHEN READY") return "color-success";
     return "color-default";
   };

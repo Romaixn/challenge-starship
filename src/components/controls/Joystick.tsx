@@ -66,7 +66,7 @@ const JoystickComponents = (props: JoystickProps) => {
   const joystickBaseMaterial = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
-        color: 0x00ffff, // Cyan électrique
+        color: 0x00ffff,
         transparent: true,
         opacity: 0.3,
       }),
@@ -75,7 +75,7 @@ const JoystickComponents = (props: JoystickProps) => {
   const joystickStickMaterial = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
-        color: 0x00ccff, // Bleu électrique
+        color: 0x00ccff,
         transparent: true,
         opacity: 0.3,
       }),
@@ -84,7 +84,7 @@ const JoystickComponents = (props: JoystickProps) => {
   const joystickHandleMaterial = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
-        color: 0x00ffff, // Cyan électrique
+        color: 0x00ffff,
         transparent: true,
         opacity: 0.7,
       }),
@@ -253,7 +253,7 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: JoystickProps) => {
   const buttonBaseMaterial = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
-        color: 0x00ffff, // Cyan électrique assorti au joystick
+        color: 0x00ffff,
         transparent: true,
         opacity: 0.3,
       }),
@@ -263,9 +263,9 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: JoystickProps) => {
   const buttonTop1Material = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
-        color: 0x00ccff, // Bleu électrique légèrement plus foncé
+        color: 0x00ccff,
         transparent: true,
-        opacity: 0.7, // Plus opaque pour le dessus du bouton
+        opacity: 0.7,
       }),
     [],
   );

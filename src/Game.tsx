@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { Environment } from "@react-three/drei";
 import AsteroidBelt from "@/components/Asteroid";
@@ -11,6 +11,9 @@ import useGame from "@/stores/useGame.ts";
 import { LandingPlayer } from "@/LandingPlayer.tsx";
 import { LandingPlatform } from "@/components/LandingPlatform.tsx";
 import { Effects } from "@/Effects.tsx";
+import { useShieldSystem } from "@/stores/useShieldSystem.ts";
+import { PlanetShield } from "@/components/PlanetShield.tsx";
+import { EnergyOrb } from "@/components/EnergyOrb.tsx";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -45,6 +48,12 @@ const Game = () => {
     return new THREE.Vector3(0, 0, playerDistanceFromPlanet);
   }, [playerDistanceFromPlanet]);
 
+  const { orbs, initializeOrbs, collectOrb } = useShieldSystem();
+
+  useEffect(() => {
+    initializeOrbs();
+  }, []);
+
   return (
     <>
       {/*{!isProd && <Perf position="top-left" />}*/}
@@ -78,6 +87,20 @@ const Game = () => {
           shouldRotate={phase === "space"}
           seed={seed}
         />
+
+        <PlanetShield radius={PLANET_RADIUS + 200} />
+
+        {orbs.map(
+          (orb) =>
+            !orb.collected && (
+              <EnergyOrb
+                key={orb.id}
+                id={orb.id}
+                position={orb.position}
+                onCollect={collectOrb}
+              />
+            ),
+        )}
 
         {phase !== "space" && (
           <>

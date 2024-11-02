@@ -82,10 +82,9 @@ export default function KeyboardHUD() {
     if (shouldShowHUD) {
       setIsVisible(true);
     } else {
-      // Add a small delay before starting the exit animation
       const timeout = setTimeout(() => {
         setIsVisible(false);
-      }, 500); // Adjust this delay as needed
+      }, 500);
       return () => clearTimeout(timeout);
     }
   }, [shouldShowHUD]);

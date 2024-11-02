@@ -29,14 +29,14 @@ const fireworksVertexShader = `
     if (explosionProgress > 0.0 && explosionProgress < 1.0) {
       if (explosionProgress < 0.3) {
         float rocketProgress = explosionProgress / 0.3;
-        pos.y += rocketProgress * 5.0; // Réduit de 30.0 à 5.0
+        pos.y += rocketProgress * 5.0;
       } 
       else {
         float dispersalProgress = (explosionProgress - 0.3) / 0.7;
         
-        vec3 movement = velocity * dispersalProgress * 4.0; // Réduit de 20.0 à 4.0
+        vec3 movement = velocity * dispersalProgress * 4.0;
         
-        movement.y -= dispersalProgress * dispersalProgress * 2.0; // Réduit de 10.0 à 2.0
+        movement.y -= dispersalProgress * dispersalProgress * 2.0;
         
         float turbulence = sin(time * 5.0 + random(seed + float(gl_VertexID)) * 10.0) * 0.1;
         movement.xz += vec2(turbulence);

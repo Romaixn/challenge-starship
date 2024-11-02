@@ -20,8 +20,8 @@ const vertexShader = `
   }
   
   vec3 generateColor(float progress, vec3 baseVelocity) {
-    vec3 hotColor = vec3(1.0, 0.8, 0.3);  // Jaune chaud
-    vec3 coolColor = vec3(1.0, 0.2, 0.0);  // Rouge foncé
+    vec3 hotColor = vec3(1.0, 0.8, 0.3);
+    vec3 coolColor = vec3(1.0, 0.2, 0.0);
     float temperature = length(baseVelocity) * (1.0 - progress);
     return mix(coolColor, hotColor, temperature);
   }
@@ -47,7 +47,7 @@ const vertexShader = `
     vColor = generateColor(progress, velocity);
     
     vOpacity = 1.0 - progress;
-    vOpacity *= smoothstep(0.0, 0.2, progress); // Fade in
+    vOpacity *= smoothstep(0.0, 0.2, progress);
     
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;

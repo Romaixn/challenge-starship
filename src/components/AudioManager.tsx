@@ -1,4 +1,3 @@
-// AudioManager.tsx
 import { useEffect } from "react";
 import * as THREE from "three";
 import useSound from "@/stores/useSound.ts";

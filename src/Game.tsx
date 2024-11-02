@@ -1,10 +1,6 @@
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import {
-  Environment,
-  KeyboardControls,
-  KeyboardControlsEntry,
-} from "@react-three/drei";
+import { Environment } from "@react-three/drei";
 import AsteroidBelt from "@/components/Asteroid";
 import Planet from "@/components/Planet";
 import { Physics } from "@react-three/rapier";
@@ -30,17 +26,6 @@ const Game = () => {
   const phase = useGame((state) => state.phase);
   const landingTransitionComplete = useGame(
     (state) => state.landingTransitionComplete,
-  );
-
-  const map = useMemo<KeyboardControlsEntry<ControlsMap>[]>(
-    () => [
-      { name: ControlsMap.up, keys: ["ArrowUp", "KeyW", "KeyZ"] },
-      { name: ControlsMap.down, keys: ["ArrowDown", "KeyS", "KeyS"] },
-      { name: ControlsMap.left, keys: ["ArrowLeft", "KeyA", "KeyA"] },
-      { name: ControlsMap.right, keys: ["ArrowRight", "KeyD", "KeyD"] },
-      { name: ControlsMap.boost, keys: ["Shift"] },
-    ],
-    [],
   );
 
   const { texture, color } = useMemo(() => {
@@ -102,15 +87,13 @@ const Game = () => {
         timeStep="vary"
         gravity={[0, 0, 0]}
       >
-        <KeyboardControls map={map}>
-          {phase === "space" && (
-            <Player initialPosition={initialPlayerPosition} />
-          )}
+        {phase === "space" && (
+          <Player initialPosition={initialPlayerPosition} />
+        )}
 
-          {phase !== "space" && landingTransitionComplete && (
-            <LandingPlayer planetRadius={PLANET_RADIUS} />
-          )}
-        </KeyboardControls>
+        {phase !== "space" && landingTransitionComplete && (
+          <LandingPlayer planetRadius={PLANET_RADIUS} />
+        )}
 
         {phase === "space" && <AsteroidBelt />}
 

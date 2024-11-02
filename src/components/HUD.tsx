@@ -183,7 +183,7 @@ const HUD = () => {
       (value) => {
         if (uiInstance.current) {
           uiInstance.current.instructions.content.html(
-            isShieldActive
+            value < totalRequiredOrbs
               ? `COLLECT ENERGY ORBS TO DISABLE PLANETARY SHIELD (${value}/${totalRequiredOrbs})`
               : "SHIELD DISABLED - PROCEED TO LANDING",
           );

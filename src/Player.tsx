@@ -104,7 +104,7 @@ export const Player = ({ initialPosition }) => {
   const defaultValues = {
     TURN_SPEED: isMobile ? 0.01 : 0.02,
     PITCH_SPEED: isMobile ? 0.01 : 0.02,
-    FORWARD_SPEED: isMobile ? 0.4 : 0.8,
+    FORWARD_SPEED: isMobile ? 0.6 : 0.8,
     BOOST_SPEED_MULTIPLIER: 3,
     BOOST_ACCELERATION: 0.1,
     BOOST_DECELERATION: 0.05,

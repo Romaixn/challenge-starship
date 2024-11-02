@@ -12,6 +12,7 @@ import React, {
 import { animated, useSpring } from "@react-spring/three";
 import { useJoystickControls } from "@/stores/useJoystickControls";
 import { css } from "../../../styled-system/css";
+import useGame from "@/stores/useGame.ts";
 
 const JoystickComponents = (props: JoystickProps) => {
   /**
@@ -513,6 +514,8 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: JoystickProps) => {
 
 export const Joystick = forwardRef<HTMLDivElement, JoystickProps>(
   (props, ref) => {
+    const phase = useGame((state) => state.phase);
+
     return (
       <div ref={ref}>
         <div
@@ -543,7 +546,7 @@ export const Joystick = forwardRef<HTMLDivElement, JoystickProps>(
             {props.children}
           </Canvas>
         </div>
-        {props.buttonNumber !== 0 && (
+        {props.buttonNumber !== 0 && phase === "space" && (
           <div
             id="-button"
             className={css({

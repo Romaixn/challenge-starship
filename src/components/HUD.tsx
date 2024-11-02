@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UI } from "@alienkitty/space.js";
 import { css } from "../../styled-system/css";
 import { isMobile } from "react-device-detect";
@@ -15,6 +15,8 @@ const HUD = () => {
   const toggleSound = useSound((state) => state.toggleSound);
   const soundPlaying = useSound((state) => state.soundPlaying);
   const currentHealth = useHealth((state) => state.currentHealth);
+  const [displayLandingInstructions, setDisplayLandingInstructions] =
+    useState(false);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -40,7 +42,7 @@ const HUD = () => {
         title: "Controls",
         content: !isMobile
           ? `Use arrow keys or WASD to control the ship.
-           Hold SHIFT to boost. Press any key to discard this message.`
+           Hold SPACE or SHIFT to boost. Press any key to discard this message.`
           : `Use joystick to control the ship. Use right button to boost. Touch to discard this message.`,
       },
       instructions: {
@@ -67,8 +69,28 @@ const HUD = () => {
 
     // Update info content based on phase
     const unsubscribePhase = useGame.subscribe((state) => {
-      if (uiInstance.current) {
-        if (state.phase === "landing") {
+      if (uiInstance.current && !displayLandingInstructions) {
+        if (state.phase === "landing" && state.landingTransitionComplete) {
+          setDisplayLandingInstructions(true);
+
+          uiInstance.current.details.content.html(
+            !isMobile
+              ? `⬆️ UP - Slow down / Brake<br>
+       ⬇️ DOWN - Accelerate<br>
+       ⬅️ RIGHT / LEFT ➡️ - Control direction<br><br>
+       <span style="color: #4ade80;">OBJECTIVE:</span><br>
+       Land gently on the platform to succeed!<br><br>
+       <span style="opacity: 0.8;">Press any key to begin landing phase...</span>`
+              : `⬆️ Push UP - Slow down / Brake<br>
+       ⬇️ Pull DOWN - Accelerate<br>
+       ⬅️ LEFT / RIGHT ➡️ - Control direction<br><br>
+       <span style="color: #4ade80;">OBJECTIVE:</span><br>
+       Land gently on the platform to succeed!<br><br>
+       <span style="opacity: 0.8;">Touch anywhere to begin landing phase...</span>`,
+          );
+          uiInstance.current.toggleDetails(true);
+          isDetailsShown.current = true;
+
           uiInstance.current.instructions.content.html(
             "Goal: Land on the planet without crashing",
           );

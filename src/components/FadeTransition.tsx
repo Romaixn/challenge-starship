@@ -10,18 +10,18 @@ const messages = [
   },
   {
     text: "ENTERING PLANETARY ATMOSPHERE",
-    duration: 2000,
+    duration: 1250,
   },
   {
     text: "ACTIVATING LANDING THRUSTERS",
-    duration: 2000,
+    duration: 1500,
   },
   {
     text: "STABILIZING SHIP ORIENTATION",
-    duration: 2000,
+    duration: 1500,
   },
   {
-    text: "LANDING CONTROLS ENGAGED",
+    text: "READY FOR MANUAL LANDING CONTROL",
     duration: 1500,
   },
 ];

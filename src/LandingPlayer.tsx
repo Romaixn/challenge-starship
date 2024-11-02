@@ -48,6 +48,8 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   const setPhase = useGame((state) => state.setPhase);
   const setLandingState = useGame((state) => state.setLandingState);
   const landingState = useGame((state) => state.landingState);
+  const isLandingPaused = useGame((state) => state.isLandingPaused);
+  const setLandingPaused = useGame((state) => state.setLandingPaused);
   const getJoystickValues = useJoystickControls(
     (state) => state.getJoystickValues,
   );
@@ -64,6 +66,10 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
     return randomX;
   }, []);
+
+  const handleUnpause = () => {
+    setLandingPaused(false);
+  };
 
   const defaultValues = {
     VERTICAL_SPEED: isMobile ? 0.3 : 0.5,
@@ -239,8 +245,8 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
 
       camera.current.position.set(
         CAMERA_DISTANCE,
-        planetRadius + defaultValues.CAMERA_DISTANCE,
-        0,
+        ref.current.position.y,
+        ref.current.position.z,
       );
       camera.current.lookAt(ref.current.position);
 
@@ -248,12 +254,34 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (isLandingPaused) {
+      const handleKey = (event: KeyboardEvent) => handleUnpause();
+      const handleTouch = () => handleUnpause();
+      const handleJoystick = () => handleUnpause();
+
+      window.addEventListener("keydown", handleKey);
+      window.addEventListener("touchstart", handleTouch);
+      const unsubscribeJoystick = useJoystickControls.subscribe(
+        (state) => state.curJoystickDis,
+        () => handleJoystick(),
+      );
+
+      return () => {
+        window.removeEventListener("keydown", handleKey);
+        window.removeEventListener("touchstart", handleTouch);
+        unsubscribeJoystick();
+      };
+    }
+  }, [isLandingPaused]);
+
   useFrame((state, delta) => {
     if (
       !ref.current ||
       !camera.current ||
       !landingTransitionComplete ||
-      landingState !== "in_progress"
+      landingState !== "in_progress" ||
+      isLandingPaused
     )
       return;
 

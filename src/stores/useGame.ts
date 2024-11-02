@@ -20,6 +20,7 @@ interface GameState {
   setLastKnownPosition: (position: THREE.Vector3) => void;
   landingState: LandingState;
   setLandingState: (state: LandingState) => void;
+  isLandingPaused: boolean;
 }
 
 const useGame = create<GameState>()(
@@ -62,10 +63,12 @@ const useGame = create<GameState>()(
     },
 
     landingState: "in_progress",
+    isLandingPaused: true,
     setLandingState: (state) => {
       if (DEBUG) console.log("Setting landing state", state);
       set({ landingState: state });
     },
+    setLandingPaused: (paused: boolean) => set({ isLandingPaused: paused }),
   })),
 );
 

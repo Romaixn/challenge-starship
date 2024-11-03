@@ -120,7 +120,7 @@ export default function MissionBriefing({ hide }: MissionBriefingProps) {
       const timer = setTimeout(() => {
         setCurrentTextIndex((prev) => prev + 1);
         setIsCurrentLineComplete(false);
-      }, 250);
+      }, 100);
       return () => clearTimeout(timer);
     }
   }, [isCurrentLineComplete, currentTextIndex, hide]);

@@ -83,31 +83,37 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
   const checkLandingConditions = () => {
     if (!ref.current || landingState !== "in_progress") return;
 
-    const altitude = ref.current.position.y - planetRadius;
-    if (altitude <= MIN_ALTITUDE) {
-      setPhase("landed");
+    const playerPosition = ref.current.position;
+    const distance = new THREE.Vector2(
+      playerPosition.x,
+      playerPosition.z,
+    ).distanceTo(new THREE.Vector2(0, INITIAL_Z_POSITION));
 
-      const distance = new THREE.Vector2(
-        ref.current.position.x,
-        ref.current.position.z,
-      ).distanceTo(new THREE.Vector2(0, INITIAL_Z_POSITION));
+    const isAbovePlatform = distance < 4;
+    const platformHeight = 1.35;
+    const effectiveMinAltitude = isAbovePlatform ?
+      MIN_ALTITUDE + platformHeight :
+      MIN_ALTITUDE;
 
-      const isOnPlatform = distance < 4;
+    const altitude = playerPosition.y - planetRadius;
 
-      if (!isOnPlatform) {
+    if (Math.abs(altitude - effectiveMinAltitude) < 0.1) {
+      if (!isAbovePlatform) {
+        setPhase("landed");
         setShowExplosion(true);
         setLandingState("crash");
         return;
       }
 
-      const isSafeVelocity =
-        Math.abs(verticalVelocity.current) < SAFE_LANDING_VELOCITY;
-      const isSafeRotation =
-        Math.abs(currentRotation.current) < SAFE_ROTATION_ANGLE;
+      const isSafeVelocity = Math.abs(verticalVelocity.current) < SAFE_LANDING_VELOCITY;
+      const isSafeRotation = Math.abs(currentRotation.current) < SAFE_ROTATION_ANGLE;
+      const isAligned = Math.abs(distance) < 4;
 
-      if (isSafeVelocity && isSafeRotation) {
+      if (isSafeVelocity && isSafeRotation && isAligned) {
+        setPhase("landed");
         setLandingState("success");
       } else {
+        setPhase("landed");
         setShowExplosion(true);
         setLandingState("crash");
       }
@@ -334,9 +340,14 @@ export const LandingPlayer = ({ planetRadius }: LandingPlayerProps) => {
     currentPosition.y += verticalVelocity.current;
 
     // Ground collision
+    const distanceFromGround = new THREE.Vector2(currentPosition.x, currentPosition.z).distanceTo(new THREE.Vector2(0, INITIAL_Z_POSITION));
+    const isAbovePlateform = distanceFromGround < 4;
+    const platformHeight = 1.35;
+    const effectiveMinAltitude = isAbovePlateform ? MIN_ALTITUDE + platformHeight : MIN_ALTITUDE;
     const altitude = currentPosition.y - planetRadius;
-    if (altitude <= MIN_ALTITUDE) {
-      currentPosition.y = planetRadius + MIN_ALTITUDE;
+
+    if (altitude <= effectiveMinAltitude) {
+      currentPosition.y = planetRadius + effectiveMinAltitude;
       checkLandingConditions();
       verticalVelocity.current = 0;
     }

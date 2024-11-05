@@ -26,7 +26,7 @@ const generateOrbPositions = (
 ): THREE.Vector3[] => {
   const positions: THREE.Vector3[] = [];
   const maxVerticalOffset = 400;
-  const minDistanceBetweenOrbs = (maxRadius - minRadius) * 0.15;
+  let minDistanceBetweenOrbs = (maxRadius - minRadius) * 0.15;
   const sectorAngle = (Math.PI * 2) / count;
 
   for (let i = 0; i < count; i++) {

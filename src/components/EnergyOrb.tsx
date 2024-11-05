@@ -11,12 +11,12 @@ uniform float uTime;
 void main() {
   vNormal = normalize(normalMatrix * normal);
   vUv = uv;
-  
+
   vec3 pos = position;
   // Pulsating effect
   float scale = 1.0 + sin(uTime * 2.0) * 0.1;
   pos *= scale;
-  
+
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }
 `;
@@ -31,16 +31,16 @@ void main() {
   // Energy swirl pattern
   float pattern = sin(vUv.x * 10.0 + uTime) * 0.5 + 0.5;
   pattern *= sin(vUv.y * 10.0 + uTime) * 0.5 + 0.5;
-  
+
   // Glow effect
   vec3 glowColor = uColor + pattern * 0.5;
-  
+
   // Fresnel
   vec3 viewDirection = normalize(cameraPosition - vNormal);
   float fresnelTerm = pow(1.0 - max(dot(viewDirection, vNormal), 0.0), 2.0);
-  
+
   vec3 finalColor = mix(glowColor, vec3(1.0), fresnelTerm);
-  
+
   gl_FragColor = vec4(finalColor, 1.0);
 }
 `;
@@ -70,11 +70,6 @@ export const EnergyOrb: React.FC<EnergyOrbProps> = ({
   useFrame((state) => {
     if (!orbRef.current) return;
     uniforms.uTime.value = state.clock.elapsedTime;
-
-    if (!isCollecting) {
-      orbRef.current.position.y =
-        position.y + Math.sin(state.clock.elapsedTime * 2) * 0.5;
-    }
   });
 
   const handleIntersectionEnter = (e) => {

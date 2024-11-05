@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { css } from "../../styled-system/css";
 import useGame from "@/stores/useGame";
@@ -14,6 +14,7 @@ export const FinalMessage = () => {
   const resetLandingTransition = useGame(
     (state) => state.resetLandingTransition,
   );
+  const setPhase = useGame((state) => state.setPhase);
   const isDead = useHealth((state) => state.isDead);
   const resetHealth = useHealth((state) => state.resetHealth);
   const initializeOrbs = useShieldSystem((state) => state.initializeOrbs);
@@ -64,11 +65,16 @@ export const FinalMessage = () => {
 
   const handleRestart = () => {
     setIsVisible(false);
-    restart();
-    setLandingState("in_progress");
     resetLandingTransition();
-    resetHealth();
-    initializeOrbs();
+    setLandingState("in_progress");
+
+    if (landingState !== "crash") {
+        restart();
+        resetHealth();
+        initializeOrbs();
+    } else {
+        setPhase("landing")
+    }
   };
 
   const isSuccess = landingState === "success";

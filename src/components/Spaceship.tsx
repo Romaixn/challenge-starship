@@ -10,9 +10,6 @@ type GLTFResult = GLTF & {
   nodes: {
     GreenShip_Body: THREE.Mesh;
     GreenShip_LandingGearItem1: THREE.Mesh;
-    GreenShip_LandingGearItem2: THREE.Mesh;
-    GreenShip_LandingGearItem3: THREE.Mesh;
-    GreenShip_LandingGearItem4: THREE.Mesh;
   };
   materials: {
     GreenShip: THREE.MeshStandardMaterial;
@@ -21,7 +18,7 @@ type GLTFResult = GLTF & {
 };
 
 export default function Spaceship(props: JSX.IntrinsicElements["group"]) {
-  const { nodes, materials } = useGLTF("/models/spaceship.glb") as GLTFResult;
+  const { nodes, materials } = useGLTF("/models/spaceship.glb", true) as GLTFResult;
   return (
     <group
       {...props}
@@ -39,24 +36,6 @@ export default function Spaceship(props: JSX.IntrinsicElements["group"]) {
         castShadow
         receiveShadow
         geometry={nodes.GreenShip_LandingGearItem1.geometry}
-        material={materials.LandingGear1}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.GreenShip_LandingGearItem2.geometry}
-        material={materials.LandingGear1}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.GreenShip_LandingGearItem3.geometry}
-        material={materials.LandingGear1}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.GreenShip_LandingGearItem4.geometry}
         material={materials.LandingGear1}
       />
       <RocketEngine

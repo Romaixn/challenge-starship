@@ -9,15 +9,11 @@ import { RigidBody } from "@react-three/rapier";
 type GLTFResult = GLTF & {
   nodes: {
     Landing_Pad: THREE.Mesh;
-    landingarm: THREE.Mesh;
-    landingarm_1: THREE.Mesh;
-    landingarm_2: THREE.Mesh;
+    Landing_Arm: THREE.Mesh;
   };
   materials: {
     landingpad: THREE.MeshStandardMaterial;
-    grey: THREE.MeshStandardMaterial;
-    orange: THREE.MeshStandardMaterial;
-    black: THREE.MeshStandardMaterial;
+    PaletteMaterial001: THREE.MeshStandardMaterial;
   };
 };
 
@@ -55,7 +51,7 @@ export const LandingPlatform = ({
 };
 
 const LandingModel = (props: JSX.IntrinsicElements["group"]) => {
-  const { nodes, materials } = useGLTF("/models/landing.glb") as GLTFResult;
+  const { nodes, materials } = useGLTF("/models/landing.glb", true) as GLTFResult;
   return (
     <group {...props} dispose={null}>
       <RigidBody name="landing_pad" type="fixed" colliders="cuboid">

@@ -41,7 +41,13 @@ const useGame = create<GameState>()(
       }),
 
     restart: () => {
-      set({ phase: "space", seed: Math.random() });
+      set({
+        phase: "space",
+        landingState: "in_progress",
+        landingTransitionComplete: false,
+        lastKnownPosition: new THREE.Vector3(0, 0, 5000),
+        seed: Math.random(),
+      });
     },
 
     setPhase: (phase) => set({ phase }),

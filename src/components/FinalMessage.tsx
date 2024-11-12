@@ -65,14 +65,16 @@ export const FinalMessage = () => {
 
   const handleRestart = () => {
     setIsVisible(false);
-    resetLandingTransition();
-    setLandingState("in_progress");
 
-    if (landingState !== "crash") {
-        restart();
-        resetHealth();
-        initializeOrbs();
-    } else {
+    if (isDead || landingState === "success") {
+        // TODO: This is a hacky way to reset the game. Maybe refactor this one day.
+        window.location.reload();
+        // resetHealth();
+        // initializeOrbs();
+        // restart();
+    } else if (landingState === "crash") {
+        resetLandingTransition();
+        setLandingState("in_progress");
         setPhase("landing")
     }
   };

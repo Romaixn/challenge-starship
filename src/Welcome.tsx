@@ -175,7 +175,7 @@ const Welcome = () => {
               transition: "opacity 0.4s ease-in-out",
             })}
           >
-            A challenge by Benjamin Code • Built by Romain Herault
+            A challenge by <a href="https://www.youtube.com/@BenjaminCode" target="_blank">Benjamin Code</a> • Built by <a href="https://rherault.dev" target="_blank">Romain Herault</a>
           </header>
 
           {/* Mission Briefing */}
